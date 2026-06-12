@@ -3,7 +3,7 @@
   --color-bg: #212121;
   --color-accent: #c8a96e;
   --color-text: #E2DED8;
-  --color-text-muted: #645b4e;
+  --color-text-muted: #81786b;
   --color-accepted: #50E3C2;
   --color-discarded: #9A87DF;
 
@@ -12,6 +12,9 @@
   --text-sm: 0.875rem;
   --text-base: 1rem;
   --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
 
   /* Spacing */
   --space-sm: 0.5rem;
@@ -24,21 +27,55 @@
   --border: 1px solid var(--color-text);
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   background-color: var(--color-bg);
   position: relative;
   color: var(--color-text);
   font-family: var(--font-sans);
+  margin: 0;
 }
 
+/* Background noise pattern
 body::after {
   content: "";
   position: fixed;
   inset: 0;
-  /* Create svg noise texture for the background */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 600px 600px;
   opacity: 0.12;
   z-index: -1;
+}
+ */
+
+nav {
+    display: flex;
+    height: 80px;
+    align-items: center;
+    border-bottom: var(--border);
+    padding: 0 var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+footer {
+    display: flex;
+    height: 80px;
+    align-items: center;
+    border-top: var(--border);
+    padding: 0 var(--space-lg);
+    margin-top: var(--space-lg);
+}
+
+a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-weight: 400;
+}
+
+a:hover {
+    color: var(--color-text);
 }

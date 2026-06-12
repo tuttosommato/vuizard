@@ -1,11 +1,15 @@
-import './App.css'
+import Header  from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
+import { Outlet } from 'react-router-dom'
+
 
 function App() {
-  return (
-      <div>
-        <h1>VUIZARD</h1>
-      </div>
-  )
+  return <>
+  <Header />
+  <Outlet />
+  <Footer />
+  </>
+
 }
 
-export default App
+export default App;
