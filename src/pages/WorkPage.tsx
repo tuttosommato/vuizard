@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { getWork } from '@/data/api'
 import type { Work } from '@/types/works'
 import WorkHeader from '@/components/work/WorkHeader'
-import AttributionsPanel from '@/components/work/AttributionsPanel'
+import AttributionsSection from '@/components/work/attributions/AttributionsSection'
 import NotFoundPage from '@/pages/NotFoundPage'
 import '@/styles/work.css'
 
@@ -100,7 +100,7 @@ function WorkPage() {
       <main className="work-layout">
         <section className="work-left">
           <WorkHeader currentWork={currentWork} />
-          <AttributionsPanel />
+          <AttributionsSection currentWork={currentWork} />
           {/* <CriticalDebatePanel /> */}
         </section>
         <section className="work-right">

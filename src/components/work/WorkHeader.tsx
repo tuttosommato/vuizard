@@ -1,5 +1,6 @@
 import type { Work } from "@/types/works";
 import { formatDating } from "@/utils/formatDating";
+import WorkImages from "@/components/work/WorkImages";
 
 type WorkHeaderProps = {
   currentWork: Work;
@@ -12,12 +13,6 @@ type WorkMetaProps = {
   material: Work["medium_material"];
   subject: Work["subject"];
 };
-
-type WorkImagesProps = {
-  photos: Work["photos"];
-};
-
-const BASE_URL = "https://catalogo.fondazionezeri.unibo.it/foto/";
 
 // ––––––– WorkMeta
 function WorkMeta({
@@ -52,16 +47,7 @@ function WorkMeta({
   );
 }
 
-// ––––––– WorkImages
-function WorkImages({ photos }: WorkImagesProps) {
-  return (
-    <div className="img-cnt">
-      {photos.map((ph) => (
-        <img key={ph.alt} alt={ph.alt} src={BASE_URL + ph.link} loading="lazy" />
-      ))}
-    </div>
-  );
-}
+
 
 // ––––––– WorkHeader
 function WorkHeader({ currentWork }: WorkHeaderProps) {
