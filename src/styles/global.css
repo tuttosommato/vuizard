@@ -1,3 +1,19 @@
+@font-face {
+  font-family: 'Satoshi';
+  src: url('../assets/fonts/Satoshi/Satoshi-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('../assets/fonts/Satoshi/Satoshi-VariableItalic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   /* Colors */
   --color-bg: #212121;
@@ -8,7 +24,7 @@
   --color-discarded: #9A87DF;
 
   /* Typography */
-  --font-sans: 'Open Sans', sans-serif;
+  --font-sans: 'Satoshi', sans-serif;
   --text-sm: 0.875rem;
   --text-base: 1rem;
   --text-lg: 1.25rem;
@@ -54,11 +70,18 @@ body::after {
 
 nav {
     display: flex;
-    height: 80px;
+    height: 60px;
     align-items: center;
     border-bottom: var(--border);
     padding: 0 var(--space-lg);
     margin-bottom: var(--space-lg);
+}
+
+nav a {
+  font-weight: 600;
+  font-size: var(--text-lg);
+  text-decoration: none;
+  color: var(--color-text);
 }
 
 footer {
@@ -70,7 +93,16 @@ footer {
     margin-top: var(--space-lg);
 }
 
-a {
+p, h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+p {
+  opacity: 0.7;
+}
+
+a:not(nav a) {
     color: var(--color-text-muted);
     text-decoration: none;
     font-weight: 400;
