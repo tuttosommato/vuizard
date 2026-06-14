@@ -9,16 +9,58 @@
 
 .work-left {
     width: 40%;
+    overflow: hidden;
 }
 
 h1 {
     font-size: var(--text-2xl);
     font-weight: 600;
-    margin: 0;
-    padding: 0;
 }
 
 .accepted-dating {
+    font-size: var(--text-lg);
+    font-weight: 200;
+}
+
+.img-cnt {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: no-wrap;
+    flex-direction: row;
+    margin: var(--space-lg) 0;
+    position: relative;
+}
+
+.img-cnt::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, var(--color-bg));
+}
+
+
+.img-cnt img {
+    height: 12rem;
+    width: auto;
+}
+
+.work-details {
+    display: grid;
+    grid-template-columns: max-content auto;
+}
+
+.work-details dt {
+    grid-column-start: 1;
+    font-size: var(--text-base);
+    font-weight: 400;
+}
+
+.work-details dd {
+    grid-column-start: 2;
     font-size: var(--text-base);
     font-weight: 200;
 }
