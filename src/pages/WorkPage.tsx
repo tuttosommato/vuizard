@@ -1,39 +1,54 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { getWork } from '@/data/api'
+import { getWork, getAttributions } from '@/data/api'
 import type { Work } from '@/types/works'
+import type { AttributionsBundle } from '@/types/attributions'
 import WorkHeader from '@/components/work/WorkHeader'
 import AttributionsSection from '@/components/work/attributions/AttributionsSection'
 import NotFoundPage from '@/pages/NotFoundPage'
 import '@/styles/work.css'
 
 
+type FetchOrigin = "work" | "attributions";
+
 type LoadState =
   | { status: "loading" }
-  | { status: "loaded"; work: Work }
+  | { status: "loaded"; work: Work; attributions: AttributionsBundle }
   | { status: "not-found" }
-  | { status: "error"; message: string }
+  | { status: "error"; origin: FetchOrigin; message: string };
 
 
 function WorkPage() {
   const { workId } = useParams<{ workId: string }>()
   const [state, setState] = useState<LoadState>({ status: "loading" })
 
-
   useEffect(() => {
     if (!workId) return
     let canceled = false
 
-    getWork(workId)
-      .then((work) => {
+    // define fetching Promises
+    const workP = getWork(workId).catch((e: unknown) => {
+      throw { origin: "work" as const, message: e instanceof (Error) ? e.message : String(e) }
+    })
+    const attrP = getAttributions(workId).catch((e: unknown) => {
+      throw { origin: "attributions" as const, message: e instanceof (Error) ? e.message : String(e) }
+    })
+
+    Promise.all([workP, attrP])
+      .then(([work, attributions]) => {
         if (canceled) return
-        setState(work === null ? { status: "not-found" } : { status: "loaded", work })
+        if (work === null || attributions === null) {
+          setState({ status: "not-found" })
+        } else {
+          setState({ status: "loaded", work, attributions })
+        }
       })
-      .catch((err: unknown) => {
+      .catch((e: { origin: FetchOrigin; message: string }) => {
         if (canceled) return
         setState({
           status: "error",
-          message: err instanceof Error ? err.message : "Failed to load work.",
+          origin: e.origin,
+          message: e.message
         })
       })
 
@@ -41,7 +56,6 @@ function WorkPage() {
       canceled = true // clean up: if another workId is loaded before this one finishes, we ignore the result of this load to prevent showing the wrong work or an error message from a previous load
     }
   }, [workId])
-
 
 
   if (!workId) {
@@ -88,9 +102,7 @@ function WorkPage() {
   }
 
   const currentWork = state.work
-
-
-
+  const currentAttributions = state.attributions
 
   return (
     <>
@@ -100,7 +112,7 @@ function WorkPage() {
       <main className="work-layout">
         <section className="work-left">
           <WorkHeader currentWork={currentWork} />
-          <AttributionsSection currentWork={currentWork} />
+          <AttributionsSection workTitle={currentWork.title} currentAttributions={currentAttributions} />
           {/* <CriticalDebatePanel /> */}
         </section>
         <section className="work-right">
