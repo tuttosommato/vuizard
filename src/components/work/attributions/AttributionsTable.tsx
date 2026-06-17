@@ -1,7 +1,10 @@
 import type { AttributionsBundle } from "@/types/attributions";
+import type { Author } from "@/types/authors";
 import { scaleLinear } from "d3-scale";
 import uncertaintyLine from "@/utils/uncertaintyLine";
 import AttributionCircle from "@/components/work/attributions/AttributionCircle.tsx";
+import { Fragment, useEffect, useState } from "react";
+import { getAuthor } from "@/data/api";
 
 
 type TableProps = {
@@ -9,15 +12,65 @@ type TableProps = {
     workTitle: string;
 };
 
-
-const CELLWIDTH = 200;
+const CELLWIDTH = 250;
 const CELLHEIGHT = 40;
-const PADDING = 5;
+const PADDING = 0;
+
+
 
 export default function AttributionsTable({ currentAttributions, workTitle }: TableProps) {
     const rankScale = scaleLinear()
         .domain([0, 10])
         .range([CELLWIDTH - PADDING, PADDING]);
+
+    const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+    const [authors, setAuthors] = useState<{ [key: string]: Author }>({});
+
+    const toggle = (id: string) => {
+        setExpandedIds(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) {
+                next.delete(id);
+            } else {
+                next.add(id);
+            }
+            return next
+        })
+    }
+
+    useEffect(() => {
+        let canceled = false;
+
+        // Only fetch real authors. Anonymous attributions don't have an author file.
+        const fetchableIds = currentAttributions.attributions
+            .filter((a) => !a.is_anonymous && a.local_id)
+            .map((a) => a.local_id);
+
+        if (fetchableIds.length === 0) {
+            return;
+        }
+
+        Promise.all(fetchableIds.map((id) => getAuthor(id)))
+            .then((authorsArray) => {
+                if (canceled) return;
+                const authorsMap: { [key: string]: Author } = {};
+                fetchableIds.forEach((id, i) => {
+                    const a = authorsArray[i];
+                    if (a) authorsMap[id] = a;
+                });
+                setAuthors(authorsMap);
+            })
+            .catch((e) => {
+                if (canceled) return;
+                console.error("Error fetching author data:", e);
+            });
+
+        return () => { canceled = true; };
+    }, [currentAttributions.attributions]);
+
+
+
 
     return (
         <table
@@ -33,68 +86,114 @@ export default function AttributionsTable({ currentAttributions, workTitle }: Ta
             </thead>
             <tbody>
                 {currentAttributions.attributions.map((attr) => {
+                    const opId = attr.operational_id
+                    //const locId = attr.local_id
+                    const isExpanded = expandedIds.has(opId)
                     const r = attr.r_qualifier;
                     const u = attr.u_qualifier;
+                    const currentAuthor = authors[attr.local_id]
+
                     return (
-                        <tr>
-                            <td>{attr.type}</td>
-                            <th>{attr.author + (r ? ", " + r : "") + (u ? " " + u : "")}</th>
-                            <td>
-                                <svg width={CELLWIDTH} height={CELLHEIGHT}>
-                                    {u
-                                        ? attr.reasons.map((reason, i) => (
-                                            <path
-                                                key={i}
-                                                d={uncertaintyLine(
-                                                    [
-                                                        rankScale(0),
-                                                        CELLHEIGHT / 2,
-                                                        rankScale(reason.rank),
-                                                        CELLHEIGHT / 2,
-                                                    ],
-                                                    u === "?" ? 0.85 : 0.6,
-                                                )}
-                                                stroke="var(--color-text)"
-                                                strokeWidth={1.5}
-                                                fill="none"
-                                            ></path>
-                                        ))
-                                        : attr.reasons.map((reason, i) => (
-                                            <line
-                                                key={i}
-                                                x1={rankScale(0)}
-                                                y1={CELLHEIGHT / 2}
-                                                x2={rankScale(reason.rank)}
-                                                y2={CELLHEIGHT / 2}
-                                                stroke="var(--color-text)"
-                                                strokeWidth={1.5}
-                                            ></line>
-                                        ))}
+                        <Fragment key={opId}>
+                            <tr className="visible-row" onClick={() => toggle(opId)} tabIndex={0} aria-expanded={isExpanded} onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    toggle(opId);
+                                }
+                            }}>
+                                <td>{attr.type}</td>
+                                <th>{attr.author + (r ? ", " + r : "") + (u ? " " + u : "")}</th>
+                                <td>
+                                    <svg width={CELLWIDTH} height={CELLHEIGHT}>
+                                        {u
+                                            ? attr.reasons.map((reason, i) => (
+                                                <path
+                                                    key={i}
+                                                    d={uncertaintyLine(
+                                                        [
+                                                            rankScale(0),
+                                                            CELLHEIGHT / 2,
+                                                            rankScale(reason.rank),
+                                                            CELLHEIGHT / 2,
+                                                        ],
+                                                        u === "?" ? 0.85 : 0.6,
+                                                    )}
+                                                    stroke="var(--color-text)"
+                                                    strokeWidth={1.5}
+                                                    fill="none"
+                                                ></path>
+                                            ))
+                                            : attr.reasons.map((reason, i) => (
+                                                <line
+                                                    key={i}
+                                                    x1={rankScale(0)}
+                                                    y1={CELLHEIGHT / 2}
+                                                    x2={rankScale(reason.rank)}
+                                                    y2={CELLHEIGHT / 2}
+                                                    stroke="var(--color-text)"
+                                                    strokeWidth={1.5}
+                                                ></line>
+                                            ))}
 
-                                    {attr.reasons.map((reason, i) => {
+                                        {attr.reasons.map((reason, i) => {
+                                            const circleType = attr.is_anonymous
+                                                ? "anonym"
+                                                : !attr.r_qualifier
+                                                    ? "author"
+                                                    : attr.r_qualifier.trimStart().startsWith("e ")
+                                                        ? "recognised"
+                                                        : "unrecognised";
 
-                                        const circleType = attr.is_anonymous
-                                            ? "anonym"
-                                            : !attr.r_qualifier
-                                                ? "author"
-                                                : attr.r_qualifier.trimStart().startsWith("e ")
-                                                    ? "recognised"
-                                                    : "unrecognised";
+                                            return (
+                                                <g key={i} transform={`translate(${rankScale(reason.rank)}, ${CELLHEIGHT / 2})`}>
+                                                    <AttributionCircle type={circleType} fill={
+                                                        attr.type === "accepted"
+                                                            ? "var(--color-accepted)"
+                                                            : "var(--color-discarded)"
+                                                    } r={CELLHEIGHT / 4} />
+                                                    <title>{reason.reason}</title>
+                                                </g>
+                                            );
+                                        })}
+                                    </svg>
+                                </td>
+                            </tr>
+                            {
+                                isExpanded && (
+                                    <tr className="row-details">
+                                        <td></td>
+                                        <td>
+                                            {currentAuthor && (
+                                                <>
+                                                    {currentAuthor.ulan && (
+                                                        <a href={currentAuthor.ulan} target="_blank" rel="noopener noreferrer">
+                                                            [ULAN]
+                                                        </a>
+                                                    )}
+                                                    {currentAuthor.viaf && (
+                                                        <a href={currentAuthor.viaf} target="_blank" rel="noopener noreferrer">
+                                                            [VIAF]
+                                                        </a>
+                                                    )}
+                                                    {currentAuthor.wikidata && (
+                                                        <a href={currentAuthor.wikidata} target="_blank" rel="noopener noreferrer">
+                                                            [WIKIDATA]
+                                                        </a>
+                                                    )}
+                                                    {currentAuthor.dbpedia && (
+                                                        <a href={currentAuthor.dbpedia} target="_blank" rel="noopener noreferrer">
+                                                            [DBPEDIA]
+                                                        </a>
+                                                    )}
+                                                </>
+                                            )}
+                                        </td>
+                                        <td>{attr.reasons.map((reason) => reason.original_text).join(", ")}</td>
+                                    </tr>
+                                )
+                            }
 
-                                        return (
-                                            <g key={i} transform={`translate(${rankScale(reason.rank)}, ${CELLHEIGHT / 2})`}>
-                                            <AttributionCircle type={circleType} fill={
-                                                attr.type === "accepted"
-                                                    ? "var(--color-accepted)"
-                                                    : "var(--color-discarded)"
-                                            } r={CELLHEIGHT / 4} />
-                                            <title>{reason.reason}</title>
-                                            </g>
-                                        );
-                                    })}
-                                </svg>
-                            </td>
-                        </tr>
+                        </Fragment>
                     );
                 })}
             </tbody>

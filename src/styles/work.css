@@ -10,6 +10,9 @@
 .work-left {
     width: 40%;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
 }
 
 h1 {
@@ -27,8 +30,8 @@ h1 {
     gap: var(--space-md);
     flex-wrap: no-wrap;
     flex-direction: row;
-    margin: var(--space-lg) 0;
     position: relative;
+    margin-top: var(--space-md);
 }
 
 .img-cnt::after {
@@ -44,7 +47,7 @@ h1 {
 
 
 .img-cnt img {
-    height: 12rem;
+    height: 9rem;
     width: auto;
 }
 
@@ -63,4 +66,51 @@ h1 {
     grid-column-start: 2;
     font-size: var(--text-base);
     font-weight: 200;
+}
+
+.attributions-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.attributions-table thead th {
+    text-align: left;
+    font-size: var(--text-sm);
+    font-weight: 400;
+    padding-bottom: var(--space-xs);
+}
+
+.attributions-table thead th:nth-child(3) {
+    text-align: right;
+}
+
+.attributions-table tbody tr {
+    text-align: left;
+}
+
+.attributions-table tbody tr td:nth-child(1) {
+    font-size: var(--text-sm);
+    font-weight: 400;
+    text-transform: uppercase;
+}
+
+.attributions-table .visible-row {
+    cursor: pointer;
+}
+
+.attributions-table .visible-row, .attributions-table .row-details {
+    border-bottom: 1px solid rgba(226, 222, 216, 0.4);
+}
+
+.attributions-table .visible-row[aria-expanded="true"] {
+    border-bottom-color: transparent;
+}
+
+.attributions-table tbody tr td:not(:nth-child(3)) {
+    max-width: 200px;
+}
+
+.attributions-table tbody tr td:nth-child(3) {
+    text-align: right;
+    width: 250px;
 }
