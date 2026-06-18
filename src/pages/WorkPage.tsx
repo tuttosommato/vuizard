@@ -5,6 +5,7 @@ import type { Work } from '@/types/works'
 import type { AttributionsBundle } from '@/types/attributions'
 import WorkHeader from '@/components/work/WorkHeader'
 import AttributionsSection from '@/components/work/attributions/AttributionsSection'
+import DebateVis from '@/components/work/attributions/DebateVis'
 import NotFoundPage from '@/pages/NotFoundPage'
 import '@/styles/work.css'
 
@@ -113,10 +114,11 @@ function WorkPage() {
         <section className="work-left">
           <WorkHeader currentWork={currentWork} />
           <AttributionsSection workTitle={currentWork.title} currentAttributions={currentAttributions} />
-          {/* <CriticalDebatePanel /> */}
+          {/* <CriticalDebateTimeline /> */}
         </section>
         <section className="work-right">
-          {/* <VisLegend /> <AttributionsVis /> */}
+          {/* <VisLegend />*/}
+          <DebateVis currentAttributions={currentAttributions} />
         </section>
       </main>
     </>
