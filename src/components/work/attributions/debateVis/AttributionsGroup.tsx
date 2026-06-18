@@ -3,18 +3,19 @@ import uncertaintyLine from "@/utils/uncertaintyLine";
 import { scaleOrdinal } from "d3";
 import AttributionCircle from "../AttributionCircle";
 import type { Author } from "@/types/authors";
-
+import {
+    center,
+    labelsFontSize,
+    radius,
+    rankScale,
+} from "./constants";
+import { verticalCenterOffset } from "./geometry";
 
 type groupProps = {
     attr: Attribution;
-    center: string;
     rotation: number;
-    rankScale: (rank: number) => number;
-    radius: number;
     labelsRef: React.RefObject<Map<string, SVGTextElement>>;
     authors: { [key: string]: Author };
-    verticalCenterOffset: (rotation: number) => number;
-    labelsFontSize: number;
 }
 
 
@@ -24,7 +25,7 @@ const colorScale = scaleOrdinal(
     );
 
     
-export default function AttributionsGroup({ attr, center, rotation, rankScale, radius, labelsRef, authors, verticalCenterOffset, labelsFontSize }: groupProps) {
+export default function AttributionsGroup({ attr, rotation, labelsRef, authors }: groupProps) {
     return <g
         key={attr.operational_id}
         transform={`${center} rotate(${rotation})`}
