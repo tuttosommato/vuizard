@@ -1,10 +1,9 @@
 import type { AttributionsBundle } from "@/types/attributions";
-import type { Author } from "@/types/authors";
 import { scaleLinear } from "d3-scale";
 import uncertaintyLine from "@/utils/uncertaintyLine";
 import AttributionCircle from "@/components/work/attributions/AttributionCircle.tsx";
-import { Fragment, useEffect, useState } from "react";
-import { getAuthor } from "@/data/api";
+import { Fragment, useState } from "react";
+import useAuthors from "@/hooks/useAuthors";
 
 
 type TableProps = {
@@ -25,7 +24,7 @@ export default function AttributionsTable({ currentAttributions, workTitle }: Ta
 
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
-    const [authors, setAuthors] = useState<{ [key: string]: Author }>({});
+    const authors = useAuthors(currentAttributions.attributions);
 
     const toggle = (id: string) => {
         setExpandedIds(prev => {
@@ -39,35 +38,6 @@ export default function AttributionsTable({ currentAttributions, workTitle }: Ta
         })
     }
 
-    useEffect(() => {
-        let canceled = false;
-
-        // Only fetch real authors. Anonymous attributions don't have an author file.
-        const fetchableIds = currentAttributions.attributions
-            .filter((a) => !a.is_anonymous && a.local_id)
-            .map((a) => a.local_id);
-
-        if (fetchableIds.length === 0) {
-            return;
-        }
-
-        Promise.all(fetchableIds.map((id) => getAuthor(id)))
-            .then((authorsArray) => {
-                if (canceled) return;
-                const authorsMap: { [key: string]: Author } = {};
-                fetchableIds.forEach((id, i) => {
-                    const a = authorsArray[i];
-                    if (a) authorsMap[id] = a;
-                });
-                setAuthors(authorsMap);
-            })
-            .catch((e) => {
-                if (canceled) return;
-                console.error("Error fetching author data:", e);
-            });
-
-        return () => { canceled = true; };
-    }, [currentAttributions.attributions]);
 
 
 

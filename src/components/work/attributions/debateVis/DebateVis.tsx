@@ -1,7 +1,5 @@
 import type { AttributionsBundle } from "@/types/attributions";
-import { useState, useEffect, useMemo, useRef, useLayoutEffect } from "react";
-import { getAuthor } from "@/data/api";
-import type { Author } from "@/types/authors";
+import { useState, useMemo, useRef, useLayoutEffect } from "react";
 import BackgroundArcs from "@/components/work/attributions/debateVis/BackgroundArcs";
 import AttributionsGroup from "@/components/work/attributions/debateVis/AttributionsGroup";
 import {
@@ -17,6 +15,7 @@ import {
     outerX
 } from "./constants";
 import { verticalCenterOffset, slotRotationDeg } from "./geometry";
+import useAuthors from "@/hooks/useAuthors";
 
 
 type VisProps = {
@@ -29,7 +28,7 @@ export default function DebateVis({ currentAttributions }: VisProps) {
 
     const attributions = currentAttributions.attributions;
 
-    const [authors, setAuthors] = useState<{ [key: string]: Author }>({});
+
 
     const rotations = attributions.map((_, i) =>
         slotRotationDeg(i, attributions.length),
@@ -41,6 +40,9 @@ export default function DebateVis({ currentAttributions }: VisProps) {
         Record<string, { textWidth: number }>
     >({});
 
+    const authors = useAuthors(attributions);
+
+    
     useLayoutEffect(() => {
         const next: Record<string, { textWidth: number }> = {};
         for (const [id, el] of labelsRef.current.entries()) {
@@ -49,6 +51,10 @@ export default function DebateVis({ currentAttributions }: VisProps) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setLabelsGeometry(next);
     }, [attributions]);
+
+
+
+
 
     const labelsEnd = useMemo(() => {
         const result: Record<string, { x: number; y: number }> = {};
@@ -74,37 +80,7 @@ export default function DebateVis({ currentAttributions }: VisProps) {
         return `M ${a.x},${a.y} C ${outerX},${a.y} ${outerX},${b.y} ${b.x},${b.y}`;
     }
 
-    useEffect(() => {
-        let canceled = false;
 
-        // Only fetch real authors. Anonymous attributions don't have an author file.
-        const fetchableIds = attributions
-            .filter((a) => !a.is_anonymous && a.local_id)
-            .map((a) => a.local_id);
-
-        if (fetchableIds.length === 0) {
-            return;
-        }
-
-        Promise.all(fetchableIds.map((id) => getAuthor(id)))
-            .then((authorsArray) => {
-                if (canceled) return;
-                const authorsMap: { [key: string]: Author } = {};
-                fetchableIds.forEach((id, i) => {
-                    const a = authorsArray[i];
-                    if (a) authorsMap[id] = a;
-                });
-                setAuthors(authorsMap);
-            })
-            .catch((e) => {
-                if (canceled) return;
-                console.error("Error fetching author data:", e);
-            });
-
-        return () => {
-            canceled = true;
-        };
-    }, [attributions]);
 
 
 
