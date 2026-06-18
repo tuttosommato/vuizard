@@ -18,10 +18,26 @@ export interface Attribution {
   is_anonymous: boolean
 }
 
+export interface AuthorSimilarity {
+  a: string
+  b: string
+  similarity_a: string
+  similarity_b: string
+  npmi: number
+  count_a: number
+  count_b: number
+  count_ab: number
+  n: number
+}
+
+/** pairs of author identifiers (may include suffixes like "-?", "-BOTTEGA", etc.) */
+export type AuthorPair = [string, string]
+
 export interface AttributionsBundle {
   attributions: Attribution[]
-  author_similarities: unknown[]
-  implicit_relations: unknown[]
-  master_relations: unknown[]
-  unmatched_bibliography: unknown[]
+  author_similarities: AuthorSimilarity[]
+  implicit_relations: AuthorPair[]
+  master_relations: AuthorPair[]
+  unmatched_bibliography: string[]
 }
+
