@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getWorksIndex } from "@/data/api";
-import type { WorksIndex } from "@/types/works"
-import '@/styles/search.css'
+import type { WorksIndex } from "@/types/works";
+import "@/styles/search.css";
 
 export default function SearchPage() {
   const [inputValue, setInputValue] = useState("");
@@ -12,19 +12,23 @@ export default function SearchPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let canceled = false
+    let canceled = false;
     getWorksIndex()
       .then((index) => {
-        if (!canceled) setWorksIndex(index)
+        if (!canceled) setWorksIndex(index);
       })
       .catch((err: unknown) => {
-        if (!canceled) setIndexError(err instanceof Error ? err.message : "Failed to log catalogue index")
+        if (!canceled)
+          setIndexError(
+            err instanceof Error
+              ? err.message
+              : "Failed to log catalogue index",
+          );
       });
     return () => {
-      canceled = false
-    }
+      canceled = false;
+    };
   }, []);
-
 
   function handleSearch() {
     if (!worksIndex) return;
@@ -39,7 +43,7 @@ export default function SearchPage() {
     }
     setError(null);
     navigate(`/work/${value}`);
-  };
+  }
 
   if (indexError) {
     return (
@@ -54,7 +58,6 @@ export default function SearchPage() {
     );
   }
 
-
   const isLoading = worksIndex === null;
 
   return (
@@ -65,7 +68,8 @@ export default function SearchPage() {
           onSubmit={(e) => {
             e.preventDefault();
             handleSearch();
-          }} noValidate
+          }}
+          noValidate
         >
           <input
             type="search"
@@ -79,15 +83,20 @@ export default function SearchPage() {
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? "search-error" : undefined}
           />
-          <button type="submit" disabled={isLoading}>Search</button>
+          <button type="submit" disabled={isLoading}>
+            Search
+          </button>
         </form>
         {error && (
-          <p id="search-error" role="alert" style={{ color: "var(--color-discarded)" }}>
+          <p
+            id="search-error"
+            role="alert"
+            style={{ color: "var(--color-discarded)" }}
+          >
             {error}
           </p>
         )}
       </main>
     </>
-
   );
 }

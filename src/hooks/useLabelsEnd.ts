@@ -6,9 +6,10 @@ import {
 import { verticalCenterOffset } from "@/components/work/attributions/debateVis/geometry";
 import type { Attribution } from "@/types/attributions";
 
-
 const useLabelsEnd = (attributions: Attribution[], rotations: number[]) => {
-  const [labelsGeometry, setLabelsGeometry] = useState<Record<string, { textWidth: number }>>({});
+  const [labelsGeometry, setLabelsGeometry] = useState<
+    Record<string, { textWidth: number }>
+  >({});
 
   const labelsEnd = useMemo(() => {
     const result: Record<string, { x: number; y: number }> = {};
@@ -36,8 +37,7 @@ const useLabelsEnd = (attributions: Attribution[], rotations: number[]) => {
     setLabelsGeometry(next);
   }, [attributions]);
 
-    return { labelsRef, labelsEnd };
-
+  return { labelsRef, labelsEnd };
 };
 
 export default useLabelsEnd;

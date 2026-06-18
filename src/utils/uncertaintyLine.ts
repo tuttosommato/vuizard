@@ -1,47 +1,45 @@
 import { curveCatmullRom, line, range } from "d3";
 
 export default function uncertaintyLine(
-    [x1, y1, x2, y2]: [number, number, number, number],
-    u: number,
+  [x1, y1, x2, y2]: [number, number, number, number],
+  u: number,
 ) {
-    // change the following parameters to change line appearence
-    const A_MAX = 13;
-    const WAVELENGTH = 12;
-    const SAMPLES_PER_WL = 8;
-    const MARGIN = 4;
+  // change the following parameters to change line appearence
+  const A_MAX = 13;
+  const WAVELENGTH = 12;
+  const SAMPLES_PER_WL = 8;
+  const MARGIN = 4;
 
-    const aMax = A_MAX;
-    const wavelength = WAVELENGTH * (0.5 + 0.5 * u); // remove computation after wavelength to have it constant
-    const margin = MARGIN;
-    const amp = aMax * (1 - Math.max(0, Math.min(1, u)));
+  const aMax = A_MAX;
+  const wavelength = WAVELENGTH * (0.5 + 0.5 * u); // remove computation after wavelength to have it constant
+  const margin = MARGIN;
+  const amp = aMax * (1 - Math.max(0, Math.min(1, u)));
 
-    const dx = x2 - x1,
-        dy = y2 - y1;
-    const L = Math.hypot(dx, dy);
-    if (L === 0) return `M${x1},${y1}`;
+  const dx = x2 - x1,
+    dy = y2 - y1;
+  const L = Math.hypot(dx, dy);
+  if (L === 0) return `M${x1},${y1}`;
 
-    const tx = dx / L,
-        ty = dy / L;
-    const nx = -ty,
-        ny = tx;
+  const tx = dx / L,
+    ty = dy / L;
+  const nx = -ty,
+    ny = tx;
 
-    const innerStart = Math.min(margin, L / 2);
-    const innerEnd = Math.max(L - margin, L / 2);
-    const nSeg = Math.max(2, Math.ceil((L / wavelength) * SAMPLES_PER_WL));
+  const innerStart = Math.min(margin, L / 2);
+  const innerEnd = Math.max(L - margin, L / 2);
+  const nSeg = Math.max(2, Math.ceil((L / wavelength) * SAMPLES_PER_WL));
 
-    const pts = range(nSeg + 1).map((i): [number, number] => {
-        const s = (i / nSeg) * L;
-        const inMargin = s <= innerStart || s >= innerEnd;
-        // Wave starts from phase 0 at the beginning of the perturbed zone for continuity
-        const off = inMargin
-            ? 0
-            : amp * Math.sin((2 * Math.PI * (s - innerStart)) / wavelength);
-        return [x1 + tx * s + nx * off, y1 + ty * s + ny * off];
-    });
-    return line().curve(curveCatmullRom.alpha(0.5))(pts) ?? "";
+  const pts = range(nSeg + 1).map((i): [number, number] => {
+    const s = (i / nSeg) * L;
+    const inMargin = s <= innerStart || s >= innerEnd;
+    // Wave starts from phase 0 at the beginning of the perturbed zone for continuity
+    const off = inMargin
+      ? 0
+      : amp * Math.sin((2 * Math.PI * (s - innerStart)) / wavelength);
+    return [x1 + tx * s + nx * off, y1 + ty * s + ny * off];
+  });
+  return line().curve(curveCatmullRom.alpha(0.5))(pts) ?? "";
 }
-
-
 
 /*
 By now i stick with wavyLine because it generates more stable lines, while sketchyLine can generate very different lines on each render, which can be visually disturbing

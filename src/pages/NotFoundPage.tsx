@@ -1,10 +1,9 @@
-import { Link } from "react-router-dom"
-
+import { Link } from "react-router-dom";
 
 type NotFoundPageProps = {
-  title?: string
-  message?: string
-}
+  title?: string;
+  message?: string;
+};
 
 export default function NotFoundPage({
   title = "Page not found",
@@ -19,5 +18,5 @@ export default function NotFoundPage({
         <Link to="/">← Back to search</Link>
       </main>
     </>
-  )
+  );
 }

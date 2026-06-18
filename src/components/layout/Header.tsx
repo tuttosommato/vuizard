@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 export default function Header() {
-    return <nav id="nav">
-        <Link to={`/`}>
-            Vuizard
-        </Link>
+  return (
+    <nav id="nav">
+      <Link to={`/`}>Vuizard</Link>
     </nav>
+  );
 }

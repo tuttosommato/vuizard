@@ -1,8 +1,8 @@
 .search-form {
-    display: flex;
-    justify-content: left;
-    margin: var(--space-lg);
-    flex-direction: column;
+  display: flex;
+  justify-content: left;
+  margin: var(--space-lg);
+  flex-direction: column;
 }
 
 form {

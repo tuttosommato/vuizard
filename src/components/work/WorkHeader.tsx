@@ -47,10 +47,8 @@ function WorkMeta({
   );
 }
 
-
 // ––––––– WorkHeader
 function WorkHeader({ currentWork }: WorkHeaderProps) {
-
   const acceptedDating = currentWork.dating.filter(
     (d) => d.type === "accepted",
   );
