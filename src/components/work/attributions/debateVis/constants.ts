@@ -1,4 +1,4 @@
-import { scaleLinear } from "d3-scale";
+import { scaleLinear, scaleOrdinal } from "d3-scale";
 
 export const height = 800;
 export const width = 1000;
@@ -13,6 +13,11 @@ export const radius = min / 2.5;
 
 // Maps an attribution's rank (0-10)
 export const rankScale = scaleLinear().domain([0, 10]).range([max, min]);
+// Maps an attribution's type to a color
+export const colorScale = scaleOrdinal(
+  ["accepted", "discarded"],
+  ["var(--color-accepted)", "var(--color-discarded)"],
+);
 
 // Control-point x-coordinate used when drawing curved connection lines
 export const outerX = rankScale(0) * 2.25;
