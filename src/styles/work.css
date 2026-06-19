@@ -67,6 +67,7 @@ h1 {
   font-weight: 200;
 }
 
+/* Attributions table */
 .attributions-table {
   width: 100%;
   border-collapse: collapse;
@@ -114,3 +115,37 @@ h1 {
   text-align: right;
   width: 250px;
 }
+
+
+/* Life table */
+.authors-life-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.authors-life-table thead th {
+  text-align: left;
+  font-size: var(--text-sm);
+  font-weight: 400;
+  padding-bottom: var(--space-xs);
+}
+
+.authors-life-table tbody tr {
+  text-align: left;
+  height: 40px;
+}
+
+.authors-life-table .visible-row {
+  cursor: pointer;
+}
+
+.authors-life-table tbody tr:not(tr.dating-row) {
+  border-bottom: 1px solid rgba(226, 222, 216, 0.4);
+}
+
+
+
+
+
+
+

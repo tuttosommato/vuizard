@@ -4,7 +4,7 @@ import { getWork, getAttributions } from "@/data/api";
 import type { Work } from "@/types/works";
 import type { AttributionsBundle } from "@/types/attributions";
 import WorkHeader from "@/components/work/WorkHeader";
-import AttributionsSection from "@/components/work/attributions/AttributionsSection";
+import AttributionsSection from "@/components/work/attributions/attributionsTable/AttributionsSection";
 import DebateVis from "@/components/work/attributions/debateVis/DebateVis";
 import NotFoundPage from "@/pages/NotFoundPage";
 import "@/styles/work.css";
@@ -122,6 +122,8 @@ function WorkPage() {
           <AttributionsSection
             workTitle={currentWork.title}
             currentAttributions={currentAttributions}
+            acceptedDating={currentWork.dating.filter((d) => d.type === "accepted")}
+            discardedDating={currentWork.dating.filter((d) => d.type === "discarded")}
           />
           {/* <CriticalDebateTimeline /> */}
         </section>
