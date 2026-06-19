@@ -2,15 +2,15 @@ import type { Attribution } from "@/types/attributions";
 import uncertaintyLine from "@/utils/uncertaintyLine";
 import AttributionCircle from "@/components/work/attributions/AttributionCircle";
 import type { Author } from "@/types/authors";
-import {
-  center,
-  labelsFontSize,
-  radius,
-  rankScale,
-  colorScale,
-} from "@/components/work/attributions/debateVis/constants";
 import { verticalCenterOffset } from "./geometry";
 import { circleTypeFor } from "@/components/work/attributions/utils";
+import {
+  colorScale,
+  labelsFontSize,
+  rankScale,
+  radius,
+  center,
+} from "./constants";
 
 type GroupProps = {
   attr: Attribution;
@@ -19,9 +19,8 @@ type GroupProps = {
   authors: { [key: string]: Author };
 };
 
-
 export default function AttributionsGroup({
-attr,
+  attr,
   rotation,
   labelsRef,
   authors,
@@ -31,17 +30,12 @@ attr,
   const circleType = circleTypeFor(attr);
 
   return (
-    <g
-      key={attr.operational_id}
-      transform={`${center} rotate(${rotation})`}
-      fill={attrFill}
-    >
-      {/* Attribution edges */}
+    <g transform={`${center} rotate(${rotation})`} fill={attrFill}>
+      {/* Edges */}
       {attr.reasons.map((reason) => {
         const x1 = rankScale(reason.rank);
         const x2 = rankScale(0);
         const key = `${attr.operational_id}-${reason.reason}`;
-        const strokeWidth = 1.5;
 
         return attr.u_qualifier ? (
           <path
@@ -52,7 +46,8 @@ attr,
             )}
             fill="none"
             stroke="var(--color-text)"
-            strokeWidth={strokeWidth}
+            strokeWidth={1.5}
+            vectorEffect="non-scaling-stroke"
           />
         ) : (
           <line
@@ -62,25 +57,24 @@ attr,
             x2={x2}
             y2={0}
             stroke="var(--color-text)"
-            strokeWidth={strokeWidth}
+            strokeWidth={1.5}
+            vectorEffect="non-scaling-stroke"
           />
         );
       })}
 
-      {/* Author symbol */}
-      {attr.reasons.map((reason, ri) => {
-        return (
-          <g
-            key={`${attr.operational_id}-${ri}`}
-            transform={`translate(${rankScale(reason.rank)}, 0)`}
-          >
-            <AttributionCircle type={circleType} fill={attrFill} r={radius} />
-            <title>{reason.reason}</title>
-          </g>
-        );
-      })}
+      {/* Symbols */}
+      {attr.reasons.map((reason, ri) => (
+        <g
+          key={`${attr.operational_id}-sym-${ri}`}
+          transform={`translate(${rankScale(reason.rank)}, 0)`}
+        >
+          <AttributionCircle type={circleType} fill={attrFill} r={radius} />
+          <title>{reason.reason}</title>
+        </g>
+      ))}
 
-      {/* Average motivation value */}
+      {/* Average */}
       {authorStats && (
         <circle
           cx={rankScale(authorStats.counts.mean)}
@@ -91,10 +85,11 @@ attr,
           strokeWidth={0.75}
           fillOpacity={0.1}
           strokeOpacity={0.7}
+          vectorEffect="non-scaling-stroke"
         />
       )}
 
-      {/* Labels - counter rotated to be read normally */}
+      {/* Labels */}
       <text
         ref={(el) => {
           if (el) labelsRef.current.set(attr.operational_id, el);

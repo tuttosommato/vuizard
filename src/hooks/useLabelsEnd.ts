@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo, useLayoutEffect } from "react";
 import {
-  rankScale,
   curveGap,
+  rankScale,
 } from "@/components/work/attributions/debateVis/constants";
 import { verticalCenterOffset } from "@/components/work/attributions/debateVis/geometry";
 import type { Attribution } from "@/types/attributions";

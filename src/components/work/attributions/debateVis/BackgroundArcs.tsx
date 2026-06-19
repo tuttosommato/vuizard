@@ -1,20 +1,11 @@
 import { range } from "d3-array";
 import { arc } from "d3-shape";
+import { min, max, increment, center } from "./constants";
 
 const arcGenerator = arc<null>().innerRadius(0).startAngle(0).endAngle(Math.PI);
+const radii = range(min, max, increment);
 
-export default function BackgroundArcs({
-  min,
-  max,
-  center,
-}: {
-  min: number;
-  max: number;
-  center: string;
-}) {
-  const increment = min;
-  const radii = range(min, max, increment);
-
+export default function BackgroundArcs() {
   return (
     <>
       {radii.map((rad) => {
@@ -31,6 +22,7 @@ export default function BackgroundArcs({
             strokeDasharray={
               rad <= min ? undefined : isMaxRadius ? undefined : "6, 8"
             }
+            vectorEffect="non-scaling-stroke"
           ></path>
         );
       })}
