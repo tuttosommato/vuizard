@@ -5,18 +5,18 @@ import type { Author } from "@/types/authors";
 import uncertaintyLine from "@/utils/uncertaintyLine";
 import AttributionCircle from "../AttributionCircle";
 import { circleTypeFor } from "../utils";
-
-const CELLWIDTH = 250;
-const CELLHEIGHT = 40;
-const PADDING = 0;
-
-const rankScale = scaleLinear()
-    .domain([0, 10])
-    .range([CELLWIDTH - PADDING, PADDING]);
+import { colorScale } from "../debateVis/constants";
+import useMeasuredSize from "@/hooks/useMeasuredSize";
 
 
 export default function AuthorsMetaTable({ authors, workTitle, currentAttributions }: { authors: Record<string, Author>; workTitle: string; currentAttributions: AttributionsBundle }) {
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+    // We measure the cellWidth of the "Reason reliability" header cell to adapt the visualization of reasons accordingly
+    const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
+
+    const rankScale = scaleLinear()
+    .domain([0, 10])
+    .range([width, 0]);
 
     const toggle = (id: string) => {
         setExpandedIds((prev) => {
@@ -40,7 +40,7 @@ export default function AuthorsMetaTable({ authors, workTitle, currentAttributio
                 <tr>
                     <th scope="col">Attribution type</th>
                     <th scope="col">Artist</th>
-                    <th scope="col">Reason reliability</th>
+                    <th ref={ref} scope="col">Reason reliability</th>
                 </tr>
             </thead>
             <tbody>
@@ -72,7 +72,7 @@ export default function AuthorsMetaTable({ authors, workTitle, currentAttributio
                                     {attr.author + (r ? ", " + r : "") + (u ? " " + u : "")}
                                 </th>
                                 <td>
-                                    <svg width={CELLWIDTH} height={CELLHEIGHT}>
+                                    <svg width="100%" height={height}>
                                         {u
                                             ? attr.reasons.map((reason, i) => (
                                                 <path
@@ -80,9 +80,9 @@ export default function AuthorsMetaTable({ authors, workTitle, currentAttributio
                                                     d={uncertaintyLine(
                                                         [
                                                             rankScale(0),
-                                                            CELLHEIGHT / 2,
+                                                            height / 2,
                                                             rankScale(reason.rank),
-                                                            CELLHEIGHT / 2,
+                                                            height / 2,
                                                         ],
                                                         u === "?" ? 0.85 : 0.6,
                                                     )}
@@ -95,9 +95,9 @@ export default function AuthorsMetaTable({ authors, workTitle, currentAttributio
                                                 <line
                                                     key={i}
                                                     x1={rankScale(0)}
-                                                    y1={CELLHEIGHT / 2}
+                                                    y1={height / 2}
                                                     x2={rankScale(reason.rank)}
-                                                    y2={CELLHEIGHT / 2}
+                                                    y2={height / 2}
                                                     stroke="var(--color-text)"
                                                     strokeWidth={1.5}
                                                 ></line>
@@ -107,16 +107,12 @@ export default function AuthorsMetaTable({ authors, workTitle, currentAttributio
                                             return (
                                                 <g
                                                     key={i}
-                                                    transform={`translate(${rankScale(reason.rank)}, ${CELLHEIGHT / 2})`}
+                                                    transform={`translate(${rankScale(reason.rank)}, ${height / 2})`}
                                                 >
                                                     <AttributionCircle
                                                         type={circleType}
-                                                        fill={
-                                                            attr.type === "accepted"
-                                                                ? "var(--color-accepted)"
-                                                                : "var(--color-discarded)"
-                                                        }
-                                                        r={CELLHEIGHT / 4}
+                                                        fill={colorScale(attr.type)}
+                                                        r={height / 4.5}
                                                     />
                                                     <title>{reason.reason}</title>
                                                 </g>

@@ -3,6 +3,9 @@ import type { AttributionsBundle } from "@/types/attributions";
 import { scaleLinear, extent } from "d3";
 import { colorScale } from "../debateVis/constants";
 import type { Work } from "@/types/works";
+import useMeasuredSize from "@/hooks/useMeasuredSize";
+
+const barHeight = 16;
 
 export default function AuthorsLifeTable({
   authors,
@@ -15,11 +18,12 @@ export default function AuthorsLifeTable({
   acceptedDating: Work["dating"];
   discardedDating: Work["dating"];
 }) {
+  const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
 
   let domain = currentAttributions.attributions.flatMap((attr) => {
-      const author = authors[attr.local_id];
-      return author?.life ? [+author.life.birth, +author.life.death] : [];
-    });
+    const author = authors[attr.local_id];
+    return author?.life ? [+author.life.birth, +author.life.death] : [];
+  });
 
   acceptedDating.forEach((d) => {
     if (d.from) domain.push(+d.from);
@@ -32,7 +36,6 @@ export default function AuthorsLifeTable({
   });
 
   domain = extent(domain) as [number, number];
-  
 
   const tempPadding = 10;
   const tempScale = scaleLinear()
@@ -41,9 +44,7 @@ export default function AuthorsLifeTable({
       domain && domain[1] !== undefined ? domain[1] + tempPadding : 1,
     ])
     .nice()
-    .range([0, 400]);
-
-  console.log(authors);
+    .range([0, width]);
 
   return (
     <table
@@ -53,27 +54,26 @@ export default function AuthorsLifeTable({
       <thead>
         <tr>
           <th scope="col">Artist</th>
-          <th scope="col">Life data</th>
+          <th ref={ref} scope="col">
+            Life data
+          </th>
         </tr>
       </thead>
       <tbody>
         {currentAttributions.attributions.map((attr) => {
-            const author = authors[attr.local_id];
-            const life = author?.life;
+          const author = authors[attr.local_id];
+          const life = author?.life;
           return (
             <tr key={attr.operational_id}>
               <th>{attr.author}</th>
-              <td style={{ width: 400 }}>
+              <td>
                 {life ? (
-                  <svg width={400} height={20}>
+                  <svg width="100%" height={height}>
                     <rect
                       x={tempScale(+life.birth)}
-                      y={0}
-                      width={
-                        tempScale(+life.death) -
-                        tempScale(+life.birth)
-                      }
-                      height={20}
+                      y={height / 2 - barHeight / 2}
+                      width={tempScale(+life.death) - tempScale(+life.birth)}
+                      height={barHeight}
                       fill={colorScale(attr.type)}
                     />
                   </svg>
@@ -85,47 +85,47 @@ export default function AuthorsLifeTable({
           );
         })}
         <tr className="dating-row accepted-dating-row">
-            <td>Accepted datings</td>
-            <td style={{ width: 400 }}>
-                <svg width={400} height={20}>
-                {acceptedDating.map((d, i) => (
-                        <rect
-                            key={i}
-                            x={tempScale(d.from ? +d.from : domain[0])}
-                            y={0}
-                            width={
-                                tempScale(d.to ? +d.to : domain[1]) -
-                                tempScale(d.from ? +d.from : domain[0])
-                            }
-                            height={20}
-                            fill="var(--color-text)"
-                        />
-                ))}
-                </svg>
-            </td>
+          <td>Accepted datings</td>
+          <td>
+            <svg width="100%" height={height}>
+              {acceptedDating.map((d, i) => (
+                <rect
+                  key={i}
+                  x={tempScale(d.from ? +d.from : domain[0])}
+                  y={height / 2 - barHeight / 2}
+                  width={
+                    tempScale(d.to ? +d.to : domain[1]) -
+                    tempScale(d.from ? +d.from : domain[0])
+                  }
+                  height={barHeight}
+                  fill="var(--color-text)"
+                />
+              ))}
+            </svg>
+          </td>
         </tr>
         {discardedDating.length > 0 && (
-        <tr className="dating-row discarded-dating-row">
+          <tr className="dating-row discarded-dating-row">
             <td>Discarded datings</td>
-            <td style={{ width: 400 }}>
-                <svg width={400} height={20}>
+            <td>
+              <svg width="100%" height={height}>
                 {discardedDating.map((d, i) => (
-                        <rect
-                            key={i}
-                            x={tempScale(d.from ? +d.from : domain[0])}
-                            y={0}
-                            width={
-                                tempScale(d.to ? +d.to : domain[1]) -
-                                tempScale(d.from ? +d.from : domain[0])
-                            }
-                            height={20}
-                            fill="var(--color-text)"
-                            fillOpacity={0.5}
-                        />
+                  <rect
+                    key={i}
+                    x={tempScale(d.from ? +d.from : domain[0])}
+                    y={height / 2 - barHeight / 2}
+                    width={
+                      tempScale(d.to ? +d.to : domain[1]) -
+                      tempScale(d.from ? +d.from : domain[0])
+                    }
+                    height={barHeight}
+                    fill="var(--color-text)"
+                    fillOpacity={0.5}
+                  />
                 ))}
-                </svg>
+              </svg>
             </td>
-        </tr>
+          </tr>
         )}
       </tbody>
     </table>
