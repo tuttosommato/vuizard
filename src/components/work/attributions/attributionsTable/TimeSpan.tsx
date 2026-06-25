@@ -1,0 +1,76 @@
+type TimeSpanProp = {
+  from: number;
+  fromQ: string;
+  to: number;
+  toQ: string;
+  scale: (value: number) => number;
+  height: number;
+  barHeight: number;
+  fill: string;
+  fillOpacity?: number;
+};
+
+export default function TimeSpan({
+  from,
+  fromQ,
+  to,
+  toQ,
+  scale,
+  height,
+  barHeight,
+  fill,
+  fillOpacity = 1,
+}: TimeSpanProp) {
+  const y = height / 2;
+  const labelY = y - 3;
+  const x1 = scale(from);
+  const x2 = scale(to);
+  const r = barHeight / 4;
+
+  if (from === to) {
+    return (
+      <>
+        <circle
+          cx={x1}
+          cy={y + r}
+          r={r}
+          fill={fill}
+          fillOpacity={fillOpacity}
+        />
+        <text
+          x={x1}
+          y={labelY}
+          fontSize={barHeight}
+          textAnchor="middle"
+          dominantBaseline="alphabetic"
+          fill="var(--color-text)"
+        >
+          {from + fromQ}
+        </text>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <rect
+        x={x1}
+        y={y}
+        width={x2 - x1}
+        height={barHeight}
+        fill={fill}
+        fillOpacity={fillOpacity}
+      />
+      <text
+        fontSize={barHeight}
+        x={x1 + (x2 -x1) / 2}
+        y={labelY}
+        textAnchor="middle"
+        dominantBaseline="alphabetic"
+        fill="var(--color-text)"
+      >
+        {from + fromQ} - {to + toQ}
+      </text>
+    </>
+  );
+}

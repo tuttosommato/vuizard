@@ -1,11 +1,13 @@
 import type { Author } from "@/types/authors";
 import type { AttributionsBundle } from "@/types/attributions";
 import { scaleLinear, extent } from "d3";
-import { colorScale } from "../debateVis/constants";
+import { colorScale, labelsFontSize } from "../debateVis/constants";
 import type { Work } from "@/types/works";
 import useMeasuredSize from "@/hooks/useMeasuredSize";
+import TimeSpan from "./TimeSpan";
+import { useMemo } from "react";
 
-const barHeight = 16;
+const barHeight = labelsFontSize / 1.25;
 
 export default function AuthorsLifeTable({
   authors,
@@ -20,31 +22,38 @@ export default function AuthorsLifeTable({
 }) {
   const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
 
-  let domain = currentAttributions.attributions.flatMap((attr) => {
-    const author = authors[attr.local_id];
-    return author?.life ? [+author.life.birth, +author.life.death] : [];
-  });
+  const domain = useMemo(() => {
+    const values = currentAttributions.attributions.flatMap((attr) => {
+      const author = authors[attr.local_id];
+      return author?.life ? [+author.life.birth, +author.life.death] : [];
+    });
+    acceptedDating.forEach((d) => {
+      if (d.from) values.push(+d.from);
+      if (d.to) values.push(+d.to);
+    });
+    discardedDating.forEach((d) => {
+      if (d.from) values.push(+d.from);
+      if (d.to) values.push(+d.to);
+    });
+    return extent(values) as [number, number];
+  }, [
+    authors,
+    currentAttributions.attributions,
+    acceptedDating,
+    discardedDating,
+  ]);
 
-  acceptedDating.forEach((d) => {
-    if (d.from) domain.push(+d.from);
-    if (d.to) domain.push(+d.to);
-  });
+  const padding = 10;
 
-  discardedDating.forEach((d) => {
-    if (d.from) domain.push(+d.from);
-    if (d.to) domain.push(+d.to);
-  });
-
-  domain = extent(domain) as [number, number];
-
-  const tempPadding = 10;
-  const tempScale = scaleLinear()
-    .domain([
-      domain && domain[0] !== undefined ? domain[0] - tempPadding : 0,
-      domain && domain[1] !== undefined ? domain[1] + tempPadding : 1,
-    ])
-    .nice()
-    .range([0, width]);
+  const timeScale = useMemo(() => {
+    return scaleLinear()
+      .domain([
+        (domain[0] ?? 0) - padding,
+        (domain[1] ?? 1) + padding,
+      ])
+      .nice()
+      .range([0, width]);
+  }, [domain, width]);
 
   return (
     <table
@@ -69,11 +78,14 @@ export default function AuthorsLifeTable({
               <td>
                 {life ? (
                   <svg width="100%" height={height}>
-                    <rect
-                      x={tempScale(+life.birth)}
-                      y={height / 2 - barHeight / 2}
-                      width={tempScale(+life.death) - tempScale(+life.birth)}
-                      height={barHeight}
+                    <TimeSpan
+                      from={+life.birth}
+                      to={+life.death}
+                      fromQ={life.birth_qualifier}
+                      toQ={life.death_qualifier}
+                      scale={timeScale}
+                      height={height}
+                      barHeight={barHeight}
                       fill={colorScale(attr.type)}
                     />
                   </svg>
@@ -84,21 +96,21 @@ export default function AuthorsLifeTable({
             </tr>
           );
         })}
+        {/* Work of art dating rows */}
         <tr className="dating-row accepted-dating-row">
-          <td>Accepted datings</td>
+          <td>Work creation (accepted)</td>
           <td>
             <svg width="100%" height={height}>
-              {acceptedDating.map((d, i) => (
-                <rect
-                  key={i}
-                  x={tempScale(d.from ? +d.from : domain[0])}
-                  y={height / 2 - barHeight / 2}
-                  width={
-                    tempScale(d.to ? +d.to : domain[1]) -
-                    tempScale(d.from ? +d.from : domain[0])
-                  }
-                  height={barHeight}
-                  fill="var(--color-text)"
+              {acceptedDating.map((d) => (
+                <TimeSpan
+                  from={+d.from}
+                  to={+d.to}
+                  fromQ={d.from_approximation || ""}
+                  toQ={d.to_approximation || ""}
+                  scale={timeScale}
+                  height={height}
+                  barHeight={barHeight}
+                  fill={"var(--color-text)"}
                 />
               ))}
             </svg>
@@ -106,20 +118,19 @@ export default function AuthorsLifeTable({
         </tr>
         {discardedDating.length > 0 && (
           <tr className="dating-row discarded-dating-row">
-            <td>Discarded datings</td>
+            <td>Work creation (discarded)</td>
             <td>
               <svg width="100%" height={height}>
-                {discardedDating.map((d, i) => (
-                  <rect
-                    key={i}
-                    x={tempScale(d.from ? +d.from : domain[0])}
-                    y={height / 2 - barHeight / 2}
-                    width={
-                      tempScale(d.to ? +d.to : domain[1]) -
-                      tempScale(d.from ? +d.from : domain[0])
-                    }
-                    height={barHeight}
-                    fill="var(--color-text)"
+                {discardedDating.map((d) => (
+                  <TimeSpan
+                    from={+d.from}
+                    to={+d.to}
+                    fromQ={d.from_approximation || ""}
+                    toQ={d.to_approximation || ""}
+                    scale={timeScale}
+                    height={height}
+                    barHeight={barHeight}
+                    fill={"var(--color-text)"}
                     fillOpacity={0.5}
                   />
                 ))}

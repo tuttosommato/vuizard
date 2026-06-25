@@ -93,12 +93,14 @@ h1 {
 }
 
 /* Attributions table */
-.attributions-table {
+
+.attributions-table, .authors-life-table {
   width: 100%;
   border-collapse: collapse;
+  margin-bottom: var(--space-lg);
 }
 
-.attributions-table thead th {
+.attributions-table thead th, .authors-life-table thead th {
   text-align: left;
   font-size: var(--text-sm);
   font-weight: 400;
@@ -109,7 +111,7 @@ h1 {
   text-align: right;
 }
 
-.attributions-table tbody tr {
+.attributions-table tbody tr, .authors-life-table tbody tr {
   text-align: left;
 }
 
@@ -119,12 +121,13 @@ h1 {
   text-transform: uppercase;
 }
 
-.attributions-table .visible-row {
+.attributions-table .visible-row, .authors-life-table {
   cursor: pointer;
 }
 
 .attributions-table .visible-row,
-.attributions-table .row-details {
+.attributions-table .row-details,
+.authors-life-table tbody tr:not(tr.dating-row) {
   border-bottom: 1px solid rgba(226, 222, 216, 0.4);
 }
 
@@ -137,30 +140,6 @@ h1 {
 }
 
 /* Life table */
-.authors-life-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.authors-life-table thead th {
-  text-align: left;
-  font-size: var(--text-sm);
-  font-weight: 400;
-  padding-bottom: var(--space-xs);
-}
-
-.authors-life-table tbody tr {
-  text-align: left;
-}
-
-.authors-life-table {
-  cursor: pointer;
-}
-
-.authors-life-table tbody tr:not(tr.dating-row) {
-  border-bottom: 1px solid rgba(226, 222, 216, 0.4);
-}
-
 .authors-life-table td,
 .authors-life-table th,
 .attributions-table td,
