@@ -128,7 +128,6 @@ function WorkPage() {
           {/* <CriticalDebateTimeline /> */}
         </section>
         <section className="work-right">
-          {/* <VisLegend />*/}
           <DebateVis currentAttributions={currentAttributions} />
         </section>
       </main>

@@ -45,6 +45,9 @@
   --radius-sm: 4px;
   --radius-md: 8px;
   --border: 1px solid var(--color-text);
+
+  /* Navigation */
+  --nav-height: 60px;
 }
 
 *,
@@ -76,11 +79,15 @@ body::after {
 
 nav {
   display: flex;
-  height: 60px;
+  height: var(--nav-height);
   align-items: center;
   border-bottom: var(--border);
   padding: 0 var(--space-lg);
   margin-bottom: var(--space-lg);
+  position: sticky;
+  top: 0;
+  background-color: var(--color-bg);
+  z-index: 100;
 }
 
 nav a {

@@ -6,6 +6,7 @@ import useAuthors from "@/hooks/useAuthors";
 import useLabelsEnd from "@/hooks/useLabelsEnd";
 import { useMemo } from "react";
 import { VIEW_W, VIEW_H, center, outerX } from "./constants";
+import VisLegend from "./VisLegend";
 
 type LinkSpec = {
   a: string;
@@ -75,12 +76,11 @@ export default function DebateVis({
 
   return (
     <div className="debate-vis-cnt">
+      <VisLegend />
       {/* Avoid rendering if width is not available yet */}
       <svg
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
-        width="100%"
-        height="100%"
       >
         <BackgroundArcs />
 

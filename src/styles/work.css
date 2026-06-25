@@ -5,6 +5,8 @@
   flex-direction: row;
   flex-wrap: nowrap;
   padding: 0 var(--space-lg);
+  align-items: flex-start;
+
 }
 
 .work-left {
@@ -18,15 +20,18 @@
 .work-right {
   flex: 1;             /* takes remaining space after .work-left */
   min-width: 0;        /* allow shrinking inside flex */
+  position: sticky;
+  top: calc(var(--nav-height) + var(--space-lg));  /* sticky below nav */
+  height: calc(100vh - var(--nav-height) - var(--space-lg));  /* fill remaining height */
   display: flex;
-  align-items: stretch;
-  overflow: hidden;
+  flex-direction: column;
+  gap: var(--space-lg);
 }
 
 .debate-vis-cnt {
   flex: 1;
   min-width: 0;
-  height: calc(100vh - 60px);
+  min-height: 0;
   display: block;
 }
 
