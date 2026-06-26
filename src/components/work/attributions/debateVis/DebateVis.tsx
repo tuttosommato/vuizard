@@ -7,6 +7,7 @@ import useLabelsEnd from "@/hooks/useLabelsEnd";
 import { useMemo } from "react";
 import { VIEW_W, VIEW_H, center, outerX } from "./constants";
 import VisLegend from "./VisLegend";
+import AxisLegend from "./AxisLegend";
 
 type LinkSpec = {
   a: string;
@@ -78,7 +79,8 @@ export default function DebateVis({
     <div className="debate-vis-cnt">
       <VisLegend />
       {/* Avoid rendering if width is not available yet */}
-      <svg className="debate-vis"
+      <svg
+        className="debate-vis"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
       >
@@ -112,6 +114,30 @@ export default function DebateVis({
             )
           );
         })}
+
+        {/* Arrow marker definition */}
+        <defs>
+          <marker
+            id="arrow"
+            viewBox="0 0 20 20"
+            refX={10}
+            refY={10}
+            markerWidth={10}
+            markerHeight={10}
+            orient="auto-start-reverse"
+            markerUnits="userSpaceOnUse"
+          >
+            <path
+              d="M 0,0 L 10,10 L 0,20"
+              fill="none"
+              stroke="context-stroke"
+              strokeWidth={2.5}
+              strokeLinejoin="miter"
+            />
+          </marker>
+        </defs>
+
+        <AxisLegend />
       </svg>
     </div>
   );

@@ -167,6 +167,14 @@ td {
 }
 
 /* VisLegend */
+.vis-arcs-legend {
+  opacity: 0.7;
+}
+
+.vis-arcs-legend text {
+  font-size: var(--text-sm);
+}
+
 .vis-legend {
   width: 80%;
   margin-left: 20%;

@@ -13,10 +13,10 @@ const size = Math.min(VIEW_W, VIEW_H)
 export const centerX = VIEW_W / 4
 export const centerY = VIEW_H / 2
 export const min = size / 25
-export const max = min * 11 + 1
+export const max = min * 12 + 1
 export const increment = min
 export const radius = min / 3
-export const rankScale = scaleLinear().domain([0, 10]).range([max, min])
+export const rankScale = scaleLinear().domain([0, 11]).range([max, min])
 export const outerX = rankScale(0) * 2
 export const center = `translate(${centerX}, ${centerY})`
 
