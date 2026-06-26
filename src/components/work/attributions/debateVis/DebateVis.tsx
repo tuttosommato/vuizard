@@ -78,7 +78,7 @@ export default function DebateVis({
     <div className="debate-vis-cnt">
       <VisLegend />
       {/* Avoid rendering if width is not available yet */}
-      <svg
+      <svg className="debate-vis"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
       >
