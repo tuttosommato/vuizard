@@ -5,7 +5,7 @@ import { colorScale, labelsFontSize } from "../debateVis/constants";
 import type { Work } from "@/types/works";
 import useMeasuredSize from "@/hooks/useMeasuredSize";
 import TimeSpan from "./TimeSpan";
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 
 const barHeight = labelsFontSize / 1.25;
 
@@ -47,10 +47,7 @@ export default function AuthorsLifeTable({
 
   const timeScale = useMemo(() => {
     return scaleLinear()
-      .domain([
-        (domain[0] ?? 0) - padding,
-        (domain[1] ?? 1) + padding,
-      ])
+      .domain([(domain[0] ?? 0) - padding, (domain[1] ?? 1) + padding])
       .nice()
       .range([0, width]);
   }, [domain, width]);
@@ -78,6 +75,35 @@ export default function AuthorsLifeTable({
               <td>
                 {life ? (
                   <svg width="100%" height={height}>
+                    {acceptedDating.map(
+                      (d, i) =>
+                        d.from &&
+                        d.to && (
+                          <Fragment key={i}>
+                            <line
+                              x1={timeScale(+d.from)}
+                              y1={0}
+                              x2={timeScale(+d.from)}
+                              y2={height}
+                              stroke="var(--color-text)"
+                              strokeWidth={1}
+                              strokeDasharray="4 4"
+                              opacity={0.4}
+                            />
+                            <line
+                              x1={timeScale(+d.to)}
+                              y1={0}
+                              x2={timeScale(+d.to)}
+                              y2={height}
+                              stroke="var(--color-text)"
+                              strokeWidth={1}
+                              strokeDasharray="4 4"
+                              opacity={0.4}
+                            />
+                          </Fragment>
+                        ),
+                    )}
+
                     <TimeSpan
                       from={+life.birth}
                       to={+life.death}
@@ -101,17 +127,42 @@ export default function AuthorsLifeTable({
           <td>Work creation (accepted)</td>
           <td>
             <svg width="100%" height={height}>
-              {acceptedDating.map((d) => (
-                <TimeSpan
-                  from={+d.from}
-                  to={+d.to}
-                  fromQ={d.from_approximation || ""}
-                  toQ={d.to_approximation || ""}
-                  scale={timeScale}
-                  height={height}
-                  barHeight={barHeight}
-                  fill={"var(--color-text)"}
-                />
+              {acceptedDating.map((d, i) => (
+                <>
+                  <Fragment key={i}>
+                    <line
+                      x1={timeScale(+d.from)}
+                      y1={0}
+                      x2={timeScale(+d.from)}
+                      y2={height / 2 + barHeight / 2}
+                      stroke="var(--color-text)"
+                      strokeWidth={1}
+                      strokeDasharray="4 4"
+                      opacity={0.4}
+                    />
+                    <line
+                      x1={timeScale(+d.to)}
+                      y1={0}
+                      x2={timeScale(+d.to)}
+                      y2={height / 2 + barHeight / 2}
+                      stroke="var(--color-text)"
+                      strokeWidth={1}
+                      strokeDasharray="4 4"
+                      opacity={0.4}
+                    />
+
+                    <TimeSpan
+                      from={+d.from}
+                      to={+d.to}
+                      fromQ={d.from_approximation || ""}
+                      toQ={d.to_approximation || ""}
+                      scale={timeScale}
+                      height={height}
+                      barHeight={barHeight}
+                      fill={"var(--color-text)"}
+                    />
+                  </Fragment>
+                </>
               ))}
             </svg>
           </td>
