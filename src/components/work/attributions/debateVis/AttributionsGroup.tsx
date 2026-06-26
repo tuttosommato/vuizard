@@ -6,7 +6,6 @@ import { verticalCenterOffset } from "./geometry";
 import { circleTypeFor } from "@/components/work/attributions/utils";
 import {
   colorScale,
-  labelsFontSize,
   rankScale,
   radius,
   center,
@@ -99,7 +98,6 @@ export default function AttributionsGroup({
         transform={`translate(${rankScale(-0.2)}, 0) rotate(${-rotation}) translate(0, ${verticalCenterOffset(rotation)})`}
         dominantBaseline="middle"
         fill="var(--color-text)"
-        fontSize={labelsFontSize}
       >
         {attr.author +
           (attr.r_qualifier ? " " + attr.r_qualifier : "") +
