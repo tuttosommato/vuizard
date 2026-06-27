@@ -70,8 +70,24 @@ function WorkHeader({ currentWork }: WorkHeaderProps) {
         material={material}
         subject={subject}
       />
-      <a href={currentWork.link} target="_blank">
-        ↼ See the original catalogue page
+      <a
+        href={currentWork.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="external-link"
+      >
+        View on Fondazione Zeri
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M7 17L17 7M9 7h8v8" />
+        </svg>
       </a>
       <WorkImages photos={photos} />
     </div>
