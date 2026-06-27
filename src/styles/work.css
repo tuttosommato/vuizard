@@ -30,7 +30,8 @@
 
 .table-switch {
   position: relative;
-  display: inline-flex;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   width: fit-content;
   padding: var(--space-2xs);
@@ -39,28 +40,9 @@
   margin: var(--space-md) 0;
 }
 
-/* sliding thumb*/
-.table-switch::before {
-  content: "";
-  position: absolute;
-  top: var(--space-2xs);
-  bottom: var(--space-2xs);
-  left: var(--space-2xs);
-  width: calc(50% - var(--space-2xs)); /* single button size */
-  border-radius: var(--radius-lg);
-  background-color: var(--color-bg);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 0;
-}
-
-.table-switch[data-active="artists"]::before {
-  transform: translateX(100%); /* moves by its own width = one button */
-}
-
 .toggle-button {
   position: relative;
   z-index: 1;
-  flex: 1;
   padding: var(--space-sm) var(--space-sm);
   border: 0;
   background: none;
@@ -71,6 +53,25 @@
   border-radius: var(--radius-xl);
   transition: color 0.3s ease;
   white-space: nowrap;
+  text-align: center;
+}
+
+/* sliding thumb*/
+.table-switch::before {
+  content: "";
+  position: absolute;
+  top: var(--space-2xs);
+  bottom: var(--space-2xs);
+  left: var(--space-2xs);
+  width: round(calc(50% - var(--space-2xs)), 1px);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.table-switch[data-active="artists"]::before {
+  transform: translateX(100%); /* moves by its own width = one button */
 }
 
 .toggle-button[aria-pressed="true"] {
