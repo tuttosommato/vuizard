@@ -227,6 +227,11 @@ h1 {
    Tables — shared structure
    ============================================================= */
 
+.attributions-table .artist-column,
+.artists-life-table .artist-column {
+  font-weight: 400;  
+}   
+
 .attributions-table,
 .artists-life-table {
   width: 100%;

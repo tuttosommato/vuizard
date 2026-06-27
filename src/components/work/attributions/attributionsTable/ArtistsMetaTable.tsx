@@ -94,7 +94,7 @@ export default function ArtistsMetaTable({
                     (attr.type === "accepted" ? " accepted-artist" : "")
                   }
                 >
-                <ArrowLink target={`/artist/${attr.local_id}`} artistName={attr.author} relation={r} uncertainty={u} />
+                <ArrowLink target={`/artist/${attr.local_id}`} artistName={attr.author} relation={r} uncertainty={u} isAnonym={attr.is_anonymous} />
                 </th>
                 <td className="reliability-column">
                   <svg width="100%" height={height}>

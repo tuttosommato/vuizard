@@ -88,7 +88,7 @@ export default function ArtistsLifeTable({
           return (
             <tr key={attr.operational_id} onClick={() => toggle(attr.operational_id)} aria-selected={selectedIds.has(attr.operational_id)}>
               <th className={"artist-column" + (attr.type === "accepted" ? " accepted-artist" : "")}>
-                <ArrowLink target={`/artist/${attr.local_id}`} artistName={attr.author} />
+                <ArrowLink target={`/artist/${attr.local_id}`} artistName={attr.author} isAnonym={attr.is_anonymous} />
               </th>
               <td className="dating-column">
                 {life ? (

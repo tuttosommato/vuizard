@@ -1,6 +1,14 @@
 import { Link } from "react-router-dom";
 
-export default function ArrowLink( { target, artistName, relation = "", uncertainty = "" } : { target: string; artistName: string; relation?: string; uncertainty?: string } ) {
+export default function ArrowLink( { target, artistName, relation = "", uncertainty = "", isAnonym = false } : { target: string; artistName: string; relation?: string; uncertainty?: string; isAnonym?: boolean } ) {
+  if (isAnonym) {
+    return (
+      <span className="anonymous-artist">
+        {artistName + (relation ? ", " + relation : "") + (uncertainty ? " " + uncertainty : "")}
+      </span>
+    );
+  }
+
   return (
     <Link
       to={target}
