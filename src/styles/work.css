@@ -18,31 +18,73 @@
 }
 
 .work-right {
-  flex: 1;             /* takes remaining space after .work-left */
-  min-width: 0;        /* allow shrinking inside flex */
-  position: sticky;
-  top: calc(var(--nav-height) + var(--space-lg));  /* sticky below nav */
-  height: calc(100vh - var(--nav-height) - var(--space-lg));  /* fill remaining height */
-}
-
-.debate-vis-cnt {
+  flex: 1;
   min-width: 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  height: 100%;
+  position: sticky;
+  top: calc(var(--nav-height) + var(--space-lg));
+  height: calc(100vh - var(--nav-height) - var(--space-lg));
 }
 
-.debate-vis-cnt svg.debate-vis {
-  display: block;
-  width: 100%;
-  height: 100%;
+
+.table-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: var(--space-2xs);
+  border-radius: calc(var(--radius-lg) + var(--space-2xs));
+  background-color: var(--color-text-muted);
+  margin: var(--space-md) 0;
 }
 
-.vis-author-label {
-  font-size: var(--text-md);     /* keep labels at a readable size regardless of viewBox scale */
+/* sliding thumb*/
+.table-switch::before {
+  content: "";
+  position: absolute;
+  top: var(--space-2xs);
+  bottom: var(--space-2xs);
+  left: var(--space-2xs);
+  width: calc(50% - var(--space-2xs)); /* single button size */
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
 }
+
+
+.table-switch[data-active="authors"]::before {
+  transform: translateX(100%);       /* moves by its own width = one button */
+}
+
+.toggle-button {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: var(--space-sm) var(--space-sm);
+  border: 0;
+  background: none;
+  color: var(--color-bg);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius-xl);
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+.toggle-button[aria-pressed="true"] {
+  color: var(--color-text);
+}
+
+.toggle-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+
+/* =============================================================
+   Work header & meta
+   ============================================================= */
 
 h1 {
   font-size: var(--text-2xl);

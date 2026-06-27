@@ -15,20 +15,22 @@ function TableSwitcher({
   setView: (view: View) => void;
 }) {
   return (
-    <div className="table-switch">
+    <div className="table-switch" data-active={view}>
       <button
+        className="toggle-button"
         type="button"
         aria-pressed={view === "attributions"}
         onClick={() => setView("attributions")}
       >
-        Attributions info
+        Attributions
       </button>
       <button
+        className="toggle-button"
         type="button"
         aria-pressed={view === "authors"}
         onClick={() => setView("authors")}
       >
-        Authors life info
+        Authors life
       </button>
     </div>
   );
@@ -42,7 +44,7 @@ function AttributionsSection({
 }: {
   currentAttributions: AttributionsBundle;
   workTitle: string;
-  acceptedDating: Work["dating"]
+  acceptedDating: Work["dating"];
   discardedDating: Work["dating"];
 }) {
   const authors = useAuthors(currentAttributions.attributions);
@@ -51,22 +53,30 @@ function AttributionsSection({
   return (
     <>
       <div>
-        <h3>Elements of attribution</h3>
-        <p>
-          The attributions presented here are reflecting the hierarchy established in the original descriptive sheet. We emphasize the importance of reliability, author recognisability, and the certainty inherent in these attributions. This list dissects the elements that define the interpretive act of attribution, offering a clearer understanding of their significance.
+        <h3>The attribution debate</h3>
+        <p> Attributing a painting to an artist is an interpretive act shaped by evidence, scholarly judgment, and frequently long-running debate. Each attribution recorded here surfaces four elements: <em>who</em> is proposed, <em>whether</em> the proposal is accepted or discarded today by the Federico Zeri Foundation, <em>what reason</em> supports it, and <em>how certain</em> the attributing source was. The visualisation on the right arranges these dimensions around the work, also showing potential similarities between the artists when available; the table below unpacks them them row by row.
         </p>
       </div>
 
-      <TableSwitcher view={view} setView={setView} />
-      {view === "attributions" ? (
-        <AuthorsMetaTable
-          authors={authors}
-          workTitle={workTitle}
-          currentAttributions={currentAttributions}
-        />
-      ) : (
-        <AuthorsLifeTable authors={authors} currentAttributions={currentAttributions} acceptedDating={acceptedDating} discardedDating={discardedDating} />
-      )}
+      <div className="table-container">
+        <h4>Switch table content</h4>
+        <p>Interact with the tables below to expand and view different aspects of the attribution data and changes in the visualisation. Click on the artist names to go to their production view.</p>
+        <TableSwitcher view={view} setView={setView} />
+        {view === "attributions" ? (
+          <AuthorsMetaTable
+            authors={authors}
+            workTitle={workTitle}
+            currentAttributions={currentAttributions}
+          />
+        ) : (
+          <AuthorsLifeTable
+            authors={authors}
+            currentAttributions={currentAttributions}
+            acceptedDating={acceptedDating}
+            discardedDating={discardedDating}
+          />
+        )}
+      </div>
     </>
   );
 }
