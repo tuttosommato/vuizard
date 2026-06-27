@@ -1,8 +1,8 @@
 import type { Attribution } from "@/types/attributions";
 
-export function circleTypeFor(attr: Attribution): "anonym" | "author" | "recognised" | "unrecognised" {
+export function circleTypeFor(attr: Attribution): "anonym" | "artist" | "recognised" | "unrecognised" {
   if (attr.is_anonymous) return "anonym"
-  if (!attr.r_qualifier) return "author"
+  if (!attr.r_qualifier) return "artist"
   if (attr.r_qualifier.trimStart().startsWith("e ")) return "recognised"
   return "unrecognised"
 }

@@ -53,7 +53,7 @@
   z-index: 0;
 }
 
-.table-switch[data-active="authors"]::before {
+.table-switch[data-active="artists"]::before {
   transform: translateX(100%); /* moves by its own width = one button */
 }
 
@@ -158,7 +158,7 @@ h1 {
   height: 100%;
 }
 
-.vis-author-label {
+.vis-artist-label {
   font-size: var(--text-md); /* readable size regardless of viewBox scale */
 }
 
@@ -227,7 +227,7 @@ h1 {
    ============================================================= */
 
 .attributions-table,
-.authors-life-table {
+.artists-life-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: var(--space-lg);
@@ -235,8 +235,8 @@ h1 {
 
 .attributions-table td,
 .attributions-table th,
-.authors-life-table td,
-.authors-life-table th {
+.artists-life-table td,
+.artists-life-table th {
   box-sizing: border-box;
   height: 50px;
   margin: 0;
@@ -245,7 +245,7 @@ h1 {
 }
 
 .attributions-table thead th,
-.authors-life-table thead th {
+.artists-life-table thead th {
   border-bottom: 1px solid var(--color-text-muted);
   text-align: left;
   font-size: var(--text-xs);
@@ -253,12 +253,12 @@ h1 {
 }
 
 .attributions-table tbody tr,
-.authors-life-table tbody tr {
+.artists-life-table tbody tr {
   text-align: left;
 }
 
 .attributions-table svg,
-.authors-life-table svg {
+.artists-life-table svg {
   display: block;
   width: 100%;
   margin: 0;
@@ -306,7 +306,7 @@ h1 {
 }
 
 .attributions-table tbody .artist-column.accepted-artist a.artist-link,
-.authors-life-table tbody .artist-column.accepted-artist a.artist-link {
+.artists-life-table tbody .artist-column.accepted-artist a.artist-link {
   font-weight: 600;
 }
 
@@ -340,15 +340,15 @@ h1 {
 
 /* Clickable rows + their border treatment */
 .attributions-table .visible-row,
-.authors-life-table tbody tr:not(tr.dating-row) {
+.artists-life-table tbody tr:not(tr.dating-row) {
   cursor: pointer;
   opacity: 0.8;
 }
 
 .attributions-table .visible-row:hover,
 .attributions-table .visible-row[aria-expanded="true"],
-.authors-life-table tbody tr:not(tr.dating-row)[aria-selected="true"],
-.authors-life-table tbody tr:not(tr.dating-row):hover {
+.artists-life-table tbody tr:not(tr.dating-row)[aria-selected="true"],
+.artists-life-table tbody tr:not(tr.dating-row):hover {
   background-color: var(--color-bg-highlight);
   opacity: 1;
 }
@@ -359,7 +359,7 @@ h1 {
 
 .attributions-table .visible-row,
 .attributions-table .row-details,
-.authors-life-table tbody tr:not(tr.dating-row) {
+.artists-life-table tbody tr:not(tr.dating-row) {
   border-bottom: 1px solid var(--color-text-muted);
 }
 
@@ -368,14 +368,14 @@ h1 {
 }
 
 /* =============================================================
-   Authors life table — row-specific
+   Artists life table — row-specific
    ============================================================= */
 
-.authors-life-table .dating-row {
+.artists-life-table .dating-row {
   cursor: default;
 }
 
-.authors-life-table .dating-row th {
+.artists-life-table .dating-row th {
   font-size: var(--text-sm);
   font-weight: 400;
 }

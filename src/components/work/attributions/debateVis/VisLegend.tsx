@@ -41,7 +41,7 @@ function MeanReliabilityDot() {
 function Symbolel({
   type,
 }: {
-  type: "author" | "anonym" | "recognised" | "unrecognised"
+  type: "artist" | "anonym" | "recognised" | "unrecognised"
 }) {
   return (
     <svg viewBox={`-${w / 2} -${h / 2} ${w} ${h}`} width={w} height={h} overflow="visible">
@@ -113,11 +113,11 @@ const sections: LegendItem[][] = [
     },
     {
       el: <MeanReliabilityDot />,
-      label: "Mean reliability for the author in the dataset",
+      label: "Mean reliability for the artist in the dataset",
     },
   ],
   [
-    { el: <Symbolel type="author" />, label: "Recognised artist" },
+    { el: <Symbolel type="artist" />, label: "Recognised artist" },
     { el: <Symbolel type="anonym" />, label: "Anonymous artist" },
     {
       el: <Symbolel type="recognised" />,
@@ -129,7 +129,7 @@ const sections: LegendItem[][] = [
     },
   ],
   [
-    { el: <Lineel kind="confidence" />, label: "Confidence in authorship identification", },
+    { el: <Lineel kind="confidence" />, label: "Confidence in artist identification", },
     { el: <Lineel kind="uncertainty" />, label: "Uncertainty", description: "(\"probably\")"},
     { el: <Lineel kind="strong" />, label: "Strong uncertainty" },
   ],

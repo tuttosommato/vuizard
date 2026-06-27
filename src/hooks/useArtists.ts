@@ -3,13 +3,13 @@ import type { Attribution } from "@/types/attributions";
 import type { Author } from "@/types/authors";
 import { getAuthor } from "@/data/api";
 
-const useAuthors = (attributions: Attribution[]) => {
-  const [authors, setAuthors] = useState<{ [key: string]: Author }>({});
+const useArtists = (attributions: Attribution[]) => {
+  const [artists, setArtists] = useState<{ [key: string]: Author }>({});
 
   useEffect(() => {
     let canceled = false;
 
-    // Only fetch real authors. Anonymous attributions don't have an author file.
+    // Only fetch real artists. Anonymous attributions don't have an artist file.
     const fetchableIds = attributions
       .filter((a) => !a.is_anonymous && a.local_id)
       .map((a) => a.local_id);
@@ -19,18 +19,18 @@ const useAuthors = (attributions: Attribution[]) => {
     }
 
     Promise.all(fetchableIds.map((id) => getAuthor(id)))
-      .then((authorsArray) => {
+      .then((artistsArray) => {
         if (canceled) return;
-        const authorsMap: { [key: string]: Author } = {};
+        const artistsMap: { [key: string]: Author } = {};
         fetchableIds.forEach((id, i) => {
-          const a = authorsArray[i];
-          if (a) authorsMap[id] = a;
+          const a = artistsArray[i];
+          if (a) artistsMap[id] = a;
         });
-        setAuthors(authorsMap);
+        setArtists(artistsMap);
       })
       .catch((e) => {
         if (canceled) return;
-        console.error("Error fetching author data:", e);
+        console.error("Error fetching artist data:", e);
       });
 
     return () => {
@@ -38,7 +38,7 @@ const useAuthors = (attributions: Attribution[]) => {
     };
   }, [attributions]);
 
-  return authors;
+  return artists;
 };
 
-export default useAuthors;
+export default useArtists;

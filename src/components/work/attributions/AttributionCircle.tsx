@@ -1,11 +1,11 @@
 type SymbolProps = {
-  type: "author" | "anonym" | "recognised" | "unrecognised";
+  type: "artist" | "anonym" | "recognised" | "unrecognised";
   fill: string;
   r: number;
 };
 export default function AttributionCircle({ type, fill, r }: SymbolProps) {
   switch (type) {
-    case "author":
+    case "artist":
       return <circle r={r} fill={fill} />;
 
     case "anonym":

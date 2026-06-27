@@ -10,13 +10,13 @@ import ArrowLink from "@/components/ArrowLink";
 
 const barHeight = labelsFontSize / 1.25;
 
-export default function AuthorsLifeTable({
-  authors,
+export default function ArtistsLifeTable({
+  artists,
   currentAttributions,
   acceptedDating,
   discardedDating,
 }: {
-  authors: Record<string, Author>;
+  artists: Record<string, Author>;
   currentAttributions: AttributionsBundle;
   acceptedDating: Work["dating"];
   discardedDating: Work["dating"];
@@ -38,8 +38,8 @@ export default function AuthorsLifeTable({
 
   const domain = useMemo(() => {
     const values = currentAttributions.attributions.flatMap((attr) => {
-      const author = authors[attr.local_id];
-      return author?.life ? [+author.life.birth, +author.life.death] : [];
+      const artist = artists[attr.local_id];
+      return artist?.life ? [+artist.life.birth, +artist.life.death] : [];
     });
     acceptedDating.forEach((d) => {
       if (d.from) values.push(+d.from);
@@ -51,7 +51,7 @@ export default function AuthorsLifeTable({
     });
     return extent(values) as [number, number];
   }, [
-    authors,
+    artists,
     currentAttributions.attributions,
     acceptedDating,
     discardedDating,
@@ -68,7 +68,7 @@ export default function AuthorsLifeTable({
 
   return (
     <table
-      className="authors-life-table"
+      className="artists-life-table"
       aria-label="Life data of attributed artists"
     >
       <thead>
@@ -83,12 +83,12 @@ export default function AuthorsLifeTable({
       </thead>
       <tbody>
         {currentAttributions.attributions.map((attr) => {
-          const author = authors[attr.local_id];
-          const life = author?.life;
+          const artist = artists[attr.local_id];
+          const life = artist?.life;
           return (
             <tr key={attr.operational_id} onClick={() => toggle(attr.operational_id)} aria-selected={selectedIds.has(attr.operational_id)}>
               <th className={"artist-column" + (attr.type === "accepted" ? " accepted-artist" : "")}>
-                <ArrowLink target={`/authors/${attr.local_id}`} authorName={attr.author} />
+                <ArrowLink target={`/artist/${attr.local_id}`} artistName={attr.author} />
               </th>
               <td className="dating-column">
                 {life ? (

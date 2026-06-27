@@ -1,11 +1,11 @@
 import type { AttributionsBundle } from "@/types/attributions";
 import type { Work } from "@/types/works";
-import AuthorsMetaTable from "./AuthorsMetaTable";
-import useAuthors from "@/hooks/useAuthors";
+import ArtistsMetaTable from "./ArtistsMetaTable";
+import useArtists from "@/hooks/useArtists";
 import { useState } from "react";
-import AuthorsLifeTable from "./AuthorsLifeTable";
+import ArtistsLifeTable from "./ArtistsLifeTable";
 
-type View = "attributions" | "authors";
+type View = "attributions" | "artists";
 
 function TableSwitcher({
   view,
@@ -27,10 +27,10 @@ function TableSwitcher({
       <button
         className="toggle-button"
         type="button"
-        aria-pressed={view === "authors"}
-        onClick={() => setView("authors")}
+        aria-pressed={view === "artists"}
+        onClick={() => setView("artists")}
       >
-        Authors life
+        Artists life
       </button>
     </div>
   );
@@ -47,7 +47,7 @@ function AttributionsSection({
   acceptedDating: Work["dating"];
   discardedDating: Work["dating"];
 }) {
-  const authors = useAuthors(currentAttributions.attributions);
+  const artists = useArtists(currentAttributions.attributions);
   const [view, setView] = useState<View>("attributions");
 
   return (
@@ -63,14 +63,14 @@ function AttributionsSection({
         <p>Interact with the tables below to expand and view different aspects of the attribution data and changes in the visualisation. Click on the artist names to go to their production view.</p>
         <TableSwitcher view={view} setView={setView} />
         {view === "attributions" ? (
-          <AuthorsMetaTable
-            authors={authors}
+          <ArtistsMetaTable
+            artists={artists}
             workTitle={workTitle}
             currentAttributions={currentAttributions}
           />
         ) : (
-          <AuthorsLifeTable
-            authors={authors}
+          <ArtistsLifeTable
+            artists={artists}
             currentAttributions={currentAttributions}
             acceptedDating={acceptedDating}
             discardedDating={discardedDating}

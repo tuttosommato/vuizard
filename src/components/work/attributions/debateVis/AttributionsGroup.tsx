@@ -15,17 +15,17 @@ type GroupProps = {
   attr: Attribution;
   rotation: number;
   labelsRef: React.RefObject<Map<string, SVGTextElement>>;
-  authors: { [key: string]: Author };
+  artists: { [key: string]: Author };
 };
 
 export default function AttributionsGroup({
   attr,
   rotation,
   labelsRef,
-  authors,
+  artists,
 }: GroupProps) {
   const attrFill = colorScale(attr.type);
-  const authorStats = authors[attr.local_id]?.stats?.[attr.operational_id];
+  const artistStats = artists[attr.local_id]?.stats?.[attr.operational_id];
   const circleType = circleTypeFor(attr);
 
   return (
@@ -74,9 +74,9 @@ export default function AttributionsGroup({
       ))}
 
       {/* Average */}
-      {authorStats && (
+      {artistStats && (
         <circle
-          cx={rankScale(authorStats.counts.mean)}
+          cx={rankScale(artistStats.counts.mean)}
           cy={0}
           r={radius / 1.5}
           fill="var(--color-text)"
@@ -94,7 +94,7 @@ export default function AttributionsGroup({
           if (el) labelsRef.current.set(attr.operational_id, el);
           else labelsRef.current.delete(attr.operational_id);
         }}
-        className="vis-author-label"
+        className="vis-artist-label"
         transform={`translate(${rankScale(-0.2)}, 0) rotate(${-rotation}) translate(0, ${verticalCenterOffset(rotation)})`}
         dominantBaseline="middle"
         fill="var(--color-text)"

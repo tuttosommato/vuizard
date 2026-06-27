@@ -9,12 +9,12 @@ import { colorScale } from "../debateVis/constants";
 import useMeasuredSize from "@/hooks/useMeasuredSize";
 import ArrowLink from "@/components/ArrowLink";
 
-export default function AuthorsMetaTable({
-  authors,
+export default function ArtistsMetaTable({
+  artists,
   workTitle,
   currentAttributions,
 }: {
-  authors: Record<string, Author>;
+  artists: Record<string, Author>;
   workTitle: string;
   currentAttributions: AttributionsBundle;
 }) {
@@ -62,7 +62,7 @@ export default function AuthorsMetaTable({
           const isExpanded = expandedIds.has(opId);
           const r = attr.r_qualifier;
           const u = attr.u_qualifier;
-          const currentAuthor = authors[attr.local_id];
+          const currentArtist = artists[attr.local_id];
           const circleType = circleTypeFor(attr);
 
           return (
@@ -94,7 +94,7 @@ export default function AuthorsMetaTable({
                     (attr.type === "accepted" ? " accepted-artist" : "")
                   }
                 >
-                <ArrowLink target={`/authors/${attr.local_id}`} authorName={attr.author} relation={r} uncertainty={u} />
+                <ArrowLink target={`/artist/${attr.local_id}`} artistName={attr.author} relation={r} uncertainty={u} />
                 </th>
                 <td className="reliability-column">
                   <svg width="100%" height={height}>
@@ -151,40 +151,40 @@ export default function AuthorsMetaTable({
                   <td className="exp-column"></td>
                   <td className="type-column"></td>
                   <td className="artist-column">
-                    {currentAuthor && (
+                    {currentArtist && (
                       <>
                         Artistic school: n.d. <br />
                         External links:{" "}
-                        {currentAuthor.ulan && (
+                        {currentArtist.ulan && (
                           <a
-                            href={currentAuthor.ulan}
+                            href={currentArtist.ulan}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
                             [ULAN]
                           </a>
                         )}
-                        {currentAuthor.viaf && (
+                        {currentArtist.viaf && (
                           <a
-                            href={currentAuthor.viaf}
+                            href={currentArtist.viaf}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
                             [VIAF]
                           </a>
                         )}
-                        {currentAuthor.wikidata && (
+                        {currentArtist.wikidata && (
                           <a
-                            href={currentAuthor.wikidata}
+                            href={currentArtist.wikidata}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
                             [WIKIDATA]
                           </a>
                         )}
-                        {currentAuthor.dbpedia && (
+                        {currentArtist.dbpedia && (
                           <a
-                            href={currentAuthor.dbpedia}
+                            href={currentArtist.dbpedia}
                             target="_blank"
                             rel="noopener noreferrer"
                           >

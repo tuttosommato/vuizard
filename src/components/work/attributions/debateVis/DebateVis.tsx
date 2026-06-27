@@ -2,7 +2,7 @@ import type { AttributionsBundle } from "@/types/attributions";
 import BackgroundArcs from "@/components/work/attributions/debateVis/BackgroundArcs";
 import AttributionsGroup from "@/components/work/attributions/debateVis/AttributionsGroup";
 import { slotRotationDeg } from "./geometry";
-import useAuthors from "@/hooks/useAuthors";
+import useArtists from "@/hooks/useArtists";
 import useLabelsEnd from "@/hooks/useLabelsEnd";
 import { useMemo } from "react";
 import { VIEW_W, VIEW_H, center, outerX } from "./constants";
@@ -30,7 +30,7 @@ export default function DebateVis({
     master_relations,
   } = currentAttributions;
 
-  const authors = useAuthors(attributions);
+  const artists = useArtists(attributions);
 
   // derived geometry
   const rotations = attributions.map((_, i) =>
@@ -55,21 +55,21 @@ export default function DebateVis({
         b: l.b,
         stroke: "var(--color-text)",
         strokeWidth: l.npmi > 0.34 ? l.npmi * 5 : 0,
-        className: "similarity author-connection",
+        className: "similarity artist-connection",
       })),
       ...implicit_relations.map(([a, b]) => ({
         a,
         b,
         stroke: "red",
         strokeWidth: 1,
-        className: "same-author author-connection",
+        className: "same-artist artist-connection",
       })),
       ...master_relations.map(([a, b]) => ({
         a,
         b,
         stroke: "yellow",
         strokeWidth: 1,
-        className: "master-relations author-connection",
+        className: "master-relations artist-connection",
       })),
     ],
     [author_similarities, implicit_relations, master_relations],
@@ -92,7 +92,7 @@ export default function DebateVis({
             attr={attr}
             rotation={rotations[i]}
             labelsRef={labelsRef}
-            authors={authors}
+            artists={artists}
           />
         ))}
 
