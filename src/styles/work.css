@@ -63,7 +63,7 @@
   top: var(--space-2xs);
   bottom: var(--space-2xs);
   left: var(--space-2xs);
-  width: round(calc(50% - var(--space-2xs)), 1px);
+  width: calc(50% - var(--space-2xs));
   border-radius: var(--radius-lg);
   background-color: var(--color-bg);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
