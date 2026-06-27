@@ -139,3 +139,48 @@ a:not(nav a) {
 a:hover {
   color: var(--color-text);
 }
+
+.artist-link-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-top: -0.05em;   /* optical adjustment */
+  margin-bottom: 0.05em; /* optical adjustment */
+  padding: 0 var(--space-xs);
+  margin-left: 0.4em;
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-text);
+  color: var(--color-bg);
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.artist-link-arrow svg {
+  display: block;       /* kills baseline gap */
+  width: 0.85em;
+  height: 0.85em;
+  stroke-width: 2;
+}
+
+.artist-link {
+  text-decoration: none;
+  color: inherit;
+  color: var(--color-text-muted);
+  transition: color 0.2s ease;
+}
+
+.artist-link:hover {
+  color: var(--color-text);
+}
+
+.artist-link:hover .artist-link-arrow,
+.artist-link:focus-visible .artist-link-arrow {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border-color: var(--color-text);
+}

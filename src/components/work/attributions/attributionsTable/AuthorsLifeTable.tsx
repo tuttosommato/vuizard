@@ -5,7 +5,8 @@ import { colorScale, labelsFontSize } from "../debateVis/constants";
 import type { Work } from "@/types/works";
 import useMeasuredSize from "@/hooks/useMeasuredSize";
 import TimeSpan from "./TimeSpan";
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useState } from "react";
+import ArrowLink from "@/components/ArrowLink";
 
 const barHeight = labelsFontSize / 1.25;
 
@@ -21,6 +22,19 @@ export default function AuthorsLifeTable({
   discardedDating: Work["dating"];
 }) {
   const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  
+  const toggle = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   const domain = useMemo(() => {
     const values = currentAttributions.attributions.flatMap((attr) => {
@@ -59,7 +73,9 @@ export default function AuthorsLifeTable({
     >
       <thead>
         <tr>
-          <th scope="col">Artist</th>
+          <th scope="col" className="artist-column">
+            Artist
+          </th>
           <th ref={ref} scope="col">
             Life data
           </th>
@@ -70,9 +86,11 @@ export default function AuthorsLifeTable({
           const author = authors[attr.local_id];
           const life = author?.life;
           return (
-            <tr key={attr.operational_id}>
-              <th>{attr.author}</th>
-              <td>
+            <tr key={attr.operational_id} onClick={() => toggle(attr.operational_id)} aria-selected={selectedIds.has(attr.operational_id)}>
+              <th className={"artist-column" + (attr.type === "accepted" ? " accepted-artist" : "")}>
+                <ArrowLink target={`/authors/${attr.local_id}`} authorName={attr.author} />
+              </th>
+              <td className="dating-column">
                 {life ? (
                   <svg width="100%" height={height}>
                     {acceptedDating.map(
@@ -124,7 +142,7 @@ export default function AuthorsLifeTable({
         })}
         {/* Work of art dating rows */}
         <tr className="dating-row accepted-dating-row">
-          <td>Work creation (accepted)</td>
+          <th className="artist-column work-dating">Work creation (accepted)</th>
           <td>
             <svg width="100%" height={height}>
               {acceptedDating.map((d, i) => (
@@ -169,7 +187,7 @@ export default function AuthorsLifeTable({
         </tr>
         {discardedDating.length > 0 && (
           <tr className="dating-row discarded-dating-row">
-            <td>Work creation (discarded)</td>
+            <th className="artist-column work-dating-discarded">Work creation (discarded)</th>
             <td>
               <svg width="100%" height={height}>
                 {discardedDating.map((d) => (
