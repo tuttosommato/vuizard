@@ -198,7 +198,7 @@ tr:hover .anonymous-artist, tr[aria-selected="true"] .anonymous-artist, tr[aria-
   border-color: var(--color-text);
 }
 
-tr:hover .artist-link-arrow {
+tr:hover .artist-link-arrow, tr[aria-selected="true"] .artist-link-arrow, tr[aria-expanded="true"] .artist-link-arrow {
   background-color: var(--color-bg-highlight);
 }
 
