@@ -1,10 +1,11 @@
 import type { Work } from "@/types/works.tsx";
+import { BASE_URL } from "@/utils/constants.ts";
 
 type WorkImagesProps = {
   photos: Work["photos"];
 };
 
-const BASE_URL = "https://catalogo.fondazionezeri.unibo.it/foto/";
+
 
 export default function WorkImages({ photos }: WorkImagesProps) {
   return (
