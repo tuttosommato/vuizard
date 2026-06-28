@@ -86,11 +86,6 @@
    Work header & meta
    ============================================================= */
 
-h1 {
-  font-size: var(--text-2xl);
-  font-weight: 600;
-}
-
 .accepted-dating {
   font-size: var(--text-lg);
   font-weight: 200;
@@ -159,7 +154,7 @@ h1 {
 }
 
 .vis-artist-label {
-  font-size: var(--text-md); /* readable size regardless of viewBox scale */
+  font-size: var(--text-base); /* readable size regardless of viewBox scale */
 }
 
 .vis-arcs-legend {
@@ -306,7 +301,7 @@ h1 {
 }
 
 .attributions-table tbody .artist-column {
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   font-weight: 400;
 }
 
