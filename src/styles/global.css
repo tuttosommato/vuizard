@@ -115,6 +115,10 @@ footer {
   margin-top: var(--space-lg);
 }
 
+main {
+  padding: 0 var(--space-lg);
+}
+
 p,
 h1,
 h2,
