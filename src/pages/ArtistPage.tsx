@@ -1,0 +1,180 @@
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { getAttributions, getAuthor, getWork } from "@/data/api";
+import type { Author } from "@/types/authors";
+import type { WorkItem } from "@/types/artists";
+import NotFoundPage from "./NotFoundPage";
+import ArtistVis from "@/components/artist/ArtistVis";
+import "@/styles/artist.css";
+import ArtistLegend from "../components/artist/ArtistLegend";
+import WorkCard from "../components/artist/WorkCard";
+
+type LoadState =
+  | { status: "loading"; phase: "artist" }
+  | { status: "loading"; phase: "works"; artist: Author; workCount: number }
+  | {
+      status: "loaded";
+      artist: Author;
+      worksList: WorkItem[];
+      artistId: string;
+    }
+  | { status: "not-found" }
+  | { status: "error"; message: string };
+
+export default function ArtistPage() {
+  const { artistId } = useParams<{ artistId: string }>();
+  const [state, setState] = useState<LoadState>({
+    status: "loading",
+    phase: "artist",
+  });
+
+  useEffect(() => {
+    if (!artistId) return;
+    let canceled = false;
+
+    getAuthor(artistId)
+      .then((artist) => {
+        if (canceled) return;
+        if (!artist) {
+          setState({ status: "not-found" });
+          return;
+        }
+        const workIds = [
+          ...new Set(Object.values(artist.stats).flatMap((s) => s.works)),
+        ];
+        setState({
+          status: "loading",
+          phase: "works",
+          artist,
+          workCount: workIds.length,
+        });
+
+        return Promise.all([
+          Promise.all(workIds.map((id) => getWork(id))),
+          Promise.all(workIds.map((id) => getAttributions(id))),
+        ]).then(([works, attributions]) => {
+          if (canceled) return;
+          if (works && attributions) {
+            const worksList = workIds.map((id, i) => ({
+              id,
+              work: works[i],
+              attributions: attributions[i],
+            }));
+            setState({ status: "loaded", artist, worksList, artistId });
+          }
+        });
+      })
+      .catch((e: unknown) => {
+        if (canceled) return;
+        setState({
+          status: "error",
+          message:
+            e instanceof Error ? e.message : "Failed to load artist data",
+        });
+      });
+    return () => {
+      canceled = true;
+    };
+  }, [artistId]);
+
+  if (state.status === "loading") {
+    return (
+      <>
+        <title>Loading…</title>
+        <main className="work-layout">
+          <p>Loading artist works...</p>
+        </main>
+      </>
+    );
+  }
+
+  if (state.status === "not-found") {
+    return (
+      <NotFoundPage
+        title="Artist not found"
+        message={`No artist exists with ID “${artistId}”.`}
+      />
+    );
+  }
+
+  if (state.status === "error") {
+    return (
+      <>
+        <title>Error</title>
+        <main>
+          <h1>Could not load artist and works</h1>
+          <p role="alert" style={{ color: "var(--color-discarded)" }}>
+            {state.message}
+          </p>
+        </main>
+      </>
+    );
+  }
+
+  // if artistId in the URL changes --> loading state until the new data is fetched
+  // this prevents showing data from the previous artist while the new data is being loaded.
+  if (state.status === "loaded" && state.artistId !== artistId) {
+    return (
+      <main>
+        <p>Loading artist works...</p>
+      </main>
+    );
+  }
+
+  return (
+    <>
+      <main className="artist-layout">
+        <div className="artist-left">
+          <div className="artist-header">
+            <p>Navigate the works with attributions to</p>
+            <h1 className="artist-name">{state.artist.names[0]}</h1>
+            {state.artist.life ? (
+              <p className="artist-life life-known">
+                {state.artist.life.birth +
+                  (state.artist.life.birth_qualifier ? "ca." : "")}{" "}
+                -{" "}
+                {state.artist.life.death +
+                  (state.artist.life.death_qualifier ? "ca." : "")}
+              </p>
+            ) : (
+              <p className="artist-life life-unknown">Life dates unknown</p>
+            )}
+
+            {state.artist.names.length > 1 && (
+              <p>
+                Also known as{" "}
+                {state.artist.names.slice(1).map((name, i) => (
+                  <span key={name}>
+                    {i > 0 && ", "}
+                    <span className="alternative-name">{name}</span>
+                  </span>
+                ))}
+              </p>
+            )}
+          </div>
+          <ArtistLegend />
+        </div>
+        <ArtistVis
+          key={artistId}
+          artistId={artistId ?? ""}
+          works={state.worksList}
+        />
+        <div className="works-list">
+          {
+            <h3 className="work-list-stats">
+              {state.worksList.length} works with attributions to{" "}
+              {state.artist.names[0]}
+            </h3>
+          }
+          {state.worksList.map((workItem) => (
+            <WorkCard
+              key={workItem.id}
+              workItem={workItem}
+              artistId={artistId ?? ""}
+            />
+          ))}
+        </div>
+      </main>
+    </>
+  );
+}

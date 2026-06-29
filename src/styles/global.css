@@ -150,7 +150,7 @@ a:hover {
   color: var(--color-text);
 }
 
-.artist-link-arrow {
+.arrow-link-arrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -170,14 +170,14 @@ a:hover {
     transform 0.2s ease;
 }
 
-.artist-link-arrow svg {
+.arrow-link-arrow svg {
   display: block; /* kills baseline gap */
   width: 0.85em;
   height: 0.85em;
   stroke-width: 2;
 }
 
-.artist-link {
+.arrow-link {
   text-decoration: none;
   color: inherit;
   color: var(--color-text-muted);
@@ -188,17 +188,18 @@ a:hover {
   color: var(--color-text-muted);
 }
 
-tr:hover .anonymous-artist, tr[aria-selected="true"] .anonymous-artist, tr[aria-expanded="true"] .anonymous-artist {
+tr:hover .anonymous-artist,
+tr[aria-selected="true"] .anonymous-artist,
+tr[aria-expanded="true"] .anonymous-artist {
   color: var(--color-text);
 }
 
-
-.artist-link:hover {
+.arrow-link:hover {
   color: var(--color-text);
 }
 
-.artist-link:hover .artist-link-arrow,
-.artist-link:focus-visible .artist-link-arrow {
+.arrow-link:hover .arrow-link-arrow,
+.arrow-link:focus-visible .arrow-link-arrow {
   background-color: var(--color-text);
   color: var(--color-bg);
   border-color: var(--color-text);

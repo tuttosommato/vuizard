@@ -4,6 +4,7 @@ import WorkPage from "@/pages/WorkPage";
 import SearchPage from "@/pages/SearchPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import ErrorPage from "@/pages/ErrorPage";
+import ArtistPage from "@/pages/ArtistPage";
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
       {
         path: "work/:workId",
         element: <WorkPage />,
+      },
+      {
+        path: "artist/:artistId",
+        element: <ArtistPage />,
       },
       {
         path: "*",

@@ -1,0 +1,183 @@
+main.artist-layout {
+  display: grid;
+  grid-template-columns: 0.8fr 3fr 1.25fr;
+  grid-template-rows: 1fr;
+  gap: var(--space-lg);
+  height: calc(100vh - var(--nav-height) - var(--space-lg) - var(--space-lg));
+  width: 100%;
+  margin-bottom: var(--space-lg);
+}
+
+main.artist-layout .artist-vis {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.artist-left,
+.works-list {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.artist-vis-container {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.works-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-sm);
+  overflow-y: auto;
+}
+
+.work-list-stats {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.work-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+  border: var(--border);
+  background-color: var(--color-bg);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  opacity: 0.8;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.work-card:hover,
+.work-card.work-card-expanded {
+  opacity: 1;
+  transform: translateX(-4px);
+}
+
+.work-card-upper {
+  height: fit-content;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-md);
+}
+
+.work-card-img-container {
+  width: 20%;
+  flex-shrink: 0;
+}
+
+.work-card-img-container img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  aspect-ratio: 3 / 4;
+}
+
+.work-card-info {
+  min-width: 0;
+  width: 80%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.work-card .work-card-title {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-box: trim-start alphabetic;
+}
+
+.work-card .work-card-dating {
+  font-size: var(--text-sm);
+  font-weight: 300;
+  margin: 0;
+}
+
+.work-card-attributions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.work-card:hover .work-card-attributions {
+  color: var(--color-text);
+}
+
+.work-card-attributions-expanded {
+  font-size: var(--text-sm);
+}
+
+.work-card-attributions-expanded ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.work-card-attributions-expanded ul li {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: var(--space-2xs) 0;
+}
+
+.work-card-attributions-expanded ul li .work-card-attributions-type-span {
+  text-transform: uppercase;
+  font-size: var(--text-2xs);
+}
+
+.work-card-attributions-type-span.type-span-accepted {
+  color: var(--color-accepted);
+}
+
+.work-card-attributions-type-span.type-span-discarded {
+  /* color: var(--color-discarded); */
+  color: var(--color-text-muted);
+}
+
+.artist-left .artist-header p {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.artist-left .artist-header p span.alternative-name {
+  font-style: italic;
+  color: var(--color-text);
+}
+
+.artist-left .artist-header p.artist-life {
+  font-weight: 400;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+}
+
+.artist-left .artist-header p.artist-life.life-known {
+  font-size: var(--text-base);
+}
+
+.artist-left .artist-header p.artist-life.life-unknown {
+  font-size: var(--text-sm);
+}

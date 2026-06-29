@@ -305,8 +305,8 @@
   font-weight: 400;
 }
 
-.attributions-table tbody .artist-column.accepted-artist a.artist-link,
-.artists-life-table tbody .artist-column.accepted-artist a.artist-link {
+.attributions-table tbody .artist-column.accepted-artist a.arrow-link,
+.artists-life-table tbody .artist-column.accepted-artist a.arrow-link {
   font-weight: 600;
 }
 
