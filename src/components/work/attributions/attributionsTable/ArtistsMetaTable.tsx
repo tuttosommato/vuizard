@@ -5,7 +5,7 @@ import type { Author } from "@/types/authors";
 import uncertaintyLine from "@/utils/uncertaintyLine";
 import AttributionCircle from "../AttributionCircle";
 import { circleTypeFor } from "../utils";
-import { colorScale } from "../debateVis/constants";
+import { colorScale } from "@/utils/constants.ts";
 import useMeasuredSize from "@/hooks/useMeasuredSize";
 import ArrowLink from "@/components/ArrowLink";
 
