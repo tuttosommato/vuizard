@@ -21,6 +21,7 @@ export interface Photos {
 }
 
 export interface Work {
+  id: string;
   title: string;
   subject: string;
   link: string;
