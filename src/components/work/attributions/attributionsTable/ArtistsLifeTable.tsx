@@ -1,7 +1,8 @@
 import type { Author } from "@/types/authors";
 import type { AttributionsBundle } from "@/types/attributions";
 import { scaleLinear, extent } from "d3";
-import { colorScale, labelsFontSize } from "../debateVis/constants";
+import { labelsFontSize } from "../debateVis/constants";
+import { colorScale } from "@/utils/constants.ts";
 import type { Work } from "@/types/works";
 import useMeasuredSize from "@/hooks/useMeasuredSize";
 import TimeSpan from "./TimeSpan";

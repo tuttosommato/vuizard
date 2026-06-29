@@ -5,11 +5,11 @@ import type { Author } from "@/types/authors";
 import { verticalCenterOffset } from "./geometry";
 import { circleTypeFor } from "@/components/work/attributions/utils";
 import {
-  colorScale,
   rankScale,
   radius,
   center,
 } from "./constants";
+import { colorScale } from "@/utils/constants.ts";
 
 type GroupProps = {
   attr: Attribution;
