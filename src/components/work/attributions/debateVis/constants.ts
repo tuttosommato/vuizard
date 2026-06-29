@@ -1,4 +1,4 @@
-import { scaleLinear, scaleOrdinal } from "d3-scale"
+import { scaleLinear } from "d3-scale"
 
 // Internal coordinate space. svg's viewBox maps this to the rendered container
 export const VIEW_W = 1000
@@ -19,9 +19,3 @@ export const radius = min / 3
 export const rankScale = scaleLinear().domain([0, 11]).range([max, min])
 export const outerX = rankScale(0) * 2
 export const center = `translate(${centerX}, ${centerY})`
-
-// Color
-export const colorScale = scaleOrdinal(
-  ["accepted", "discarded"],
-  ["var(--color-accepted)", "var(--color-discarded)"],
-)
