@@ -161,7 +161,7 @@ a:hover {
   margin-left: 0.4em;
   border: var(--border);
   border-radius: var(--radius-sm);
-  background-color: var(--color-bg);
+  background-color: transparent;
   color: var(--color-text);
   transition:
     background-color 0.2s ease,
@@ -202,10 +202,6 @@ tr:hover .anonymous-artist, tr[aria-selected="true"] .anonymous-artist, tr[aria-
   background-color: var(--color-text);
   color: var(--color-bg);
   border-color: var(--color-text);
-}
-
-tr:hover .artist-link-arrow, tr[aria-selected="true"] .artist-link-arrow, tr[aria-expanded="true"] .artist-link-arrow {
-  background-color: var(--color-bg-highlight);
 }
 
 .external-link {
