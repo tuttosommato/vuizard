@@ -48,12 +48,12 @@ export default function TierArcs() {
         strokeLinecap="square"
       />
 
-      {/* Generates two specular dashed lines ranging from TIER_II to TIER_IV */}
+      {/* Generates two specular dashed lines ranging from TIER_I to TIER_IV */}
       {[1, -1].map((sign) => (
         <line
           key={sign}
           x1="0"
-          y1={sign * TIER_II}
+          y1={sign * TIER_I}
           x2="0"
           y2={sign * TIER_IV}
           stroke="var(--color-text)"
