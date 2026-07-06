@@ -1,14 +1,15 @@
 import { Link } from "react-router-dom";
+import ArrowIcon from "./ArrowIcon";
 
 export default function ArrowLink({
   target,
-  artistName,
+  artistName = "",
   relation = "",
   uncertainty = "",
   isAnonym = false,
 }: {
   target: string;
-  artistName: string;
+  artistName?: string;
   relation?: string;
   uncertainty?: string;
   isAnonym?: boolean;
@@ -16,13 +17,13 @@ export default function ArrowLink({
   if (isAnonym) {
     return (
       <span className="anonymous-artist">
-        {artistName +
+        {artistName && artistName +
           (relation ? ", " + relation : "") +
           (uncertainty ? " " + uncertainty : "")}
       </span>
     );
   }
-
+  
   return (
     <Link
       to={target}
@@ -33,15 +34,7 @@ export default function ArrowLink({
         (relation ? ", " + relation : "") +
         (uncertainty ? " " + uncertainty : "")}
       <span className="arrow-link-arrow" aria-hidden="true">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg>
+        <ArrowIcon />
       </span>
     </Link>
   );
