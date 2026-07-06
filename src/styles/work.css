@@ -46,7 +46,7 @@
   border: 0;
   background: none;
   color: var(--color-bg);
-  font-size: var(--text-2xs);
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
   border-radius: var(--radius-xl);
@@ -221,6 +221,10 @@
    Tables — shared structure
    ============================================================= */
 
+td, th {
+  padding: 0 var(--space-sm);
+}
+
 .attributions-table .artist-column,
 .artists-life-table .artist-column {
   font-weight: 400;  
@@ -240,7 +244,6 @@
   box-sizing: border-box;
   height: 50px;
   margin: 0;
-  padding: 0;
   vertical-align: middle;
 }
 
@@ -268,7 +271,13 @@
 /* Column widths (shared layout for both tables) */
 .exp-column {
   width: 5%;
-  text-align: left;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.exp-column svg {
+  display: block;
+  margin: auto;
 }
 .type-column {
   width: 20%;
@@ -331,6 +340,15 @@
   font-weight: 400;
 }
 
+.artist-column .artist-names-cnt .names-list {
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.artist-column .artist-names-cnt {
+  margin-bottom: var(--space-2xs);
+}
+
 .attributions-table tr.row-details td {
   min-height: 25px;
   height: auto;
@@ -345,16 +363,18 @@
   opacity: 0.8;
 }
 
-.attributions-table .visible-row:hover,
+
 .attributions-table .visible-row[aria-expanded="true"],
 .artists-life-table tbody tr:not(tr.dating-row)[aria-selected="true"],
-.artists-life-table tbody tr:not(tr.dating-row):hover {
+.attributions-table .visible-row:hover:hover:not(:has(.arrow-link:hover)),
+.artists-life-table tbody tr:not(tr.dating-row):hover:not(:has(.arrow-link:hover)):not(:has(.info-tooltip-act:hover)) {
   background-color: var(--color-bg-highlight);
   opacity: 1;
 }
 
 .attributions-table .row-details {
   background-color: var(--color-bg-highlight);
+  cursor: pointer;
 }
 
 .attributions-table .visible-row,
@@ -378,4 +398,43 @@
 .artists-life-table .dating-row th {
   font-size: var(--text-sm);
   font-weight: 400;
+}
+
+.info-tooltip-act {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  height: 2em;
+  border: var(--border);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 200px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  background-color: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.info-tooltip-act:hover {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
+
+.info-tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  border: var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-bg) !important;
+  color: var(--color-text);
+  width: 300px;
+}
+
+span.tooltip-highlight {
+  color: var(--color-text-highlight);
+  font-weight: 600;
+  opacity: 1;
 }

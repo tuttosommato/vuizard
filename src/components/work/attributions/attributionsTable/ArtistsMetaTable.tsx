@@ -8,6 +8,8 @@ import { circleTypeFor } from "../utils";
 import { colorScale } from "@/utils/constants.ts";
 import useMeasuredSize from "@/hooks/useMeasuredSize";
 import ArrowLink from "@/components/ArrowLink";
+import ExpandArrow from "@/components/ExpandArrow";
+
 
 export default function ArtistsMetaTable({
   artists,
@@ -79,7 +81,9 @@ export default function ArtistsMetaTable({
                   }
                 }}
               >
-                <td className="exp-column">{isExpanded ? "-" : "+"}</td>
+                <td className="exp-column">
+                  <ExpandArrow isExpanded={isExpanded} />
+                </td>
                 <td
                   className={
                     "type-column" +
@@ -147,52 +151,32 @@ export default function ArtistsMetaTable({
                 </td>
               </tr>
               {isExpanded && (
-                <tr className="row-details">
+                <tr className="row-details" onClick={() => toggle(opId)}>
                   <td className="exp-column"></td>
                   <td className="type-column"></td>
                   <td className="artist-column">
-                    {currentArtist && (
-                      <>
-                        Artistic school: n.d. <br />
-                        External links:{" "}
-                        {currentArtist.ulan && (
-                          <a
-                            href={currentArtist.ulan}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            [ULAN]
-                          </a>
-                        )}
-                        {currentArtist.viaf && (
-                          <a
-                            href={currentArtist.viaf}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            [VIAF]
-                          </a>
-                        )}
-                        {currentArtist.wikidata && (
-                          <a
-                            href={currentArtist.wikidata}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            [WIKIDATA]
-                          </a>
-                        )}
-                        {currentArtist.dbpedia && (
-                          <a
-                            href={currentArtist.dbpedia}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            [DBPEDIA]
-                          </a>
-                        )}
-                      </>
+                    {currentArtist && currentArtist.names.length > 0 && (
+                      <div className="artist-names-cnt">Other names: <span className="names-list">{currentArtist.names.join(", ")}</span></div>
                     )}
+                    {currentArtist && (() => {
+                      const links = [
+                        { label: "ULAN", href: currentArtist.ulan },
+                        { label: "VIAF", href: currentArtist.viaf },
+                        { label: "Wikidata", href: currentArtist.wikidata },
+                        { label: "DBpedia", href: currentArtist.dbpedia },
+                      ].filter((l) => l.href);
+                      return links.length > 0 ? (
+                        <div className="artist-links-cnt">
+                          External links:{" "}
+                          {links.map((l, i) => (
+                            <span key={l.label}>
+                              <a href={l.href!} onClick={(e) => e.stopPropagation()} className="in-text-a" target="_blank" rel="noopener noreferrer">{l.label}</a>
+                              {i < links.length - 1 && ", "}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null;
+                    })()}
                   </td>
                   <td className="reliability-column">
                     {attr.reasons

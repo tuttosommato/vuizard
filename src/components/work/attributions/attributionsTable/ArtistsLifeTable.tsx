@@ -8,6 +8,7 @@ import useMeasuredSize from "@/hooks/useMeasuredSize";
 import TimeSpan from "./TimeSpan";
 import { Fragment, useMemo, useState } from "react";
 import ArrowLink from "@/components/ArrowLink";
+import QuestionMarkTooltip from "@/components/QuestionMarkTooltip";
 
 const barHeight = labelsFontSize / 1.25;
 
@@ -77,6 +78,8 @@ export default function ArtistsLifeTable({
           <th scope="col" className="artist-column">
             Artist
           </th>
+          <th scope="col" className="uncertain-column">
+          </th>
           <th ref={ref} scope="col">
             Life data
           </th>
@@ -91,6 +94,9 @@ export default function ArtistsLifeTable({
               <th className={"artist-column" + (attr.type === "accepted" ? " accepted-artist" : "")}>
                 <ArrowLink target={`/artist/${attr.local_id}`} artistName={attr.author} isAnonym={attr.is_anonymous} />
               </th>
+              <td>
+                {attr.r_qualifier && <QuestionMarkTooltip author={attr.author} qualifier={attr.r_qualifier} />}
+              </td>
               <td className="dating-column">
                 {life ? (
                   <svg width="100%" height={height}>
@@ -107,7 +113,7 @@ export default function ArtistsLifeTable({
                               stroke="var(--color-text)"
                               strokeWidth={1}
                               strokeDasharray="4 4"
-                              opacity={0.4}
+                              opacity={0.2}
                             />
                             <line
                               x1={timeScale(+d.to)}
@@ -117,7 +123,7 @@ export default function ArtistsLifeTable({
                               stroke="var(--color-text)"
                               strokeWidth={1}
                               strokeDasharray="4 4"
-                              opacity={0.4}
+                              opacity={0.2}
                             />
                           </Fragment>
                         ),
@@ -144,6 +150,7 @@ export default function ArtistsLifeTable({
         {/* Work of art dating rows */}
         <tr className="dating-row accepted-dating-row">
           <th className="artist-column work-dating">Work creation (accepted)</th>
+          <td></td>
           <td>
             <svg width="100%" height={height}>
               {acceptedDating.map((d, i) => (
@@ -157,7 +164,7 @@ export default function ArtistsLifeTable({
                       stroke="var(--color-text)"
                       strokeWidth={1}
                       strokeDasharray="4 4"
-                      opacity={0.4}
+                      opacity={0.2}
                     />
                     <line
                       x1={timeScale(+d.to)}
@@ -167,7 +174,7 @@ export default function ArtistsLifeTable({
                       stroke="var(--color-text)"
                       strokeWidth={1}
                       strokeDasharray="4 4"
-                      opacity={0.4}
+                      opacity={0.2}
                     />
 
                     <TimeSpan
