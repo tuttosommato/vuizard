@@ -18,12 +18,15 @@
 :root {
   /* Colors */
   --color-bg: #2a2a2a;
-  --color-accent: #c8a96e;
+  --color-bg-highlight: #343434;
   --color-text: #e2ded8;
   --color-text-muted: #9c978f;
+  --color-link-1: #9a87df;
+  --color-link-2: #50a6e3;
+  /* --color-discarded-alt: #9a87df; */
   --color-accepted: #50e3c2;
-  --color-discarded: #9a87df;
-  --color-bg-highlight: #343434;
+  --color-discarded: #F1A2C8;
+  --color-accent: #c8a96e;
 
   /* Typography */
   --font-sans: "Satoshi", sans-serif;

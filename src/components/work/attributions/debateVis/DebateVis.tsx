@@ -61,14 +61,14 @@ export default function DebateVis({
       ...implicit_relations.map(([a, b]) => ({
         a,
         b,
-        stroke: "red",
+        stroke: "var(--color-link-1)",
         strokeWidth: 1,
         className: "same-artist artist-connection",
       })),
       ...master_relations.map(([a, b]) => ({
         a,
         b,
-        stroke: "yellow",
+        stroke: "var(--color-link-2)",
         strokeWidth: 1,
         className: "master-relations artist-connection",
       })),

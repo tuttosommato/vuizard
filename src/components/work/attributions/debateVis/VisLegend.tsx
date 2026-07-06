@@ -140,11 +140,11 @@ const sections: LegendItem[][] = [
       description: "(based on attributions co-occurrence)",
     },
     {
-      el: <Curveel stroke="var(--color-discarded)" />,
+      el: <Curveel stroke="var(--color-link-1)" />,
       label: "Same recognised artist involved",
     },
     {
-      el: <Curveel stroke="var(--color-accent)" />,
+      el: <Curveel stroke="var(--color-link-2)" />,
       label: "Artist and related anonyms",
     },
   ],
