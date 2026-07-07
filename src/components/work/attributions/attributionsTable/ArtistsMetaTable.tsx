@@ -10,7 +10,6 @@ import useMeasuredSize from "@/hooks/useMeasuredSize";
 import ArrowLink from "@/components/ArrowLink";
 import ExpandArrow from "@/components/ExpandArrow";
 
-
 export default function ArtistsMetaTable({
   artists,
   workTitle,
@@ -24,7 +23,9 @@ export default function ArtistsMetaTable({
   // We measure the cellWidth of the "Reason reliability" header cell to adapt the visualization of reasons accordingly
   const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
 
-  const rankScale = scaleLinear().domain([0, 10]).range([width, 0]);
+  const radius = height / 5.25;
+
+  const rankScale = scaleLinear().domain([0, 11]).range([width, radius]);
 
   const toggle = (id: string) => {
     setExpandedIds((prev) => {
@@ -141,7 +142,7 @@ export default function ArtistsMetaTable({
                           <AttributionCircle
                             type={circleType}
                             fill={colorScale(attr.type)}
-                            r={height / 5.25}
+                            r={radius}
                           />
                           <title>{reason.reason}</title>
                         </g>
