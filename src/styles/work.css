@@ -467,7 +467,7 @@ span.tooltip-highlight {
 }
 
 .full-screen-image button {
-  background: var(--color-bg);
+  background: transparent;
   border: var(--border);
   border-radius: var(--radius-md);
   padding: var(--space-2xs) var(--space-2xs);
