@@ -156,7 +156,7 @@ export default function ArtistsMetaTable({
                   <td className="type-column"></td>
                   <td className="artist-column">
                     {currentArtist && currentArtist.names.length > 0 && (
-                      <div className="artist-names-cnt">Other names: <span className="names-list">{currentArtist.names.join(", ")}</span></div>
+                      <div className="artist-names-cnt">Also known as: <span className="names-list">{currentArtist.names.join(", ")}</span></div>
                     )}
                     {currentArtist && (() => {
                       const links = [

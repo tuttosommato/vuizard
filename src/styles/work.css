@@ -27,6 +27,8 @@
   height: calc(100vh - var(--nav-height) - var(--space-lg));
 }
 
+
+
 .table-switch {
   position: relative;
   display: inline-grid;
@@ -36,7 +38,8 @@
   padding: var(--space-2xs);
   border-radius: calc(var(--radius-lg) + var(--space-2xs));
   background-color: var(--color-text-muted);
-  margin: var(--space-md) 0;
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 
 .toggle-button {
@@ -119,6 +122,7 @@
 .work-details {
   display: grid;
   grid-template-columns: max-content auto;
+  margin: var(--space-md) 0;
 }
 
 .work-details dt {
@@ -234,7 +238,6 @@ td, th {
 .artists-life-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: var(--space-lg);
 }
 
 .attributions-table td,

@@ -113,7 +113,7 @@ export default function ArtistsLifeTable({
                               stroke="var(--color-text)"
                               strokeWidth={1}
                               strokeDasharray="4 4"
-                              opacity={0.2}
+                              opacity={0.4}
                             />
                             <line
                               x1={timeScale(+d.to)}
@@ -123,7 +123,7 @@ export default function ArtistsLifeTable({
                               stroke="var(--color-text)"
                               strokeWidth={1}
                               strokeDasharray="4 4"
-                              opacity={0.2}
+                              opacity={0.4}
                             />
                           </Fragment>
                         ),
@@ -164,7 +164,7 @@ export default function ArtistsLifeTable({
                       stroke="var(--color-text)"
                       strokeWidth={1}
                       strokeDasharray="4 4"
-                      opacity={0.2}
+                      opacity={0.4}
                     />
                     <line
                       x1={timeScale(+d.to)}
@@ -174,7 +174,7 @@ export default function ArtistsLifeTable({
                       stroke="var(--color-text)"
                       strokeWidth={1}
                       strokeDasharray="4 4"
-                      opacity={0.2}
+                      opacity={0.4}
                     />
 
                     <TimeSpan

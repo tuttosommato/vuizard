@@ -120,7 +120,7 @@ function WorkPage() {
         <section className="work-left">
           <WorkHeader currentWork={currentWork} />
           <AttributionsSection
-            workTitle={currentWork.title}
+            work={currentWork}
             currentAttributions={currentAttributions}
             acceptedDating={currentWork.dating.filter((d) => d.type === "accepted")}
             discardedDating={currentWork.dating.filter((d) => d.type === "discarded")}
