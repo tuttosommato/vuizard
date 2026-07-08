@@ -427,21 +427,17 @@ th {
 }
 
 .info-tooltip {
+  font-size: var(--text-sm);
   display: flex;
   flex-direction: column;
   gap: var(--space-2xs);
   border: var(--border);
   border-radius: var(--radius-md);
   padding: var(--space-sm) var(--space-md);
-  background-color: var(--color-bg) !important;
+  background-color: transparent;
+  backdrop-filter: blur(10px);
   color: var(--color-text);
-  width: 300px;
-}
-
-span.tooltip-highlight {
-  color: var(--color-text-highlight);
-  font-weight: 600;
-  opacity: 1;
+  width: 400px;
 }
 
 /* =============================================================

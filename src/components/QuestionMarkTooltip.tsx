@@ -26,8 +26,12 @@ function Tooltip({
     >
       <p>
         This attribution refers to{" "}
-        <span className="tooltip-highlight">"{author}{", "}{qualifier}"</span>. Life dates shown
-        are <span className="tooltip-highlight">{author}</span>'s only.
+        <span className="keyword">
+          "{author}
+          {", "}
+          {qualifier}"
+        </span>
+        . Life dates shown are <span className="keyword">{author}</span>'s only.
       </p>
     </div>,
     document.body,
