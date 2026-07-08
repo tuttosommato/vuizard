@@ -158,6 +158,10 @@
   height: 100%;
 }
 
+.debate-vis g.attribution-group {
+  cursor: pointer;
+}
+
 .vis-artist-label {
   font-size: var(--text-base); /* readable size regardless of viewBox scale */
 }
@@ -168,6 +172,18 @@
 
 .vis-arcs-legend text {
   font-size: var(--text-sm);
+}
+
+.reason-tooltip {
+  pointer-events: none;
+  z-index: 9999;
+  background-color: transparent;
+  backdrop-filter: blur(10px);
+  color: var(--color-text);
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-xs);
 }
 
 /* =============================================================
@@ -368,11 +384,14 @@ th {
   opacity: 0.8;
 }
 
-
 .attributions-table .visible-row[aria-expanded="true"],
 .artists-life-table tbody tr:not(tr.dating-row)[aria-selected="true"],
 .attributions-table .visible-row:hover:hover:not(:has(.arrow-link:hover)),
-.artists-life-table tbody tr:not(tr.dating-row):hover:not(:has(.arrow-link:hover)):not(:has(.info-tooltip-act:hover)) {
+.artists-life-table
+  tbody
+  tr:not(tr.dating-row):hover:not(:has(.arrow-link:hover)):not(
+    :has(.info-tooltip-act:hover)
+  ) {
   background-color: var(--color-bg-highlight);
   opacity: 1;
 }
