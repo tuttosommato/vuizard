@@ -17,6 +17,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  padding-bottom: var(--space-lg);
 }
 
 .work-right {
@@ -25,9 +26,8 @@
   position: sticky;
   top: calc(var(--nav-height) + var(--space-lg));
   height: calc(100vh - var(--nav-height) - var(--space-lg));
+  padding-bottom: var(--space-lg);
 }
-
-
 
 .table-switch {
   position: relative;
@@ -226,14 +226,15 @@
    Tables — shared structure
    ============================================================= */
 
-td, th {
+td,
+th {
   padding: 0 var(--space-sm);
 }
 
 .attributions-table .artist-column,
 .artists-life-table .artist-column {
-  font-weight: 400;  
-}   
+  font-weight: 400;
+}
 
 .attributions-table,
 .artists-life-table {

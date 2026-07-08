@@ -96,7 +96,6 @@ nav {
   align-items: center;
   border-bottom: var(--border);
   padding: 0 var(--space-lg);
-  margin-bottom: var(--space-lg);
   position: sticky;
   top: 0;
   background-color: var(--color-bg);
@@ -120,7 +119,7 @@ footer {
 }
 
 main {
-  padding: 0 var(--space-lg);
+  padding: var(--space-lg) var(--space-lg) 0 var(--space-lg);
 }
 
 p,
