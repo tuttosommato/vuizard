@@ -386,10 +386,10 @@ th {
 
 .attributions-table .visible-row[aria-expanded="true"],
 .artists-life-table tbody tr:not(tr.dating-row)[aria-selected="true"],
-.attributions-table .visible-row:hover:hover:not(:has(.arrow-link:hover)),
+.attributions-table .tr-highlighted:not(:has(.arrow-link:hover)),
 .artists-life-table
   tbody
-  tr:not(tr.dating-row):hover:not(:has(.arrow-link:hover)):not(
+  tr:not(tr.dating-row).tr-highlighted:not(:has(.arrow-link:hover)):not(
     :has(.info-tooltip-act:hover)
   ) {
   background-color: var(--color-bg-highlight);

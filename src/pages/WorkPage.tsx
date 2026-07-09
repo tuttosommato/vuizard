@@ -9,6 +9,7 @@ import DebateVis from "@/components/work/attributions/debateVis/DebateVis";
 import NotFoundPage from "@/pages/NotFoundPage";
 import "@/styles/work.css";
 import { CrossSelectionProvider } from "@/stores/CrossSelectionContext";
+import { HighlightProvider } from "@/stores/HighlightContext";
 
 type FetchOrigin = "work" | "attributions";
 
@@ -119,6 +120,7 @@ function WorkPage() {
 
       <main className="work-layout">
         <CrossSelectionProvider>
+        <HighlightProvider>
         <section className="work-left">
           <WorkHeader currentWork={currentWork} />
           <AttributionsSection
@@ -132,6 +134,7 @@ function WorkPage() {
         <section className="work-right">
           <DebateVis currentAttributions={currentAttributions} />
         </section>
+        </HighlightProvider>
         </CrossSelectionProvider>
       </main>
     </>

@@ -9,19 +9,18 @@ import { colorScale } from "@/utils/constants.ts";
 import { createPortal } from "react-dom";
 import { useState, useRef, useEffect } from "react";
 import { useCrossSelection } from "@/stores/CrossSelectionContext";
+import { useHighlight } from "@/stores/HighlightContext";
 
 type GroupProps = {
   attr: Attribution;
   rotation: number;
   labelsRef: React.RefObject<Map<string, SVGTextElement>>;
   artists: { [key: string]: Author };
-  setHighlightedId: React.Dispatch<React.SetStateAction<string | null>>;
-  highlightedId: string | null;
   highlightMembers: Set<string> | null;
   tooltipPosition: "top" | "bottom";
 };
 
-const TOOLTIP_GAP = 8;
+const TOOLTIP_GAP = 4;
 
 function ReasonTooltip({
   reason,
@@ -64,8 +63,6 @@ export default function AttributionsGroup({
   rotation,
   labelsRef,
   artists,
-  setHighlightedId,
-  highlightedId,
   highlightMembers,
   tooltipPosition,
 }: GroupProps) {
@@ -78,6 +75,7 @@ export default function AttributionsGroup({
     ({ x: number; y: number } | null)[]
   >([]);
   
+  const { highlightedId, setHighlightedId } = useHighlight();
   const isHighlighted = highlightedId === attr.operational_id;
 
   useEffect(() => {
@@ -206,6 +204,7 @@ export default function AttributionsGroup({
             vectorEffect="non-scaling-stroke"
             style={{
               opacity: opacityLogic1,
+              pointerEvents: "none",
             }}
           />
         )}

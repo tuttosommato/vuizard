@@ -10,6 +10,7 @@ import useMeasuredSize from "@/hooks/useMeasuredSize";
 import ArrowLink from "@/components/ArrowLink";
 import ExpandArrow from "@/components/ExpandArrow";
 import { useCrossSelection } from "@/stores/CrossSelectionContext";
+import { useHighlight } from "@/stores/HighlightContext";
 
 export default function ArtistsMetaTable({
   artists,
@@ -29,6 +30,7 @@ export default function ArtistsMetaTable({
   const rankScale = scaleLinear().domain([0, 11]).range([width, radius]);
 
   const {selectedIds, toggle} = useCrossSelection();
+  const { highlightedId, setHighlightedId } = useHighlight();
 
   return (
     <table
@@ -62,7 +64,9 @@ export default function ArtistsMetaTable({
           return (
             <Fragment key={opId}>
               <tr
-                className="visible-row"
+                className={`visible-row ${highlightedId === opId ? "tr-highlighted" : ""}`}
+                onMouseEnter={() => setHighlightedId(opId)}
+                onMouseLeave={() => setHighlightedId(null)}
                 onClick={() => toggle(opId)}
                 tabIndex={0}
                 aria-expanded={isExpanded}

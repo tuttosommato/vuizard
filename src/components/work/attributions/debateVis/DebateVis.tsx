@@ -4,7 +4,8 @@ import AttributionsGroup from "@/components/work/attributions/debateVis/Attribut
 import { slotRotationDeg } from "./geometry";
 import useArtists from "@/hooks/useArtists";
 import useLabelsEnd from "@/hooks/useLabelsEnd";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useHighlight } from "@/stores/HighlightContext";
 import { VIEW_W, VIEW_H, center, outerX } from "./constants";
 import VisLegend from "./VisLegend";
 import AxisLegend from "./AxisLegend";
@@ -35,7 +36,7 @@ export default function DebateVis({
 
   const artists = useArtists(attributions);
 
-  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const highlightedId = useHighlight().highlightedId;
 
   const highlightMembers = useMemo(() => {
     if (!highlightedId) return null;
@@ -169,8 +170,6 @@ export default function DebateVis({
               rotation={rotations[i]}
               labelsRef={labelsRef}
               artists={artists}
-              setHighlightedId={setHighlightedId}
-              highlightedId={highlightedId}
               highlightMembers={highlightMembers}
               tooltipPosition={i + 1 <= attrLength / 2 ? "bottom" : "top"}
             />

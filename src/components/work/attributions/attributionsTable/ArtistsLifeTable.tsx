@@ -10,6 +10,7 @@ import { Fragment, useMemo } from "react";
 import ArrowLink from "@/components/ArrowLink";
 import QuestionMarkTooltip from "@/components/QuestionMarkTooltip";
 import { useCrossSelection } from "@/stores/CrossSelectionContext";
+import { useHighlight } from "@/stores/HighlightContext";
 
 const barHeight = labelsFontSize / 1.25;
 
@@ -27,6 +28,7 @@ export default function ArtistsLifeTable({
   const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
 
   const {selectedIds, toggle} = useCrossSelection();
+  const { highlightedId, setHighlightedId } = useHighlight();
 
   const domain = useMemo(() => {
     const values = currentAttributions.attributions.flatMap((attr) => {
@@ -80,7 +82,13 @@ export default function ArtistsLifeTable({
           const artist = artists[attr.local_id];
           const life = artist?.life;
           return (
-            <tr key={attr.operational_id} onClick={() => toggle(attr.operational_id)} aria-selected={selectedIds.has(attr.operational_id)}>
+            <tr
+            className={highlightedId === attr.operational_id ? "tr-highlighted" : ""}
+            key={attr.operational_id}
+            onMouseEnter={() => setHighlightedId(attr.operational_id)}
+            onMouseLeave={() => setHighlightedId(null)}
+            onClick={() => toggle(attr.operational_id)}
+            aria-selected={selectedIds.has(attr.operational_id)}>
               <th className={"artist-column" + (attr.type === "accepted" ? " accepted-artist" : "")}>
                 <ArrowLink target={`/artist/${attr.local_id}`} artistName={attr.author} isAnonym={attr.is_anonymous} />
               </th>
