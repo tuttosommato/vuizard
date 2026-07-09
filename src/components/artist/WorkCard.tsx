@@ -5,6 +5,7 @@ import { useState } from "react";
 import ArrowLink from "@/components/ArrowLink";
 import ArrowIcon from "@/components/ArrowIcon";
 import { Link } from "react-router-dom";
+import ExpandArrow from "@/components/ExpandArrow";
 
 interface WorkCardProps {
   workItem: WorkItem;
@@ -12,16 +13,16 @@ interface WorkCardProps {
 }
 
 export default function WorkCard({ workItem, artistId }: WorkCardProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const acceptedDating = workItem.work?.dating
     .filter((d) => d.type === "accepted")
     .map(formatDating);
 
   return (
-    <div className={"work-card-container" + (expanded ? " work-card-container-expanded" : "")}>
+    <div className={"work-card-container" + (isExpanded ? " work-card-container-expanded" : "")}>
         <div
         className="work-card"
-        onClick={() => setExpanded(!expanded)}
+        onClick={() => setIsExpanded(!isExpanded)}
         >
         <div className="work-card-upper">
             <div className="work-card-img-container">
@@ -40,12 +41,12 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
                 </p>
             </div>
             <div className="work-card-attributions">
-                <p>Expand attributions</p>
-                <span>{expanded ? "−" : "+"}</span>
+                <p>{isExpanded ? "Collapse" : "Expand"} attributions</p>
+                <ExpandArrow isExpanded={isExpanded} />
             </div>
             </div>
         </div>
-        {expanded && (
+        {isExpanded && (
             <div className="work-card-attributions-expanded">
             {workItem.attributions ? (
                 <ul>
