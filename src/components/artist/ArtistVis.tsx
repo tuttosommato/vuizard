@@ -3,8 +3,11 @@ import ArtistVisLegend from "./ArtistVisLegend";
 import ArrowMarkerDef from "@/components/ArrowMarkerDef";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { zoom } from "d3-zoom";
+import type { ZoomBehavior } from "d3-zoom";
 import { select } from "d3-selection";
 import type { WorkItem } from "@/types/artists";
+import { easeCubicInOut } from "d3-ease";
+
 import {
   TIER_RADII,
   colorScale,
@@ -24,6 +27,31 @@ import {
   forceY,
 } from "d3-force";
 
+function ZoomControls({
+  svgRef,
+  zoomRef,
+}: {
+  svgRef: React.RefObject<SVGSVGElement | null>;
+  zoomRef: React.RefObject<ZoomBehavior<SVGSVGElement, unknown> | null>;
+}) {
+  const handleZoom = (direction: "+" | "-") => {
+    if (!svgRef.current || !zoomRef.current) return;
+    const factor = direction === "+" ? 1.6 : 0.6;
+    select(svgRef.current)
+      .transition()
+      .duration(200)
+      .ease(easeCubicInOut)
+      .call(zoomRef.current.scaleBy, factor);
+  };
+
+  return (
+    <div className="zoom-controls">
+      <button onClick={() => handleZoom("+")}>+</button>
+      <button onClick={() => handleZoom("-")}>-</button>
+    </div>
+  );
+}
+
 export default function ArtistVis({
   artistId,
   works,
@@ -32,6 +60,7 @@ export default function ArtistVis({
   works: WorkItem[];
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [transform, setTransform] = useState("translate(0, 0) scale(1)");
 
   useEffect(() => {
@@ -48,6 +77,7 @@ export default function ArtistVis({
         setTransform(`translate(${t.x}, ${t.y}) scale(${t.k})`);
       });
 
+    zoomRef.current = z;
     select(currentSvg).call(z);
 
     return () => {
@@ -137,6 +167,7 @@ export default function ArtistVis({
           ))}
         </g>
       </svg>
+      <ZoomControls svgRef={svgRef} zoomRef={zoomRef} />
     </div>
   );
 }
