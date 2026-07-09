@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useCallback, useEffect } from "react";
 
 type SelectionContextValue = {
   selectedIds: Set<string>;
@@ -6,6 +6,7 @@ type SelectionContextValue = {
 };
 
 const CrossSelectionContext = createContext<SelectionContextValue | null>(null);
+const PRESERVE_SELECTION = 'tbody, .attribution-group, .table-switch';
 
 export function CrossSelectionProvider({children} : {children: React.ReactNode}) {
 
@@ -24,9 +25,23 @@ export function CrossSelectionProvider({children} : {children: React.ReactNode})
       });
     };
 
+
+    const clear = useCallback(() => setSelectedIds(() => new Set()), []);
+
+    useEffect(() => {
+      const handleClick = (e: MouseEvent) => {
+        const target = e.target instanceof Element ? e.target : null;
+        if (target?.closest(PRESERVE_SELECTION)) return;
+        clear();
+      };
+      document.addEventListener('click', handleClick)
+      return () => document.removeEventListener('click', handleClick);
+    }, [clear]);
+
     const value = {
       selectedIds,
-      toggle
+      toggle,
+      clear
     }
 
 
