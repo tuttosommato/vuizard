@@ -65,7 +65,7 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
                             "work-card-attributions-type-span" +
                             (attr.type === "accepted"
                             ? " type-span-accepted"
-                            : " type-span-discarded")
+                            : " type-span-discarded") + (attr.local_id === artistId ? " type-span-highlighted" : "")
                         }
                         >
                         {attr.type}

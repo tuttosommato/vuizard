@@ -244,16 +244,18 @@ main.artist-layout .artist-vis {
 .work-card-attributions-expanded ul li .work-card-attributions-type-span {
   text-transform: uppercase;
   font-size: var(--text-2xs);
+    color: var(--color-text-muted);
 }
 
-.work-card-attributions-type-span.type-span-accepted {
+
+.work-card-attributions-type-span.type-span-highlighted.type-span-accepted {
   color: var(--color-accepted);
 }
 
-.work-card-attributions-type-span.type-span-discarded {
-  /* color: var(--color-discarded); */
-  color: var(--color-text-muted);
+.work-card-attributions-type-span.type-span-highlighted.type-span-discarded {
+  color: var(--color-discarded);
 }
+
 
 .artist-left {
   background: linear-gradient(to left, var(--color-bg), transparent);
