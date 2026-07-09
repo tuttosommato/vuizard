@@ -377,40 +377,6 @@ th {
   padding-bottom: var(--space-sm);
 }
 
-/* Clickable rows + their border treatment */
-.attributions-table .visible-row,
-.artists-life-table tbody tr:not(tr.dating-row) {
-  cursor: pointer;
-  opacity: 0.8;
-}
-
-.attributions-table .visible-row[aria-expanded="true"],
-.artists-life-table tbody tr:not(tr.dating-row)[aria-selected="true"],
-.attributions-table .tr-highlighted:not(:has(.arrow-link:hover)),
-.artists-life-table
-  tbody
-  tr:not(tr.dating-row).tr-highlighted:not(:has(.arrow-link:hover)):not(
-    :has(.info-tooltip-act:hover)
-  ) {
-  background-color: var(--color-bg-highlight);
-  opacity: 1;
-}
-
-.attributions-table .row-details {
-  background-color: var(--color-bg-highlight);
-  cursor: pointer;
-}
-
-.attributions-table .visible-row,
-.attributions-table .row-details,
-.artists-life-table tbody tr:not(tr.dating-row) {
-  border-bottom: 1px solid var(--color-text-muted);
-}
-
-.attributions-table .visible-row[aria-expanded="true"] {
-  border-bottom-color: transparent;
-}
-
 /* =============================================================
    Artists life table — row-specific
    ============================================================= */
@@ -499,4 +465,70 @@ th {
 
 .full-screen-image button svg {
   display: block;
+}
+
+/* =============================================================
+   Table-vis highlighting
+   ============================================================= */
+.attributions-table .visible-row,
+.artists-life-table tbody tr:not(tr.dating-row) {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.attributions-table .visible-row[aria-expanded="true"],
+.artists-life-table tbody tr:not(tr.dating-row)[aria-selected="true"],
+.attributions-table .tr-highlighted:not(:has(.arrow-link:hover)),
+.artists-life-table
+  tbody
+  tr:not(tr.dating-row).tr-highlighted:not(:has(.arrow-link:hover)):not(
+    :has(.info-tooltip-act:hover)
+  ) {
+  background-color: var(--color-bg-highlight);
+  opacity: 1;
+}
+
+.attributions-table .row-details {
+  background-color: var(--color-bg-highlight);
+  cursor: pointer;
+}
+
+.attributions-table .visible-row,
+.attributions-table .row-details,
+.artists-life-table tbody tr:not(tr.dating-row) {
+  border-bottom: 1px solid var(--color-text-muted);
+}
+
+.attributions-table .visible-row[aria-expanded="true"] {
+  border-bottom-color: transparent;
+}
+
+.debate-vis {
+  --dim-opacity: 0.4;
+}
+
+.reason-edge,
+.reason-symbol,
+.average-marker,
+.vis-artist-label {
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+.average-marker {
+  pointer-events: none;
+}
+
+/* If any attribution group is active, reduce the opacity of every edge, symbol, label of the groups that are not active */
+.debate-vis:has(.attribution-group[data-active])
+  .attribution-group:not([data-active])
+  :is(.reason-edge, .reason-symbol, .average-marker, .vis-artist-label) {
+  opacity: var(--dim-opacity);
+}
+
+/* If any attribution group has a active label, increase the opacity of that label */
+.debate-vis:has(.attribution-group[data-label-active])
+  .attribution-group[data-label-active]
+  .vis-artist-label {
+  opacity: 1;
 }

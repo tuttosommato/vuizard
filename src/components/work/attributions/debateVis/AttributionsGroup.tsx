@@ -74,9 +74,14 @@ export default function AttributionsGroup({
   const [coordsList, setCoordsList] = useState<
     ({ x: number; y: number } | null)[]
   >([]);
-  
+
+  const { selectedIds, toggle } = useCrossSelection();
   const { highlightedId, setHighlightedId } = useHighlight();
   const isHighlighted = highlightedId === attr.operational_id;
+  
+  const isSelected = selectedIds.has(attr.operational_id);
+  const isSymbolActive = isSelected || isHighlighted;
+  const isLabelActive = highlightMembers?.has(attr.operational_id) || isHighlighted || isSelected; 
 
   useEffect(() => {
     const next = attr.reasons.map((_, ri) => {
@@ -92,23 +97,6 @@ export default function AttributionsGroup({
   }, [isHighlighted, attr.reasons, tooltipPosition]);
 
   
-  const { selectedIds, toggle } = useCrossSelection();
-
-  const opacityLogic1 = !selectedIds.has(attr.operational_id) ? !highlightedId
-    ? 1
-    : highlightedId && highlightedId === attr.operational_id
-      ? 1
-      : 0.4
-        : 1;
-  const opacityLogic2 = !selectedIds.has(attr.operational_id) ? !highlightedId
-    ? 1
-    : (highlightedId && highlightedId === attr.operational_id) ||
-        (highlightedId && highlightMembers?.has(attr.operational_id))
-      ? 1
-      : 0.4
-        : 1;
-
-
 
   return (
     <>
@@ -128,6 +116,8 @@ export default function AttributionsGroup({
 
       <g
         className="attribution-group"
+        data-active={isSymbolActive || undefined}
+        data-label-active={isLabelActive || undefined}
         transform={`${center} rotate(${rotation})`}
         fill={attrFill}
         onClick={() => toggle(attr.operational_id)}
@@ -142,6 +132,7 @@ export default function AttributionsGroup({
 
           return attr.u_qualifier ? (
             <path
+              className="reason-edge"
               key={key}
               d={uncertaintyLine(
                 [x1, 0, x2, 0],
@@ -151,12 +142,10 @@ export default function AttributionsGroup({
               stroke="var(--color-text)"
               strokeWidth={1.5}
               vectorEffect="non-scaling-stroke"
-              style={{
-                opacity: opacityLogic1,
-              }}
             />
           ) : (
             <line
+              className="reason-edge"
               key={key}
               x1={x1}
               y1={0}
@@ -165,9 +154,6 @@ export default function AttributionsGroup({
               stroke="var(--color-text)"
               strokeWidth={1.5}
               vectorEffect="non-scaling-stroke"
-              style={{
-                opacity: opacityLogic1,
-              }}
             />
           );
         })}
@@ -175,15 +161,13 @@ export default function AttributionsGroup({
         {/* Symbols */}
         {attr.reasons.map((reason, ri) => (
           <g
+            className="reason-symbol"
             key={`${attr.operational_id}-sym-${ri}`}
             ref={(el) => {
               if (el) symbolRefs.current.set(ri, el);
               else symbolRefs.current.delete(ri);
             }}
             transform={`translate(${rankScale(reason.rank)}, 0)`}
-            style={{
-              opacity: opacityLogic1,
-            }}
           >
             <AttributionCircle type={circleType} fill={attrFill} r={radius} />
             <title>{reason.reason}</title>
@@ -193,6 +177,7 @@ export default function AttributionsGroup({
         {/* Average */}
         {artistStats && (
           <circle
+            className="average-marker"
             cx={rankScale(artistStats.counts.mean)}
             cy={0}
             r={radius / 1.5}
@@ -202,10 +187,6 @@ export default function AttributionsGroup({
             fillOpacity={0.1}
             strokeOpacity={0.7}
             vectorEffect="non-scaling-stroke"
-            style={{
-              opacity: opacityLogic1,
-              pointerEvents: "none",
-            }}
           />
         )}
 
@@ -219,9 +200,6 @@ export default function AttributionsGroup({
           transform={`translate(${rankScale(-0.2)}, 0) rotate(${-rotation}) translate(0, ${verticalCenterOffset(rotation)})`}
           dominantBaseline="middle"
           fill="var(--color-text)"
-          style={{
-            opacity: opacityLogic2,
-          }}
         >
           {attr.author +
             (attr.r_qualifier ? " " + attr.r_qualifier : "") +
