@@ -1,17 +1,18 @@
 main.artist-layout {
   display: grid;
-  grid-template-columns: 0.8fr 3fr 1.4fr;
+  grid-template-columns: 1fr 3fr 1.4fr;
   grid-template-rows: 1fr;
   gap: var(--space-md);
-  height: calc(100vh - var(--nav-height) - var(--space-lg) - var(--space-lg));
+  height: calc(100vh - var(--nav-height));
   width: 100%;
-  margin-bottom: var(--space-sm);
 }
 
 main.artist-layout .artist-vis {
   display: block;
   width: 100%;
   height: 100%;
+  overflow: visible;
+  z-index: 0;
 }
 
 .artist-left,
@@ -20,6 +21,8 @@ main.artist-layout .artist-vis {
   height: 100%;
   min-width: 0;
   min-height: 0;
+  padding: var(--space-lg) var(--space-lg) 0 var(--space-lg);
+  z-index: 1;
 }
 
 .artist-vis-container {
@@ -82,6 +85,7 @@ main.artist-layout .artist-vis {
   padding-left: calc((var(--space-lg) + var(--space-sm)));
   overflow-x: hidden;
   overflow-y: scroll;
+  background-color: var(--color-bg);
 }
 
 .work-list-stats {
@@ -251,6 +255,11 @@ main.artist-layout .artist-vis {
   color: var(--color-text-muted);
 }
 
+.artist-left {
+  background: linear-gradient(to left, var(--color-bg), transparent);
+  backdrop-filter: blur(20px);
+}
+
 .artist-left .artist-header p {
   font-size: var(--text-sm);
   font-weight: 400;
@@ -276,25 +285,3 @@ main.artist-layout .artist-vis {
 .artist-left .artist-header p.artist-life.life-unknown {
   font-size: var(--text-sm);
 }
-
-/* .artist-vis-container {
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    min-height: 0;
-    mask-image: linear-gradient(
-        to right,
-        transparent 0%,
-        black 5%,
-        black 95%,
-        transparent 100%
-    ),
-    linear-gradient(
-        to bottom,
-        transparent 0%,
-        var(--color-bg) 5%,
-        var(--color-bg) 95%,
-        transparent 100%
-    );
-    mask-composite: intersect;
-} */

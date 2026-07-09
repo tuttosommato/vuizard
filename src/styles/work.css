@@ -1,8 +1,8 @@
 /* =============================================================
    Work page layout
    ============================================================= */
-
-.work-layout {
+main.work-layout {
+  padding: var(--space-lg) var(--space-lg) 0 var(--space-lg);
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
