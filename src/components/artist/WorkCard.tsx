@@ -41,7 +41,7 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
                 </p>
             </div>
             <div className="work-card-attributions">
-                <p>{isExpanded ? "Collapse" : "Expand"} attributions</p>
+                <p>{isExpanded ? "Collapse" : "Expand"} {Object.keys(workItem.attributions?.attributions || {}).length} attribution{Object.keys(workItem.attributions?.attributions || {}).length !== 1 ? "s" : ""}</p>
                 <ExpandArrow isExpanded={isExpanded} />
             </div>
             </div>
@@ -49,6 +49,8 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
         {isExpanded && (
             <div className="work-card-attributions-expanded">
             {workItem.attributions ? (
+                <>
+                <p className="work-card-attributions-header"><span>Artists</span><span>Type</span></p>
                 <ul>
                 {Object.values(workItem.attributions.attributions).map((attr) => {
                     return (
@@ -74,6 +76,7 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
                     );
                 })}
                 </ul>
+                </>
             ) : null}
             </div>
         )}
