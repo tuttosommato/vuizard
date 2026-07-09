@@ -8,6 +8,7 @@ import AttributionsSection from "@/components/work/attributions/attributionsTabl
 import DebateVis from "@/components/work/attributions/debateVis/DebateVis";
 import NotFoundPage from "@/pages/NotFoundPage";
 import "@/styles/work.css";
+import { CrossSelectionProvider } from "@/stores/CrossSelectionContext";
 
 type FetchOrigin = "work" | "attributions";
 
@@ -117,6 +118,7 @@ function WorkPage() {
       />
 
       <main className="work-layout">
+        <CrossSelectionProvider>
         <section className="work-left">
           <WorkHeader currentWork={currentWork} />
           <AttributionsSection
@@ -130,6 +132,7 @@ function WorkPage() {
         <section className="work-right">
           <DebateVis currentAttributions={currentAttributions} />
         </section>
+        </CrossSelectionProvider>
       </main>
     </>
   );

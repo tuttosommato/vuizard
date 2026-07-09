@@ -8,6 +8,7 @@ import { rankScale, radius, center } from "./constants";
 import { colorScale } from "@/utils/constants.ts";
 import { createPortal } from "react-dom";
 import { useState, useRef, useEffect } from "react";
+import { useCrossSelection } from "@/stores/CrossSelectionContext";
 
 type GroupProps = {
   attr: Attribution;
@@ -76,6 +77,7 @@ export default function AttributionsGroup({
   const [coordsList, setCoordsList] = useState<
     ({ x: number; y: number } | null)[]
   >([]);
+  
   const isHighlighted = highlightedId === attr.operational_id;
 
   useEffect(() => {
@@ -91,17 +93,24 @@ export default function AttributionsGroup({
     setCoordsList(next);
   }, [isHighlighted, attr.reasons, tooltipPosition]);
 
-  const opacityLogic1 = !highlightedId
+  
+  const { selectedIds, toggle } = useCrossSelection();
+
+  const opacityLogic1 = !selectedIds.has(attr.operational_id) ? !highlightedId
     ? 1
     : highlightedId && highlightedId === attr.operational_id
       ? 1
-      : 0.4;
-  const opacityLogic2 = !highlightedId
+      : 0.4
+        : 1;
+  const opacityLogic2 = !selectedIds.has(attr.operational_id) ? !highlightedId
     ? 1
     : (highlightedId && highlightedId === attr.operational_id) ||
         (highlightedId && highlightMembers?.has(attr.operational_id))
       ? 1
-      : 0.7;
+      : 0.4
+        : 1;
+
+
 
   return (
     <>
@@ -123,6 +132,7 @@ export default function AttributionsGroup({
         className="attribution-group"
         transform={`${center} rotate(${rotation})`}
         fill={attrFill}
+        onClick={() => toggle(attr.operational_id)}
         onMouseEnter={() => setHighlightedId(attr.operational_id)}
         onMouseLeave={() => setHighlightedId(null)}
       >

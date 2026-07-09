@@ -6,9 +6,10 @@ import { colorScale } from "@/utils/constants.ts";
 import type { Work } from "@/types/works";
 import useMeasuredSize from "@/hooks/useMeasuredSize";
 import TimeSpan from "./TimeSpan";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useMemo } from "react";
 import ArrowLink from "@/components/ArrowLink";
 import QuestionMarkTooltip from "@/components/QuestionMarkTooltip";
+import { useCrossSelection } from "@/stores/CrossSelectionContext";
 
 const barHeight = labelsFontSize / 1.25;
 
@@ -24,19 +25,8 @@ export default function ArtistsLifeTable({
   discardedDating: Work["dating"];
 }) {
   const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  
-  const toggle = (id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
+
+  const {selectedIds, toggle} = useCrossSelection();
 
   const domain = useMemo(() => {
     const values = currentAttributions.attributions.flatMap((attr) => {

@@ -1,5 +1,5 @@
 import { scaleLinear } from "d3";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import type { AttributionsBundle } from "@/types/attributions";
 import type { Author } from "@/types/authors";
 import uncertaintyLine from "@/utils/uncertaintyLine";
@@ -9,6 +9,7 @@ import { colorScale } from "@/utils/constants.ts";
 import useMeasuredSize from "@/hooks/useMeasuredSize";
 import ArrowLink from "@/components/ArrowLink";
 import ExpandArrow from "@/components/ExpandArrow";
+import { useCrossSelection } from "@/stores/CrossSelectionContext";
 
 export default function ArtistsMetaTable({
   artists,
@@ -19,7 +20,7 @@ export default function ArtistsMetaTable({
   workTitle: string;
   currentAttributions: AttributionsBundle;
 }) {
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
   // We measure the cellWidth of the "Reason reliability" header cell to adapt the visualization of reasons accordingly
   const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
 
@@ -27,17 +28,7 @@ export default function ArtistsMetaTable({
 
   const rankScale = scaleLinear().domain([0, 11]).range([width, radius]);
 
-  const toggle = (id: string) => {
-    setExpandedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
+  const {selectedIds, toggle} = useCrossSelection();
 
   return (
     <table
@@ -62,7 +53,7 @@ export default function ArtistsMetaTable({
         {currentAttributions.attributions.map((attr) => {
           const opId = attr.operational_id;
           //const locId = attr.local_id
-          const isExpanded = expandedIds.has(opId);
+          const isExpanded = selectedIds.has(opId);
           const r = attr.r_qualifier;
           const u = attr.u_qualifier;
           const currentArtist = artists[attr.local_id];
