@@ -157,7 +157,7 @@ export default function ArtistVis({
 
           {dots.map((dot) => (
             <circle
-              key={dot.operational_id}
+              key={dot.work_id + "-" + dot.operational_id}
               cx={dot.x}
               cy={dot.y}
               r={VIS_DOT_RADIUS}

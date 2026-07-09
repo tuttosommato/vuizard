@@ -121,6 +121,10 @@ export default function ArtistPage() {
     );
   }
 
+  const discardedWorksCount = Object.values(state.artist.stats).reduce((acc, s) => acc + s.counts.discarded, 0);
+  const acceptedWorksCount = Object.values(state.artist.stats).reduce((acc, s) => acc + s.counts.accepted, 0);
+
+
   return (
     <>
       <main className="artist-layout">
@@ -161,10 +165,15 @@ export default function ArtistPage() {
         />
         <div className="works-list">
           {
-            <h3 className="work-list-stats">
+            <div className="works-list-header">
+            <h3 className="work-list-stats-title">
               {state.worksList.length} works with attributions to{" "}
-              {state.artist.names[0]}
+              {state.artist.names[0]}.
             </h3>
+            <p className="work-list-stats">
+              Includes <span className="work-list-n-accepted">{acceptedWorksCount} accepted</span> and <span className="work-list-n-discarded">{discardedWorksCount} discarded</span> attributions.
+            </p>
+            </div>
           }
           {state.worksList.map((workItem) => (
             <WorkCard

@@ -88,11 +88,50 @@ main.artist-layout .artist-vis {
   background-color: var(--color-bg);
 }
 
-.work-list-stats {
+.works-list-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-bottom: var(--space-sm);
+}
+
+.work-list-stats-title {
   font-size: var(--text-lg);
   font-weight: 700;
   color: var(--color-text);
 }
+
+/* .work-list-stats-title,
+.work-list-stats {
+  display: inline;
+  margin: 0;
+}
+
+.work-list-stats-title {
+  margin-right: 0.4em;
+} */
+
+
+.work-list-n-accepted, .work-list-n-discarded  {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.025em 0.25em;
+  line-height: 1.4;
+  font-weight: 600;
+  border-radius: var(--radius-xs);
+}
+
+.work-list-n-accepted {
+  background-color: var(--color-accepted);
+  color: var(--color-bg);
+}
+
+.work-list-n-discarded {
+  background-color: var(--color-discarded);
+  color: var(--color-bg);
+}
+
 
 .work-card-container {
   display: flex;
@@ -258,8 +297,8 @@ main.artist-layout .artist-vis {
 
 
 .artist-left {
-  background: linear-gradient(to left, var(--color-bg), transparent);
-  backdrop-filter: blur(20px);
+background-color: color-mix(in srgb, var(--color-bg) 80%, transparent);
+  backdrop-filter: blur(10px);
 }
 
 .artist-left .artist-header p {
@@ -277,7 +316,7 @@ main.artist-layout .artist-vis {
 .artist-left .artist-header p.artist-life {
   font-weight: 400;
   color: var(--color-text);
-  margin-bottom: var(--space-sm);
+  margin: var(--space-xs) 0;
 }
 
 .artist-left .artist-header p.artist-life.life-known {
@@ -287,3 +326,4 @@ main.artist-layout .artist-vis {
 .artist-left .artist-header p.artist-life.life-unknown {
   font-size: var(--text-sm);
 }
+
