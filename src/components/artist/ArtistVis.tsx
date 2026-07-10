@@ -111,6 +111,9 @@ export default function ArtistVis({
       return attributions
         .filter((attr) => attr.local_id === artistId)
         .map((attr) => {
+          const isDocumented = attr.reasons.some(
+            (reason) => reason.rank === 10,
+          );
           const relation = attr.r_qualifier;
           const radius = TIER_RADII[relation] ?? 0;
           return {
@@ -127,9 +130,32 @@ export default function ArtistVis({
               : colorScale(attr.type),
             size: nAttributions,
             type: attr.type,
+            isDocumented,
           };
         });
     });
+
+    function forceHalfPlane(
+      filter: (d: (typeof nodes)[0]) => boolean,
+      y0: number,
+      side: "above" | "below",
+    ) {
+      let subset: (typeof nodes)[0][] = [];
+
+      function force() {
+        for (const d of subset) {
+          const r = dotRadius(d);
+          if (side === "above" && d.y > y0 - r) d.y = y0 - r;
+          if (side === "below" && d.y < y0 + r) d.y = y0 + r;
+        }
+      }
+
+      force.initialize = (allNodes: (typeof nodes)[0][]) => {
+        subset = allNodes.filter(filter);
+      };
+
+      return force;
+    }
 
     const centerNodes = nodes.filter((node) => node.tierRadius === 0);
     const radNodes = nodes.filter((node) => node.tierRadius !== 0);
@@ -139,12 +165,21 @@ export default function ArtistVis({
       .force("x", forceX(VIS_CX).strength(1))
       .force("y", forceY(VIS_CY).strength(1))
       .force(
+        "half-documented",
+        forceHalfPlane((d) => d.isDocumented, VIS_CY - 10, "above"),
+      )
+      .force(
+        "half-nondocumented",
+        forceHalfPlane((d) => !d.isDocumented, VIS_CY + 10, "below"),
+      )
+      .force(
         "collide",
         forceCollide<(typeof nodes)[0]>((d) => dotRadius(d) + 2)
           .strength(1)
           .iterations(10),
       )
-      .tick(200);
+      .tick(400);
+
     // apply force simulation to radial nodes
     forceSimulation(radNodes)
       .force(

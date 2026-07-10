@@ -53,9 +53,9 @@ export default function TierArcs() {
         <line
           key={sign}
           x1="0"
-          y1={sign * TIER_I}
+          y1={sign * TIER_IV}
           x2="0"
-          y2={sign * TIER_IV}
+          y2={sign * TIER_I}
           stroke="var(--color-text)"
           strokeDasharray="8,8"
           strokeLinecap="square"
@@ -114,6 +114,17 @@ export default function TierArcs() {
           </text>
         </g>
       ))}
+
+      {/* Dashed line dividing the space in two */}
+      <line
+        x1={VIS_NUCLEUS_RADIUS}
+        y1={0}
+        x2={-TIER_IV}
+        y2={0}
+        stroke="var(--color-text)"
+        strokeDasharray="4,4"
+        strokeLinecap="square"
+      />
     </g>
   );
 }
