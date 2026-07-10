@@ -333,3 +333,54 @@ background-color: color-mix(in srgb, var(--color-bg) 80%, transparent);
   font-size: var(--text-sm);
 }
 
+/* ==============================================
+====================LEGEND=======================
+================================================= */
+
+.artist-legend {
+  margin-top: var(--space-lg);
+  font-size: var(--text-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.acceptance-legend-items, .size-legend-items, .uncertainty-legend-items, .uncertainty-items-cnt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.accepted-legend-item, .discarded-legend-item, .size-items-cnt, .uncertainty-legend-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.accepted-legend-item svg, .discarded-legend-item svg, .uncertainty-legend-item svg {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+
+.accepted-legend-item svg circle, .discarded-legend-item svg circle, .uncertainty-legend-item svg circle {
+  transform: translate(8px, 8px);
+}
+
+.size-legend-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.size-legend-item svg {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
+
+.size-legend-item svg circle {
+  transform: translate(10px, 10px);
+}
