@@ -3,17 +3,24 @@ import AttributionCircle from "../work/attributions/AttributionCircle";
 export default function ArtistLegend() {
   return (
     <div className="artist-legend">
-      
       <div className="acceptance-legend-items">
         <div className="accepted-legend-item">
           <svg>
-            <AttributionCircle type="artist" fill="var(--color-accepted)" r={8} />
+            <AttributionCircle
+              type="artist"
+              fill="var(--color-accepted)"
+              r={8}
+            />
           </svg>
           <span>Accepted attributions</span>
         </div>
         <div className="discarded-legend-item">
           <svg>
-            <AttributionCircle type="artist" fill="var(--color-discarded)" r={8} />
+            <AttributionCircle
+              type="artist"
+              fill="var(--color-discarded)"
+              r={8}
+            />
           </svg>
           <span>Discarded attributions</span>
         </div>
@@ -42,7 +49,11 @@ export default function ArtistLegend() {
           </div>
           <div className="size-legend-item">
             <svg>
-              <AttributionCircle type="artist" fill="var(--color-text)" r={10} />
+              <AttributionCircle
+                type="artist"
+                fill="var(--color-text)"
+                r={10}
+              />
             </svg>
             <span>7</span>
           </div>
@@ -54,25 +65,26 @@ export default function ArtistLegend() {
         <div className="uncertainty-items-cnt">
           <div className="uncertainty-legend-item">
             <svg>
-              <AttributionCircle type="artist" fill="url(#uncertain-legend-1)" r={8} />
+              <AttributionCircle
+                type="artist"
+                fill="url(#uncertain-legend-1)"
+                r={8}
+              />
             </svg>
             <span>Less uncertain</span>
           </div>
           <div className="uncertainty-legend-item">
             <svg>
-              <AttributionCircle type="artist" fill="url(#uncertain-legend-2)" r={8} />
+              <AttributionCircle
+                type="artist"
+                fill="url(#uncertain-legend-2)"
+                r={8}
+              />
             </svg>
             <span>More uncertain</span>
           </div>
         </div>
-
-
-        
-
       </div>
-
-
-
     </div>
   );
 }

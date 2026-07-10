@@ -111,8 +111,8 @@ main.artist-layout .artist-vis {
   margin-right: 0.4em;
 } */
 
-
-.work-list-n-accepted, .work-list-n-discarded  {
+.work-list-n-accepted,
+.work-list-n-discarded {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -131,7 +131,6 @@ main.artist-layout .artist-vis {
   background-color: var(--color-discarded);
   color: var(--color-bg);
 }
-
 
 .work-card-container {
   display: flex;
@@ -278,7 +277,8 @@ main.artist-layout .artist-vis {
   font-weight: 600;
 }
 
-.work-card-attributions-expanded ul li, .work-card-attributions-header {
+.work-card-attributions-expanded ul li,
+.work-card-attributions-header {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
@@ -289,9 +289,8 @@ main.artist-layout .artist-vis {
 .work-card-attributions-expanded ul li .work-card-attributions-type-span {
   text-transform: uppercase;
   font-size: var(--text-2xs);
-    color: var(--color-text-muted);
+  color: var(--color-text-muted);
 }
-
 
 .work-card-attributions-type-span.type-span-highlighted.type-span-accepted {
   color: var(--color-accepted);
@@ -301,9 +300,8 @@ main.artist-layout .artist-vis {
   color: var(--color-discarded);
 }
 
-
 .artist-left {
-background-color: color-mix(in srgb, var(--color-bg) 80%, transparent);
+  background-color: color-mix(in srgb, var(--color-bg) 80%, transparent);
   backdrop-filter: blur(10px);
 }
 
@@ -345,26 +343,36 @@ background-color: color-mix(in srgb, var(--color-bg) 80%, transparent);
   gap: var(--space-lg);
 }
 
-.acceptance-legend-items, .size-legend-items, .uncertainty-legend-items, .uncertainty-items-cnt {
+.acceptance-legend-items,
+.size-legend-items,
+.uncertainty-legend-items,
+.uncertainty-items-cnt {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
 }
 
-.accepted-legend-item, .discarded-legend-item, .size-items-cnt, .uncertainty-legend-item {
+.accepted-legend-item,
+.discarded-legend-item,
+.size-items-cnt,
+.uncertainty-legend-item {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: var(--space-sm);
 }
 
-.accepted-legend-item svg, .discarded-legend-item svg, .uncertainty-legend-item svg {
+.accepted-legend-item svg,
+.discarded-legend-item svg,
+.uncertainty-legend-item svg {
   display: inline-block;
   width: 16px;
   height: 16px;
 }
 
-.accepted-legend-item svg circle, .discarded-legend-item svg circle, .uncertainty-legend-item svg circle {
+.accepted-legend-item svg circle,
+.discarded-legend-item svg circle,
+.uncertainty-legend-item svg circle {
   transform: translate(8px, 8px);
 }
 

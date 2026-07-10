@@ -53,14 +53,6 @@ function ZoomControls({
   );
 }
 
-
-
-
-
-
-
-
-
 export default function ArtistVis({
   artistId,
   works,
@@ -111,7 +103,11 @@ export default function ArtistVis({
             x: VIS_CX - radius,
             y: VIS_CY,
             tierRadius: radius,
-            fill: attr.u_qualifier ? attr.u_qualifier === "?" ? `url(#uncertain-${attr.type}-1)` : `url(#uncertain-${attr.type}-2)` : colorScale(attr.type),
+            fill: attr.u_qualifier
+              ? attr.u_qualifier === "?"
+                ? `url(#uncertain-${attr.type}-1)`
+                : `url(#uncertain-${attr.type}-2)`
+              : colorScale(attr.type),
             size: nAttributions,
             type: attr.type,
           };
@@ -126,8 +122,8 @@ export default function ArtistVis({
       .force("x", forceX(VIS_CX).strength(1))
       .force("y", forceY(VIS_CY).strength(1))
       .force(
-    "collide",
-    forceCollide<(typeof nodes)[0]>((d) => dotRadius(d) + 2)
+        "collide",
+        forceCollide<(typeof nodes)[0]>((d) => dotRadius(d) + 2)
           .strength(1)
           .iterations(10),
       )
@@ -144,8 +140,8 @@ export default function ArtistVis({
       )
       .force("center", forceY(VIS_CY).strength(0.02))
       .force(
-    "collide",
-    forceCollide<(typeof nodes)[0]>((d) => dotRadius(d) + 2)
+        "collide",
+        forceCollide<(typeof nodes)[0]>((d) => dotRadius(d) + 2)
           .strength(1)
           .iterations(10),
       )
