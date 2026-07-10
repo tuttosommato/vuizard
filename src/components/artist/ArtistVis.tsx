@@ -15,7 +15,6 @@ import {
   VIS_VIEWBOX_HEIGHT,
   VIS_CX,
   VIS_CY,
-  VIS_DOT_RADIUS,
   VIS_MIN_ZOOM,
   VIS_MAX_ZOOM,
 } from "@/utils/constants.ts";
@@ -26,6 +25,8 @@ import {
   forceX,
   forceY,
 } from "d3-force";
+import UncertaintyPatternDefs from "./UncertaintyPatternDefs";
+import RadialHalftonePatternDefs from "./RadialHalftonePatternDefs";
 
 function ZoomControls({
   svgRef,
@@ -52,6 +53,14 @@ function ZoomControls({
   );
 }
 
+
+
+
+
+
+
+
+
 export default function ArtistVis({
   artistId,
   works,
@@ -62,6 +71,7 @@ export default function ArtistVis({
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [transform, setTransform] = useState("translate(0, 0) scale(1)");
+  const dotRadius = (d: { size: number }) => Math.sqrt(d.size) * 4.5;
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -88,6 +98,7 @@ export default function ArtistVis({
   const dots = useMemo(() => {
     const nodes = works.flatMap((work) => {
       const attributions = work.attributions?.attributions ?? [];
+      const nAttributions = attributions.length;
       return attributions
         .filter((attr) => attr.local_id === artistId)
         .map((attr) => {
@@ -100,7 +111,9 @@ export default function ArtistVis({
             x: VIS_CX - radius,
             y: VIS_CY,
             tierRadius: radius,
-            fill: colorScale(attr.type),
+            fill: attr.u_qualifier ? attr.u_qualifier === "?" ? `url(#uncertain-${attr.type}-1)` : `url(#uncertain-${attr.type}-2)` : colorScale(attr.type),
+            size: nAttributions,
+            type: attr.type,
           };
         });
     });
@@ -113,10 +126,10 @@ export default function ArtistVis({
       .force("x", forceX(VIS_CX).strength(1))
       .force("y", forceY(VIS_CY).strength(1))
       .force(
-        "collide",
-        forceCollide(VIS_DOT_RADIUS + 2)
+    "collide",
+    forceCollide<(typeof nodes)[0]>((d) => dotRadius(d) + 2)
           .strength(1)
-          .iterations(5),
+          .iterations(10),
       )
       .tick(200);
     // apply force simulation to radial nodes
@@ -131,10 +144,10 @@ export default function ArtistVis({
       )
       .force("center", forceY(VIS_CY).strength(0.02))
       .force(
-        "collide",
-        forceCollide(VIS_DOT_RADIUS + 2)
+    "collide",
+    forceCollide<(typeof nodes)[0]>((d) => dotRadius(d) + 2)
           .strength(1)
-          .iterations(5),
+          .iterations(10),
       )
       .tick(200);
 
@@ -150,6 +163,8 @@ export default function ArtistVis({
       >
         {/* Use arrow marker definition */}
         <ArrowMarkerDef />
+        <UncertaintyPatternDefs />
+        <RadialHalftonePatternDefs />
 
         <g transform={transform}>
           <TierArcs />
@@ -160,9 +175,11 @@ export default function ArtistVis({
               key={dot.work_id + "-" + dot.operational_id}
               cx={dot.x}
               cy={dot.y}
-              r={VIS_DOT_RADIUS}
+              r={dotRadius(dot)}
               fill={dot.fill}
               data-work-id={dot.work_id}
+              /* stroke={dot.type === "accepted" ? "var(--color-accepted)" : "var(--color-discarded)"}
+              strokeWidth={0.25} */
             />
           ))}
         </g>
