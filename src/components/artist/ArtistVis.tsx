@@ -1,7 +1,7 @@
 import TierArcs from "./TierArcs";
 import ArtistVisLegend from "./ArtistVisLegend";
 import ArrowMarkerDef from "@/components/ArrowMarkerDef";
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { zoom } from "d3-zoom";
 import type { ZoomBehavior } from "d3-zoom";
 import { select } from "d3-selection";
@@ -25,8 +25,8 @@ import {
   forceX,
   forceY,
 } from "d3-force";
-import UncertaintyPatternDefs from "./UncertaintyPatternDefs";
-import RadialHalftonePatternDefs from "./RadialHalftonePatternDefs";
+import UncertaintyPatternDefs from "./defs/UncertaintyPatternDefs";
+import RadialHalftonePatternDefs from "./defs/RadialHalftonePatternDefs";
 
 function ZoomControls({
   svgRef,
@@ -63,7 +63,24 @@ export default function ArtistVis({
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [transform, setTransform] = useState("translate(0, 0) scale(1)");
-  const dotRadius = (d: { size: number }) => Math.sqrt(d.size) * 4.5;
+
+  const dotsLength = works.flatMap((work) => {
+    const attributions = work.attributions?.attributions ?? [];
+    return attributions.filter((attr) => attr.local_id === artistId);
+  }).length;
+
+  const multiplier =
+    dotsLength >= 400
+      ? 2
+      : dotsLength >= 300
+        ? 3
+        : dotsLength >= 200
+          ? 3.25
+          : 4;
+  const dotRadius = useCallback(
+    (d: { size: number }) => Math.sqrt(d.size) * multiplier,
+    [multiplier],
+  );
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -138,17 +155,25 @@ export default function ArtistVis({
           VIS_CY,
         ).strength(2),
       )
-      .force("center", forceY(VIS_CY).strength(0.02))
+      .force("center", forceY(VIS_CY).strength(-0.005))
+      .force(
+        "half-documented",
+        forceHalfPlane((d) => d.isDocumented, VIS_CY - 10, "above"),
+      )
+      .force(
+        "half-nondocumented",
+        forceHalfPlane((d) => !d.isDocumented, VIS_CY + 10, "below"),
+      )
       .force(
         "collide",
         forceCollide<(typeof nodes)[0]>((d) => dotRadius(d) + 2)
           .strength(1)
           .iterations(10),
       )
-      .tick(200);
+      .tick(400);
 
     return nodes;
-  }, [works, artistId]);
+  }, [works, artistId, dotRadius]);
 
   return (
     <div className="artist-vis-container">
