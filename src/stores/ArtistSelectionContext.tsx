@@ -9,6 +9,7 @@ import {
 type ArtistSelectionContextValue = {
   selectedIds: Set<string>;
   toggle: (id: string) => void;
+  triggerNewSelection: string | null;
   clear: () => void;
 };
 
@@ -19,14 +20,19 @@ const ArtistSelectionContext =
 
 export function ArtistSelectionProvider({ children }: { children: ReactNode }) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [triggerNewSelection, setTriggerNewSelection] = useState<string | null>(
+    null,
+  );
 
   const toggle = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
+        setTriggerNewSelection(null);
       } else {
         next.add(id);
+        setTriggerNewSelection(id);
       }
       return next;
     });
@@ -45,7 +51,9 @@ export function ArtistSelectionProvider({ children }: { children: ReactNode }) {
   });
 
   return (
-    <ArtistSelectionContext.Provider value={{ selectedIds, toggle, clear }}>
+    <ArtistSelectionContext.Provider
+      value={{ selectedIds, toggle, triggerNewSelection, clear }}
+    >
       {children}
     </ArtistSelectionContext.Provider>
   );
