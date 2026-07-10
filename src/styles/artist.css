@@ -392,3 +392,38 @@ main.artist-layout .artist-vis {
 .size-legend-item svg circle {
   transform: translate(10px, 10px);
 }
+
+
+/* Thumbnail */
+
+.artist-vis:has(.attr-circle:hover) .attr-circle:not(:hover) {
+  opacity: 0.4;
+} 
+
+.attr-circle {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.attr-circle:hover {
+  stroke: var(--color-text);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.work-thumbnail {
+  position: fixed;
+  transform: translate(12px, -50%);
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+
+.work-thumbnail img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 300px;
+  max-height: 300px;
+}

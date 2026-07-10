@@ -7,7 +7,6 @@ import type { ZoomBehavior } from "d3-zoom";
 import { select } from "d3-selection";
 import type { WorkItem } from "@/types/artists";
 import { easeCubicInOut } from "d3-ease";
-
 import {
   TIER_RADII,
   colorScale,
@@ -17,6 +16,7 @@ import {
   VIS_CY,
   VIS_MIN_ZOOM,
   VIS_MAX_ZOOM,
+  BASE_URL,
 } from "@/utils/constants.ts";
 import {
   forceSimulation,
@@ -27,6 +27,7 @@ import {
 } from "d3-force";
 import UncertaintyPatternDefs from "./defs/UncertaintyPatternDefs";
 import RadialHalftonePatternDefs from "./defs/RadialHalftonePatternDefs";
+import { createPortal } from "react-dom";
 
 function ZoomControls({
   svgRef,
@@ -53,6 +54,30 @@ function ZoomControls({
   );
 }
 
+function WorkThumbnail({
+  work,
+  coords,
+}: {
+  work: WorkItem;
+  coords: { x: number; y: number };
+}) {
+  const src = work.work?.photos[0]?.link;
+  if (!src) return null;
+
+  return createPortal(
+    <div
+      className="work-thumbnail"
+      style={{
+        left: coords.x,
+        top: coords.y
+      }}
+    >
+      <img src={BASE_URL + src} alt={work.work?.subject ?? "Untitled"} />
+    </div>,
+    document.body
+  );
+}
+
 export default function ArtistVis({
   artistId,
   works,
@@ -63,6 +88,10 @@ export default function ArtistVis({
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [transform, setTransform] = useState("translate(0, 0) scale(1)");
+  const [hoveredWork, setHoveredWork] = useState<{
+    work: WorkItem;
+    coords: { x: number; y: number };
+  } | null>(null);
 
   const dotsLength = works.flatMap((work) => {
     const attributions = work.attributions?.attributions ?? [];
@@ -212,6 +241,9 @@ export default function ArtistVis({
 
   return (
     <div className="artist-vis-container">
+      {hoveredWork && (
+        <WorkThumbnail work={hoveredWork.work} coords={hoveredWork.coords} />
+      )}
       <svg
         className="artist-vis"
         ref={svgRef}
@@ -228,12 +260,23 @@ export default function ArtistVis({
 
           {dots.map((dot) => (
             <circle
+            className="attr-circle"
               key={dot.work_id + "-" + dot.operational_id}
               cx={dot.x}
               cy={dot.y}
               r={dotRadius(dot)}
               fill={dot.fill}
               data-work-id={dot.work_id}
+              onMouseEnter={(e) => {
+                const work = works.find((w) => w.id === dot.work_id);
+                if (!work) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                setHoveredWork({
+                  work,
+                  coords: { x: rect.right, y: rect.top + rect.height / 2 },
+                });
+              }}
+              onMouseLeave={() => setHoveredWork(null)}
               /* stroke={dot.type === "accepted" ? "var(--color-accepted)" : "var(--color-discarded)"}
               strokeWidth={0.25} */
             />
