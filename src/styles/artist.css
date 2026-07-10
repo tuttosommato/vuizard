@@ -393,22 +393,30 @@ main.artist-layout .artist-vis {
   transform: translate(10px, 10px);
 }
 
-
 /* Thumbnail */
 
-.artist-vis:has(.attr-circle:hover) .attr-circle:not(:hover) {
-  opacity: 0.4;
-} 
+.attr-circle:hover,
+.attr-circle.selected-circle {
+  stroke: var(--color-text);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.artist-vis {
+  --dim-opacity: 0.4;
+}
 
 .attr-circle {
   opacity: 1;
   cursor: pointer;
+  transition: opacity 0.15s ease;
 }
 
-.attr-circle:hover {
-  stroke: var(--color-text);
-  stroke-width: 1px;
-  vector-effect: non-scaling-stroke;
+.artist-vis:has(.attr-circle.selected-circle)
+  .attr-circle:not(.selected-circle):not(:hover),
+.artist-vis:has(.attr-circle:hover)
+  .attr-circle:not(.selected-circle):not(:hover) {
+  opacity: var(--dim-opacity);
 }
 
 .work-thumbnail {

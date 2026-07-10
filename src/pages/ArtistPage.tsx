@@ -8,6 +8,7 @@ import ArtistVis from "@/components/artist/ArtistVis";
 import "@/styles/artist.css";
 import ArtistLegend from "../components/artist/ArtistLegend";
 import WorkCard from "../components/artist/WorkCard";
+import { ArtistSelectionProvider } from "@/stores/ArtistSelectionContext";
 
 type LoadState =
   | { status: "loading"; phase: "artist" }
@@ -121,69 +122,84 @@ export default function ArtistPage() {
     );
   }
 
-  const discardedWorksCount = Object.values(state.artist.stats).reduce((acc, s) => acc + s.counts.discarded, 0);
-  const acceptedWorksCount = Object.values(state.artist.stats).reduce((acc, s) => acc + s.counts.accepted, 0);
-
+  const discardedWorksCount = Object.values(state.artist.stats).reduce(
+    (acc, s) => acc + s.counts.discarded,
+    0,
+  );
+  const acceptedWorksCount = Object.values(state.artist.stats).reduce(
+    (acc, s) => acc + s.counts.accepted,
+    0,
+  );
 
   return (
     <>
-      <main className="artist-layout">
-        <div className="artist-left">
-          <div className="artist-header">
-            <p>Navigate the works with attributions to</p>
-            <h1 className="artist-name">{state.artist.names[0]}</h1>
-            {state.artist.life ? (
-              <p className="artist-life life-known">
-                {state.artist.life.birth +
-                  (state.artist.life.birth_qualifier ? "ca." : "")}{" "}
-                -{" "}
-                {state.artist.life.death +
-                  (state.artist.life.death_qualifier ? "ca." : "")}
-              </p>
-            ) : (
-              <p className="artist-life life-unknown">Life dates unknown</p>
-            )}
+      <ArtistSelectionProvider>
+        <main className="artist-layout">
+          <div className="artist-left">
+            <div className="artist-header">
+              <p>Navigate the works with attributions to</p>
+              <h1 className="artist-name">{state.artist.names[0]}</h1>
+              {state.artist.life ? (
+                <p className="artist-life life-known">
+                  {state.artist.life.birth +
+                    (state.artist.life.birth_qualifier ? "ca." : "")}{" "}
+                  -{" "}
+                  {state.artist.life.death +
+                    (state.artist.life.death_qualifier ? "ca." : "")}
+                </p>
+              ) : (
+                <p className="artist-life life-unknown">Life dates unknown</p>
+              )}
 
-            {state.artist.names.length > 1 && (
-              <p>
-                Also known as{" "}
-                {state.artist.names.slice(1).map((name, i) => (
-                  <span key={name}>
-                    {i > 0 && ", "}
-                    <span className="alternative-name">{name}</span>
-                  </span>
-                ))}
-              </p>
-            )}
-          </div>
-          <ArtistLegend />
-        </div>
-        <ArtistVis
-          key={artistId}
-          artistId={artistId ?? ""}
-          works={state.worksList}
-        />
-        <div className="works-list">
-          {
-            <div className="works-list-header">
-            <h3 className="work-list-stats-title">
-              {state.worksList.length} works with attributions to{" "}
-              {state.artist.names[0]}.
-            </h3>
-            <p className="work-list-stats">
-              Includes <span className="work-list-n-accepted">{acceptedWorksCount} accepted</span> and <span className="work-list-n-discarded">{discardedWorksCount} discarded</span> attributions.
-            </p>
+              {state.artist.names.length > 1 && (
+                <p>
+                  Also known as{" "}
+                  {state.artist.names.slice(1).map((name, i) => (
+                    <span key={name}>
+                      {i > 0 && ", "}
+                      <span className="alternative-name">{name}</span>
+                    </span>
+                  ))}
+                </p>
+              )}
             </div>
-          }
-          {state.worksList.map((workItem) => (
-            <WorkCard
-              key={workItem.id}
-              workItem={workItem}
-              artistId={artistId ?? ""}
-            />
-          ))}
-        </div>
-      </main>
+            <ArtistLegend />
+          </div>
+          <ArtistVis
+            key={artistId}
+            artistId={artistId ?? ""}
+            works={state.worksList}
+          />
+          <div className="works-list">
+            {
+              <div className="works-list-header">
+                <h3 className="work-list-stats-title">
+                  {state.worksList.length} works with attributions to{" "}
+                  {state.artist.names[0]}.
+                </h3>
+                <p className="work-list-stats">
+                  Includes{" "}
+                  <span className="work-list-n-accepted">
+                    {acceptedWorksCount} accepted
+                  </span>{" "}
+                  and{" "}
+                  <span className="work-list-n-discarded">
+                    {discardedWorksCount} discarded
+                  </span>{" "}
+                  attributions.
+                </p>
+              </div>
+            }
+            {state.worksList.map((workItem) => (
+              <WorkCard
+                key={workItem.id}
+                workItem={workItem}
+                artistId={artistId ?? ""}
+              />
+            ))}
+          </div>
+        </main>
+      </ArtistSelectionProvider>
     </>
   );
 }

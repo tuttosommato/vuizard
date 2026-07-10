@@ -28,6 +28,7 @@ import {
 import UncertaintyPatternDefs from "./defs/UncertaintyPatternDefs";
 import RadialHalftonePatternDefs from "./defs/RadialHalftonePatternDefs";
 import { createPortal } from "react-dom";
+import { useArtistSelection } from "@/stores/ArtistSelectionContext";
 
 function ZoomControls({
   svgRef,
@@ -92,6 +93,7 @@ export default function ArtistVis({
     work: WorkItem;
     coords: { x: number; y: number };
   } | null>(null);
+  const {selectedIds, toggle} = useArtistSelection();
 
   const dotsLength = works.flatMap((work) => {
     const attributions = work.attributions?.attributions ?? [];
@@ -260,7 +262,7 @@ export default function ArtistVis({
 
           {dots.map((dot) => (
             <circle
-            className="attr-circle"
+              className={`attr-circle ${selectedIds.has(dot.work_id) ? "selected-circle" : ""}`}
               key={dot.work_id + "-" + dot.operational_id}
               cx={dot.x}
               cy={dot.y}
@@ -277,6 +279,7 @@ export default function ArtistVis({
                 });
               }}
               onMouseLeave={() => setHoveredWork(null)}
+              onClick={() => toggle(dot.work_id)}
               /* stroke={dot.type === "accepted" ? "var(--color-accepted)" : "var(--color-discarded)"}
               strokeWidth={0.25} */
             />
