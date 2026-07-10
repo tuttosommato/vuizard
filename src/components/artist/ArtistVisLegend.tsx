@@ -8,7 +8,7 @@ import {
 } from "@/utils/constants.ts";
 
 const legendOffset = 4;
-const bracketX = legendOffset * 4;
+/* const bracketX = legendOffset * 4; */
 const lineX = legendOffset * 6;
 const labelX = legendOffset * 9;
 
@@ -55,7 +55,7 @@ export default function ArtistVisLegend() {
         Less direct relationship with the artist
       </text>
       {/* Bracketed line */}
-      <path
+{/*       <path
         d={`M ${bracketX} ${TIER_II} L ${lineX} ${TIER_II} L ${lineX} ${TIER_IV} L ${bracketX} ${TIER_IV} M ${bracketX} ${TIER_III} L ${lineX} ${TIER_III}`}
         stroke="var(--color-text-muted)"
         strokeLinecap="square"
@@ -68,7 +68,7 @@ export default function ArtistVisLegend() {
         dominantBaseline="middle"
       >
         Attributions to anonyms
-      </text>
+      </text> */}
       {/* Space division */}
 
       <text

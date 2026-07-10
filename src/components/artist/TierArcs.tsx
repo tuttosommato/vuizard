@@ -9,21 +9,21 @@ import {
 } from "@/utils/constants.ts";
 
 const tiers = [
-  { id: "tier-1", r: TIER_I, label: "Artist and anonymous creators" },
+  { id: "tier-1", r: TIER_I, label: "The artist and collaborating anonyms" },
   {
     id: "tier-2",
     r: TIER_II,
-    label: "Creators working directly with the known artist",
+    label: "Anonyms who worked directly with the artist",
   },
   {
     id: "tier-3",
     r: TIER_III,
-    label: "Creators not working directly with the known artist",
+    label: "Anonyms who didn't work directly with the artist",
   },
   {
     id: "tier-4",
     r: TIER_IV,
-    label: "Creators influenced by the known artist",
+    label: "Anonyms influenced by the known artist",
   },
 ];
 
