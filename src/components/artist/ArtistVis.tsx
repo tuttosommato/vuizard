@@ -10,6 +10,7 @@ import { easeCubicInOut } from "d3-ease";
 import { useImperativeHandle } from "react";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
 import { zoomIdentity } from "d3-zoom";
+import uncertaintyBucket from "@/utils/uncertaintyBucket";
 import {
   TIER_RADII,
   colorScale,
@@ -159,6 +160,7 @@ function ArtistVis({
               : colorScale(attr.type),
             size: nAttributions,
             type: attr.type,
+            uncertaintyStatus: uncertaintyBucket(attr.u_qualifier),
             radius: Math.sqrt(nAttributions) * multiplier,
             isDocumented,
           };
@@ -240,7 +242,7 @@ function ArtistVis({
     return nodes;
   }, [works, artistId, multiplier]);
 
-  const { isFilteredOut } = useArtistFilter();
+  const { isWorkFilteredOut, isAttributionFilteredOut } = useArtistFilter();
 
   const workEdges = useMemo(() => {
     const groups = new Map<string, typeof dots>();
@@ -346,7 +348,9 @@ function ArtistVis({
 
           {dots.map((dot) => (
             <circle
-              className={`attr-circle ${isWorkActive(dot.work_id) ? "selected-circle" : ""} ${isFilteredOut(dot.size) ? "filtered-out" : ""}`}
+              className={`attr-circle
+                ${isWorkActive(dot.work_id) ? " selected-circle" : ""}
+                ${isWorkFilteredOut(dot.size) || isAttributionFilteredOut(dot.uncertaintyStatus) ? "filtered-out" : ""}`}
               key={dot.work_id + "-" + dot.operational_id}
               cx={dot.x}
               cy={dot.y}

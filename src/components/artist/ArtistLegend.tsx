@@ -2,7 +2,13 @@ import AttributionCircle from "../work/attributions/AttributionCircle";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
 
 export default function ArtistLegend({ multiplier }: { multiplier: number }) {
-  const { sizeRange, setSizeRange, sizeBounds } = useArtistFilter();
+  const {
+    sizeRange,
+    setSizeRange,
+    sizeBounds,
+    handleUncertaintyFilter,
+    uncertaintyRange,
+  } = useArtistFilter();
   const [min, max] = sizeBounds;
 
   const thumbSizePx = (value: number) => Math.sqrt(value) * 8;
@@ -116,7 +122,23 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
       <div className="uncertainty-legend-items">
         <span>Uncertainty</span>
         <div className="uncertainty-items-cnt">
-          <div className="uncertainty-legend-item">
+          <label className="uncertainty-legend-item">
+            <input
+              type="checkbox"
+              checked={!uncertaintyRange.has("certain")}
+              onChange={() => handleUncertaintyFilter("certain")}
+            />
+            <svg>
+              <AttributionCircle type="artist" fill="var(--color-text)" r={8} />
+            </svg>
+            <span>Certain</span>
+          </label>
+          <label className="uncertainty-legend-item">
+            <input
+              type="checkbox"
+              checked={!uncertaintyRange.has("probably")}
+              onChange={() => handleUncertaintyFilter("probably")}
+            />
             <svg>
               <AttributionCircle
                 type="artist"
@@ -125,8 +147,13 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
               />
             </svg>
             <span>Less uncertain</span>
-          </div>
-          <div className="uncertainty-legend-item">
+          </label>
+          <label className="uncertainty-legend-item">
+            <input
+              type="checkbox"
+              checked={!uncertaintyRange.has("uncertain")}
+              onChange={() => handleUncertaintyFilter("uncertain")}
+            />
             <svg>
               <AttributionCircle
                 type="artist"
@@ -135,7 +162,7 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
               />
             </svg>
             <span>More uncertain</span>
-          </div>
+          </label>
         </div>
       </div>
     </div>

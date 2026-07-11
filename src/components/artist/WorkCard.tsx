@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import ExpandArrow from "@/components/ExpandArrow";
 import { useArtistSelection } from "@/stores/ArtistSelectionContext";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
+import uncertaintyBucket from "@/utils/uncertaintyBucket";
 
 interface WorkCardProps {
   workItem: WorkItem;
@@ -20,17 +21,29 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
   const { selectedIds, toggle, setHoveredWorkId } = useArtistSelection();
   const workId = workItem.id;
   const isSelected = selectedIds.has(workId);
-  const { isFilteredOut } = useArtistFilter();
+  const { isWorkFilteredOut, isAttributionFilteredOut } = useArtistFilter();
   const attributionsLength = Object.keys(
     workItem.attributions?.attributions || {},
   ).length;
+
+  const relevantAttrs =
+    workItem.attributions?.attributions.filter(
+      (a) => a.local_id === artistId,
+    ) ?? [];
+
+  const isFilteredOut =
+    isWorkFilteredOut(attributionsLength) ||
+    relevantAttrs.length === 0 ||
+    relevantAttrs.every((attr) =>
+      isAttributionFilteredOut(uncertaintyBucket(attr.u_qualifier)),
+    );
 
   return (
     <div
       className={
         "work-card-container" +
         (isSelected ? " work-card-container-expanded" : "") +
-        (isFilteredOut(attributionsLength) ? " filtered-out" : "")
+        (isFilteredOut ? " filtered-out" : "")
       }
     >
       <div

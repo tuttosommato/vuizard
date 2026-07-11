@@ -343,6 +343,10 @@ main.artist-layout .artist-vis {
   gap: var(--space-lg);
 }
 
+.uncertainty-legend-item {
+  cursor: pointer;
+}
+
 .acceptance-legend-items,
 .size-legend-items,
 .uncertainty-legend-items,

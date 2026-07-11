@@ -4,7 +4,14 @@ type ArtistFilterContextValue = {
   sizeRange: [number, number];
   setSizeRange: (range: [number, number]) => void;
   sizeBounds: [number, number];
-  isFilteredOut: (size: number) => boolean;
+  isWorkFilteredOut: (size: number) => boolean;
+  uncertaintyRange: Set<"certain" | "probably" | "uncertain" | null>;
+  handleUncertaintyFilter: (
+    status: "certain" | "probably" | "uncertain",
+  ) => void;
+  isAttributionFilteredOut: (
+    status: "certain" | "probably" | "uncertain",
+  ) => boolean;
 };
 
 const ArtistFilterContext = createContext<ArtistFilterContextValue | null>(
@@ -19,12 +26,39 @@ export function ArtistFilterProvider({
   sizeBounds: [number, number];
 }) {
   const [sizeRange, setSizeRange] = useState<[number, number]>(sizeBounds);
-  const isFilteredOut = (size: number) =>
+  const isWorkFilteredOut = (size: number) =>
     size < sizeRange[0] || size > sizeRange[1];
+
+  const [uncertaintyRange, setUncertaintyRange] = useState<
+    Set<"certain" | "probably" | "uncertain" | null>
+  >(new Set(null));
+
+  const isAttributionFilteredOut = (
+    status: "certain" | "probably" | "uncertain",
+  ) => uncertaintyRange && uncertaintyRange.has(status);
+
+  const handleUncertaintyFilter = (
+    status: "certain" | "probably" | "uncertain",
+  ) => {
+    setUncertaintyRange((prev) => {
+      const next = new Set(prev);
+      if (next.has(status)) next.delete(status);
+      else next.add(status);
+      return next;
+    });
+  };
 
   return (
     <ArtistFilterContext
-      value={{ sizeRange, setSizeRange, sizeBounds, isFilteredOut }}
+      value={{
+        sizeRange,
+        setSizeRange,
+        sizeBounds,
+        isWorkFilteredOut,
+        uncertaintyRange,
+        handleUncertaintyFilter,
+        isAttributionFilteredOut,
+      }}
     >
       {children}
     </ArtistFilterContext>
