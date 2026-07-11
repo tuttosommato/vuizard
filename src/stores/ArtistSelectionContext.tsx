@@ -54,7 +54,7 @@ export function ArtistSelectionProvider({ children }: { children: ReactNode }) {
   });
 
   return (
-    <ArtistSelectionContext.Provider
+    <ArtistSelectionContext
       value={{
         selectedIds,
         toggle,
@@ -65,7 +65,7 @@ export function ArtistSelectionProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-    </ArtistSelectionContext.Provider>
+    </ArtistSelectionContext>
   );
 }
 

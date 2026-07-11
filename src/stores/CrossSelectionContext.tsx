@@ -52,9 +52,9 @@ export function CrossSelectionProvider({
   };
 
   return (
-    <CrossSelectionContext.Provider value={value}>
+    <CrossSelectionContext value={value}>
       {children}
-    </CrossSelectionContext.Provider>
+    </CrossSelectionContext>
   );
 }
 

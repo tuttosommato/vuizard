@@ -17,9 +17,9 @@ export function HighlightProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <HighlightContext.Provider value={value}>
+    <HighlightContext value={value}>
       {children}
-    </HighlightContext.Provider>
+    </HighlightContext>
   );
 }
 
