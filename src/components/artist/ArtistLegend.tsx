@@ -1,8 +1,8 @@
 import AttributionCircle from "../work/attributions/AttributionCircle";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
 
-export default function ArtistLegend({ multiplier }: {multiplier: number}) {
-const { sizeRange, setSizeRange, sizeBounds } = useArtistFilter();
+export default function ArtistLegend({ multiplier }: { multiplier: number }) {
+  const { sizeRange, setSizeRange, sizeBounds } = useArtistFilter();
   const [min, max] = sizeBounds;
 
   const thumbSizePx = (value: number) => Math.sqrt(value) * 8;

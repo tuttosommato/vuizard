@@ -21,13 +21,16 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
   const workId = workItem.id;
   const isSelected = selectedIds.has(workId);
   const { isFilteredOut } = useArtistFilter();
-  const attributionsLength = Object.keys(workItem.attributions?.attributions || {}).length
+  const attributionsLength = Object.keys(
+    workItem.attributions?.attributions || {},
+  ).length;
 
   return (
     <div
       className={
         "work-card-container" +
-        (isSelected ? " work-card-container-expanded" : "") + (isFilteredOut(attributionsLength) ? " filtered-out" : "")
+        (isSelected ? " work-card-container-expanded" : "") +
+        (isFilteredOut(attributionsLength) ? " filtered-out" : "")
       }
     >
       <div
@@ -55,12 +58,9 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
             </div>
             <div className="work-card-attributions">
               <p>
-                {isSelected ? "Collapse" : "Expand"}{" "}
-                {attributionsLength}{" "}
+                {isSelected ? "Collapse" : "Expand"} {attributionsLength}{" "}
                 attribution
-                {attributionsLength !== 1
-                  ? "s"
-                  : ""}
+                {attributionsLength !== 1 ? "s" : ""}
               </p>
               <ExpandArrow isExpanded={isSelected} />
             </div>

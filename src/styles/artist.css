@@ -428,8 +428,6 @@ main.artist-layout .artist-vis {
   appearance: none;
 }
 
-
-
 .size-range-input::-webkit-slider-runnable-track {
   background: transparent;
 }
@@ -458,7 +456,6 @@ main.artist-layout .artist-vis {
   cursor: pointer;
 }
 
-
 .size-range-input::-webkit-slider-thumb:hover {
   box-shadow: 0px 0px 2px 2px rgba(255, 255, 255, 0.1);
 }
@@ -484,7 +481,6 @@ main.artist-layout .artist-vis {
   color: var(--color-text);
 }
 
-
 /* Thumbnail */
 
 .attr-circle:hover,
@@ -504,7 +500,8 @@ main.artist-layout .artist-vis {
   transition: opacity 0.15s ease;
 }
 
-.attr-circle.filtered-out, .work-card-container.filtered-out {
+.attr-circle.filtered-out,
+.work-card-container.filtered-out {
   opacity: 0.15;
   pointer-events: none;
 }

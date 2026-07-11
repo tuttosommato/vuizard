@@ -94,7 +94,7 @@ function ArtistVis({
 }: {
   artistId: string;
   works: WorkItem[];
-  multiplier: number,
+  multiplier: number;
   ref?: React.Ref<ArtistVisHandle>;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -110,7 +110,6 @@ function ArtistVis({
     selectedIds.has(workId) ||
     workId === hoveredWork?.work.id ||
     workId === hoveredWorkId;
-
 
   useEffect(() => {
     if (!svgRef.current) return;

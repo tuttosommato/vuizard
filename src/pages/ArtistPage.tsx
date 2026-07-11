@@ -126,13 +126,13 @@ export default function ArtistPage() {
     );
   }
 
-    const attributionsCounts = state.worksList.map((w) => {
-    return w.attributions?.attributions.length ?? 0
-  })
+  const attributionsCounts = state.worksList.map((w) => {
+    return w.attributions?.attributions.length ?? 0;
+  });
   const sizeBounds = [
     Math.min(...attributionsCounts),
-    Math.max(...attributionsCounts)
-  ] as [number, number]
+    Math.max(...attributionsCounts),
+  ] as [number, number];
 
   return (
     <>
@@ -167,19 +167,18 @@ function ArtistPageContent({
   const { triggerNewSelection, selectedIds } = useArtistSelection();
 
   const dotsLength = state.worksList.flatMap((work) => {
-      const attributions = work.attributions?.attributions ?? [];
-      return attributions.filter((attr) => attr.local_id === artistId);
-    }).length;
-  
-    const multiplier =
-      dotsLength >= 400
-        ? 2
-        : dotsLength >= 300
-          ? 3
-          : dotsLength >= 200
-            ? 3.25
-            : 4;
-  
+    const attributions = work.attributions?.attributions ?? [];
+    return attributions.filter((attr) => attr.local_id === artistId);
+  }).length;
+
+  const multiplier =
+    dotsLength >= 400
+      ? 2
+      : dotsLength >= 300
+        ? 3
+        : dotsLength >= 200
+          ? 3.25
+          : 4;
 
   useEffect(() => {
     if (!triggerNewSelection) return;
@@ -248,13 +247,13 @@ function ArtistPageContent({
         </div>
         <ArtistLegend multiplier={multiplier} />
       </div>
-<ArtistVis
-  ref={artistVisRef}
-  key={artistId}
-  artistId={artistId ?? ""}
-  works={state.worksList}
-  multiplier={multiplier}
-/>
+      <ArtistVis
+        ref={artistVisRef}
+        key={artistId}
+        artistId={artistId ?? ""}
+        works={state.worksList}
+        multiplier={multiplier}
+      />
       <div className="works-list" ref={listRef}>
         {
           <div className="works-list-header">
