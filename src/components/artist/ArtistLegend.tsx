@@ -28,6 +28,7 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
         <label className="accepted-legend-item">
           <input
             type="checkbox"
+            className="legend-checkbox"
             checked={!acceptanceRange.has("accepted")}
             onChange={() => handleAcceptanceFilter("accepted")}
           />
@@ -44,6 +45,7 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
         <label className="discarded-legend-item">
           <input
             type="checkbox"
+            className="legend-checkbox"
             checked={!acceptanceRange.has("discarded")}
             onChange={() => handleAcceptanceFilter("discarded")}
           />
@@ -58,7 +60,58 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
         </label>
       </div>
 
-      <div className="size-legend-items">
+      <div className="uncertainty-legend-items">
+        <span>Uncertainty</span>
+        <div className="uncertainty-items-cnt">
+          <label className="uncertainty-legend-item">
+            <input
+              type="checkbox"
+              className="legend-checkbox"
+              checked={!uncertaintyRange.has("certain")}
+              onChange={() => handleUncertaintyFilter("certain")}
+            />
+            <svg>
+              <AttributionCircle type="artist" fill="var(--color-text)" r={8} />
+            </svg>
+            <span>Certain</span>
+          </label>
+          <label className="uncertainty-legend-item">
+            <input
+              type="checkbox"
+              className="legend-checkbox"
+
+              checked={!uncertaintyRange.has("probably")}
+              onChange={() => handleUncertaintyFilter("probably")}
+            />
+            <svg>
+              <AttributionCircle
+                type="artist"
+                fill="url(#uncertain-legend-1)"
+                r={8}
+              />
+            </svg>
+            <span>Less uncertain</span>
+          </label>
+          <label className="uncertainty-legend-item">
+            <input
+              type="checkbox"
+              className="legend-checkbox"
+              checked={!uncertaintyRange.has("uncertain")}
+              onChange={() => handleUncertaintyFilter("uncertain")}
+            />
+            <svg>
+              <AttributionCircle
+                type="artist"
+                fill="url(#uncertain-legend-2)"
+                r={8}
+              />
+            </svg>
+            <span>More uncertain</span>
+          </label>
+        </div>
+      </div>
+
+            <div className="size-legend-items">
         <span>Number of attributions</span>
         <div className="size-range-slider">
           <div className="size-range-track" />
@@ -132,52 +185,7 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
         </div>
       </div>
 
-      <div className="uncertainty-legend-items">
-        <span>Uncertainty</span>
-        <div className="uncertainty-items-cnt">
-          <label className="uncertainty-legend-item">
-            <input
-              type="checkbox"
-              checked={!uncertaintyRange.has("certain")}
-              onChange={() => handleUncertaintyFilter("certain")}
-            />
-            <svg>
-              <AttributionCircle type="artist" fill="var(--color-text)" r={8} />
-            </svg>
-            <span>Certain</span>
-          </label>
-          <label className="uncertainty-legend-item">
-            <input
-              type="checkbox"
-              checked={!uncertaintyRange.has("probably")}
-              onChange={() => handleUncertaintyFilter("probably")}
-            />
-            <svg>
-              <AttributionCircle
-                type="artist"
-                fill="url(#uncertain-legend-1)"
-                r={8}
-              />
-            </svg>
-            <span>Less uncertain</span>
-          </label>
-          <label className="uncertainty-legend-item">
-            <input
-              type="checkbox"
-              checked={!uncertaintyRange.has("uncertain")}
-              onChange={() => handleUncertaintyFilter("uncertain")}
-            />
-            <svg>
-              <AttributionCircle
-                type="artist"
-                fill="url(#uncertain-legend-2)"
-                r={8}
-              />
-            </svg>
-            <span>More uncertain</span>
-          </label>
-        </div>
-      </div>
+      
     </div>
   );
 }
