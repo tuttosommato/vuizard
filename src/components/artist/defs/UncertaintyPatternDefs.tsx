@@ -1,13 +1,29 @@
 const TILE_SIZE_1 = 3;
-const DOT_R1 = TILE_SIZE_1 / 2.5;
-const TILE_SIZE_2 = 2;
-const DOT_R2 = TILE_SIZE_2 / 4;
+const DOT_R1 = TILE_SIZE_1 / 4;
+const TILE_SIZE_2 = 4;
+const DOT_R2 = TILE_SIZE_2 / 2.8;
 
 function UncertaintyPattern({ id, base, uncertaintyLevel }: { id: string; base: string; uncertaintyLevel: number }) {
     return (
-        <pattern id={id} patternUnits="userSpaceOnUse" width={uncertaintyLevel === 1 ? TILE_SIZE_1 : TILE_SIZE_2} height={uncertaintyLevel === 1 ? TILE_SIZE_1 : TILE_SIZE_2}>
-            <rect width={uncertaintyLevel === 1 ? TILE_SIZE_1 : TILE_SIZE_2} height={uncertaintyLevel === 1 ? TILE_SIZE_1 : TILE_SIZE_2} fill="var(--color-bg)" />
-            <circle cx={uncertaintyLevel === 1 ? TILE_SIZE_1 / 2 : TILE_SIZE_2 / 2} cy={uncertaintyLevel === 1 ? TILE_SIZE_1 / 2 : TILE_SIZE_2 / 2} r={uncertaintyLevel === 1 ? DOT_R1 : DOT_R2} fill={base} />
+        <pattern
+        id={id}
+        patternUnits="userSpaceOnUse"
+        width={uncertaintyLevel === 1 ? TILE_SIZE_1 : TILE_SIZE_2}
+        height={uncertaintyLevel === 1 ? TILE_SIZE_1 : TILE_SIZE_2}>
+            <rect
+            width={uncertaintyLevel === 1 ? TILE_SIZE_1 : TILE_SIZE_2}
+            height={uncertaintyLevel === 1 ? TILE_SIZE_1 : TILE_SIZE_2}
+            fill={base} />
+            <circle
+            cx={uncertaintyLevel === 1 ? TILE_SIZE_1 / 1.5 : TILE_SIZE_2 / 1.5}
+            cy={uncertaintyLevel === 1 ? TILE_SIZE_1 / 1.5 : TILE_SIZE_2 / 3}
+            r={uncertaintyLevel === 1 ? DOT_R1 : DOT_R2}
+            fill={"var(--color-bg)"} />
+            <circle
+            cx={uncertaintyLevel === 1 ? TILE_SIZE_1 / 3 : TILE_SIZE_2 / 3}
+            cy={uncertaintyLevel === 1 ? TILE_SIZE_1 / 3 : TILE_SIZE_2 / 1.5}
+            r={uncertaintyLevel === 1 ? DOT_R1 : DOT_R2}
+            fill={"var(--color-bg)"} />
         </pattern>
     )
 }
