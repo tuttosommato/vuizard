@@ -7,6 +7,8 @@ import type { ZoomBehavior } from "d3-zoom";
 import { select } from "d3-selection";
 import type { WorkItem } from "@/types/artists";
 import { easeCubicInOut } from "d3-ease";
+import { useImperativeHandle } from "react";
+import { zoomIdentity } from "d3-zoom";
 import {
   TIER_RADII,
   colorScale,
@@ -70,21 +72,27 @@ function WorkThumbnail({
       className="work-thumbnail"
       style={{
         left: coords.x,
-        top: coords.y
+        top: coords.y,
       }}
     >
       <img src={BASE_URL + src} alt={work.work?.subject ?? "Untitled"} />
     </div>,
-    document.body
+    document.body,
   );
 }
 
-export default function ArtistVis({
+export type ArtistVisHandle = {
+  focusOnWorks: (workIds: string[]) => void;
+};
+
+function ArtistVis({
   artistId,
   works,
+  ref,
 }: {
   artistId: string;
   works: WorkItem[];
+  ref?: React.Ref<ArtistVisHandle>;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
@@ -241,6 +249,74 @@ export default function ArtistVis({
     return nodes;
   }, [works, artistId, dotRadius]);
 
+  const workEdges = useMemo(() => {
+  const groups = new Map<string, typeof dots>();
+  for (const dot of dots) {
+    const group = groups.get(dot.work_id) ?? [];
+    group.push(dot);
+    groups.set(dot.work_id, group);
+  }
+
+  return [...groups.values()]
+    .filter((group) => group.length > 1)
+    .flatMap((group) => {
+      const cx = group.reduce((sum, d) => sum + d.x, 0) / group.length;
+      const cy = group.reduce((sum, d) => sum + d.y, 0) / group.length;
+      return group.map((d) => ({
+        work_id: d.work_id,
+        operational_id: d.operational_id,
+        x1: d.x,
+        y1: d.y,
+        x2: cx,
+        y2: cy,
+      }));
+    });
+}, [dots]);
+
+
+  useImperativeHandle(ref, () => ({
+    focusOnWorks(workIds) {
+      if (!svgRef.current || !zoomRef.current) return;
+      const matches = dots.filter((d) => workIds.includes(d.work_id));
+      if (matches.length === 0) return;
+
+      if (matches.length === 1) {
+        const target = matches[0];
+        const transform = zoomIdentity
+          .translate(VIS_VIEWBOX_WIDTH / 2, VIS_VIEWBOX_HEIGHT / 2)
+          .scale(2)
+          .translate(-target.x, -target.y);
+
+        select(svgRef.current)
+          .transition()
+          .duration(300)
+          .call(zoomRef.current.transform, transform);
+        return;
+      }
+
+      const xs = matches.map((d) => d.x);
+      const ys = matches.map((d) => d.y);
+      const [minX, maxX] = [Math.min(...xs), Math.max(...xs)];
+      const [minY, maxY] = [Math.min(...ys), Math.max(...ys)];
+      const padding = 80;
+      const scale = Math.min(
+        VIS_VIEWBOX_WIDTH / (maxX - minX + padding * 2), // es. 1000/500 = 2
+        VIS_VIEWBOX_HEIGHT / (maxY - minY + padding * 2), // es. 900/300 = 3
+        VIS_MAX_ZOOM, // es. 5
+      ); // choosing the min to avoid overzoom
+
+      const transform = zoomIdentity
+        .translate(VIS_VIEWBOX_WIDTH / 2, VIS_VIEWBOX_HEIGHT / 2)
+        .scale(scale)
+        .translate(-(minX + maxX) / 2, -(minY + maxY) / 2); // -(left + right)/2 & -(top + bottom)/2
+
+      select(svgRef.current)
+        .transition()
+        .duration(300)
+        .call(zoomRef.current.transform, transform);
+    },
+  }));
+
   return (
     <div className="artist-vis-container">
       {hoveredWork && (
@@ -290,3 +366,5 @@ export default function ArtistVis({
     </div>
   );
 }
+
+export default ArtistVis;

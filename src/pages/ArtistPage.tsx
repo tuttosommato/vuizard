@@ -4,7 +4,7 @@ import { getAttributions, getAuthor, getWork } from "@/data/api";
 import type { Author } from "@/types/authors";
 import type { WorkItem } from "@/types/artists";
 import NotFoundPage from "./NotFoundPage";
-import ArtistVis from "@/components/artist/ArtistVis";
+import ArtistVis, { type ArtistVisHandle } from "@/components/artist/ArtistVis";
 import "@/styles/artist.css";
 import ArtistLegend from "../components/artist/ArtistLegend";
 import WorkCard from "../components/artist/WorkCard";
@@ -151,7 +151,8 @@ function ArtistPageContent({
 
   const listRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef(new Map<string, HTMLDivElement>());
-  const { triggerNewSelection } = useArtistSelection();
+  const artistVisRef = useRef<ArtistVisHandle>(null);
+  const { triggerNewSelection, selectedIds } = useArtistSelection();
 
   useEffect(() => {
     if (!triggerNewSelection) return;
@@ -182,6 +183,11 @@ function ArtistPageContent({
     const scrollDelta = cardRect.top - containerRect.top;
     container.scrollBy({ top: scrollDelta - 40, behavior: "smooth" });
   }, [triggerNewSelection]);
+
+  useEffect(() => {
+    if (selectedIds.size === 0) return;
+    artistVisRef.current?.focusOnWorks([...selectedIds]);
+  }, [selectedIds]);
 
   return (
     <main className="artist-layout">
@@ -215,11 +221,12 @@ function ArtistPageContent({
         </div>
         <ArtistLegend />
       </div>
-      <ArtistVis
-        key={artistId}
-        artistId={artistId ?? ""}
-        works={state.worksList}
-      />
+<ArtistVis
+  ref={artistVisRef}
+  key={artistId}
+  artistId={artistId ?? ""}
+  works={state.worksList}
+/>
       <div className="works-list" ref={listRef}>
         {
           <div className="works-list-header">
