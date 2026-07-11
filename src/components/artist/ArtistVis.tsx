@@ -101,7 +101,12 @@ function ArtistVis({
     work: WorkItem;
     coords: { x: number; y: number };
   } | null>(null);
-  const {selectedIds, toggle} = useArtistSelection();
+  const { selectedIds, toggle, hoveredWorkId } = useArtistSelection();
+
+  const isWorkActive = (workId: string) =>
+    selectedIds.has(workId) ||
+    workId === hoveredWork?.work.id ||
+    workId === hoveredWorkId;
 
   const dotsLength = works.flatMap((work) => {
     const attributions = work.attributions?.attributions ?? [];
@@ -336,9 +341,25 @@ function ArtistVis({
           <TierArcs />
           <ArtistVisLegend />
 
+          {workEdges
+          .filter((edge) => isWorkActive(edge.work_id))
+          .map((edge) => (
+  <line
+    key={`edge-${edge.work_id}-${edge.operational_id}`}
+    x1={edge.x1}
+    y1={edge.y1}
+    x2={edge.x2}
+    y2={edge.y2}
+    stroke="var(--color-text-muted)"
+    strokeWidth={1}
+    vectorEffect="non-scaling-stroke"
+    data-work-id={edge.work_id}
+  />
+))}
+
           {dots.map((dot) => (
             <circle
-              className={`attr-circle ${selectedIds.has(dot.work_id) ? "selected-circle" : ""}`}
+              className={`attr-circle ${isWorkActive(dot.work_id) ? "selected-circle" : ""}`}
               key={dot.work_id + "-" + dot.operational_id}
               cx={dot.x}
               cy={dot.y}

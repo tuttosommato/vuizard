@@ -11,6 +11,8 @@ type ArtistSelectionContextValue = {
   toggle: (id: string) => void;
   triggerNewSelection: string | null;
   clear: () => void;
+  hoveredWorkId: string | null;
+  setHoveredWorkId: (id: string | null) => void;
 };
 
 const PRESERVE_SELECTION = ".attr-circle, .artist-legend, .work-card";
@@ -23,6 +25,7 @@ export function ArtistSelectionProvider({ children }: { children: ReactNode }) {
   const [triggerNewSelection, setTriggerNewSelection] = useState<string | null>(
     null,
   );
+  const [hoveredWorkId, setHoveredWorkId] = useState<string | null>(null);
 
   const toggle = (id: string) => {
     setSelectedIds((prev) => {
@@ -52,7 +55,14 @@ export function ArtistSelectionProvider({ children }: { children: ReactNode }) {
 
   return (
     <ArtistSelectionContext.Provider
-      value={{ selectedIds, toggle, triggerNewSelection, clear }}
+      value={{
+        selectedIds,
+        toggle,
+        triggerNewSelection,
+        clear,
+        hoveredWorkId,
+        setHoveredWorkId,
+      }}
     >
       {children}
     </ArtistSelectionContext.Provider>

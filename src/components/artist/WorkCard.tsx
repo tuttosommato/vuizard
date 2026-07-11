@@ -16,7 +16,7 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
   const acceptedDating = workItem.work?.dating
     .filter((d) => d.type === "accepted")
     .map(formatDating);
-  const { selectedIds, toggle } = useArtistSelection();
+  const { selectedIds, toggle, setHoveredWorkId } = useArtistSelection();
   const workId = workItem.id;
   const isSelected = selectedIds.has(workId);
 
@@ -27,7 +27,12 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
         (isSelected ? " work-card-container-expanded" : "")
       }
     >
-      <div className="work-card" onClick={() => toggle(workId)}>
+      <div
+        className="work-card"
+        onClick={() => toggle(workId)}
+        onMouseEnter={() => setHoveredWorkId(workId)}
+        onMouseLeave={() => setHoveredWorkId(null)}
+      >
         <div className="work-card-upper">
           <div className="work-card-img-container">
             <img
