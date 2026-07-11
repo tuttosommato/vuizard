@@ -12,6 +12,7 @@ import {
   ArtistSelectionProvider,
   useArtistSelection,
 } from "@/stores/ArtistSelectionContext";
+import { ArtistFilterProvider } from "@/stores/ArtistFilterContext";
 
 type LoadState =
   | { status: "loading"; phase: "artist" }
@@ -124,10 +125,21 @@ export default function ArtistPage() {
       </main>
     );
   }
+
+    const attributionsCounts = state.worksList.map((w) => {
+    return w.attributions?.attributions.length ?? 0
+  })
+  const sizeBounds = [
+    Math.min(...attributionsCounts),
+    Math.max(...attributionsCounts)
+  ] as [number, number]
+
   return (
     <>
       <ArtistSelectionProvider>
-        <ArtistPageContent state={state} artistId={artistId ?? ""} />
+        <ArtistFilterProvider sizeBounds={sizeBounds}>
+          <ArtistPageContent state={state} artistId={artistId ?? ""} />
+        </ArtistFilterProvider>
       </ArtistSelectionProvider>
     </>
   );
@@ -153,6 +165,21 @@ function ArtistPageContent({
   const cardRefs = useRef(new Map<string, HTMLDivElement>());
   const artistVisRef = useRef<ArtistVisHandle>(null);
   const { triggerNewSelection, selectedIds } = useArtistSelection();
+
+  const dotsLength = state.worksList.flatMap((work) => {
+      const attributions = work.attributions?.attributions ?? [];
+      return attributions.filter((attr) => attr.local_id === artistId);
+    }).length;
+  
+    const multiplier =
+      dotsLength >= 400
+        ? 2
+        : dotsLength >= 300
+          ? 3
+          : dotsLength >= 200
+            ? 3.25
+            : 4;
+  
 
   useEffect(() => {
     if (!triggerNewSelection) return;
@@ -219,13 +246,14 @@ function ArtistPageContent({
             </p>
           )}
         </div>
-        <ArtistLegend />
+        <ArtistLegend multiplier={multiplier} />
       </div>
 <ArtistVis
   ref={artistVisRef}
   key={artistId}
   artistId={artistId ?? ""}
   works={state.worksList}
+  multiplier={multiplier}
 />
       <div className="works-list" ref={listRef}>
         {

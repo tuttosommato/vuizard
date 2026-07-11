@@ -1,13 +1,14 @@
 import TierArcs from "./TierArcs";
 import ArtistVisLegend from "./ArtistVisLegend";
 import ArrowMarkerDef from "@/components/ArrowMarkerDef";
-import { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { zoom } from "d3-zoom";
 import type { ZoomBehavior } from "d3-zoom";
 import { select } from "d3-selection";
 import type { WorkItem } from "@/types/artists";
 import { easeCubicInOut } from "d3-ease";
 import { useImperativeHandle } from "react";
+import { useArtistFilter } from "@/stores/ArtistFilterContext";
 import { zoomIdentity } from "d3-zoom";
 import {
   TIER_RADII,
@@ -88,10 +89,12 @@ export type ArtistVisHandle = {
 function ArtistVis({
   artistId,
   works,
+  multiplier,
   ref,
 }: {
   artistId: string;
   works: WorkItem[];
+  multiplier: number,
   ref?: React.Ref<ArtistVisHandle>;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -108,23 +111,6 @@ function ArtistVis({
     workId === hoveredWork?.work.id ||
     workId === hoveredWorkId;
 
-  const dotsLength = works.flatMap((work) => {
-    const attributions = work.attributions?.attributions ?? [];
-    return attributions.filter((attr) => attr.local_id === artistId);
-  }).length;
-
-  const multiplier =
-    dotsLength >= 400
-      ? 2
-      : dotsLength >= 300
-        ? 3
-        : dotsLength >= 200
-          ? 3.25
-          : 4;
-  const dotRadius = useCallback(
-    (d: { size: number }) => Math.sqrt(d.size) * multiplier,
-    [multiplier],
-  );
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -174,6 +160,7 @@ function ArtistVis({
               : colorScale(attr.type),
             size: nAttributions,
             type: attr.type,
+            radius: Math.sqrt(nAttributions) * multiplier,
             isDocumented,
           };
         });
@@ -188,7 +175,7 @@ function ArtistVis({
 
       function force() {
         for (const d of subset) {
-          const r = dotRadius(d);
+          const r = d.radius;
           if (side === "above" && d.y > y0 - r) d.y = y0 - r;
           if (side === "below" && d.y < y0 + r) d.y = y0 + r;
         }
@@ -218,7 +205,7 @@ function ArtistVis({
       )
       .force(
         "collide",
-        forceCollide<(typeof nodes)[0]>((d) => dotRadius(d) + 2)
+        forceCollide<(typeof nodes)[0]>((d) => d.radius + 2)
           .strength(1)
           .iterations(10),
       )
@@ -245,39 +232,40 @@ function ArtistVis({
       )
       .force(
         "collide",
-        forceCollide<(typeof nodes)[0]>((d) => dotRadius(d) + 2)
+        forceCollide<(typeof nodes)[0]>((d) => d.radius + 2)
           .strength(1)
           .iterations(10),
       )
       .tick(400);
 
     return nodes;
-  }, [works, artistId, dotRadius]);
+  }, [works, artistId, multiplier]);
+
+  const { isFilteredOut } = useArtistFilter();
 
   const workEdges = useMemo(() => {
-  const groups = new Map<string, typeof dots>();
-  for (const dot of dots) {
-    const group = groups.get(dot.work_id) ?? [];
-    group.push(dot);
-    groups.set(dot.work_id, group);
-  }
+    const groups = new Map<string, typeof dots>();
+    for (const dot of dots) {
+      const group = groups.get(dot.work_id) ?? [];
+      group.push(dot);
+      groups.set(dot.work_id, group);
+    }
 
-  return [...groups.values()]
-    .filter((group) => group.length > 1)
-    .flatMap((group) => {
-      const cx = group.reduce((sum, d) => sum + d.x, 0) / group.length;
-      const cy = group.reduce((sum, d) => sum + d.y, 0) / group.length;
-      return group.map((d) => ({
-        work_id: d.work_id,
-        operational_id: d.operational_id,
-        x1: d.x,
-        y1: d.y,
-        x2: cx,
-        y2: cy,
-      }));
-    });
-}, [dots]);
-
+    return [...groups.values()]
+      .filter((group) => group.length > 1)
+      .flatMap((group) => {
+        const cx = group.reduce((sum, d) => sum + d.x, 0) / group.length;
+        const cy = group.reduce((sum, d) => sum + d.y, 0) / group.length;
+        return group.map((d) => ({
+          work_id: d.work_id,
+          operational_id: d.operational_id,
+          x1: d.x,
+          y1: d.y,
+          x2: cx,
+          y2: cy,
+        }));
+      });
+  }, [dots]);
 
   useImperativeHandle(ref, () => ({
     focusOnWorks(workIds) {
@@ -342,28 +330,28 @@ function ArtistVis({
           <ArtistVisLegend />
 
           {workEdges
-          .filter((edge) => isWorkActive(edge.work_id))
-          .map((edge) => (
-  <line
-    key={`edge-${edge.work_id}-${edge.operational_id}`}
-    x1={edge.x1}
-    y1={edge.y1}
-    x2={edge.x2}
-    y2={edge.y2}
-    stroke="var(--color-text-muted)"
-    strokeWidth={1}
-    vectorEffect="non-scaling-stroke"
-    data-work-id={edge.work_id}
-  />
-))}
+            .filter((edge) => isWorkActive(edge.work_id))
+            .map((edge) => (
+              <line
+                key={`edge-${edge.work_id}-${edge.operational_id}`}
+                x1={edge.x1}
+                y1={edge.y1}
+                x2={edge.x2}
+                y2={edge.y2}
+                stroke="var(--color-text-muted)"
+                strokeWidth={1}
+                vectorEffect="non-scaling-stroke"
+                data-work-id={edge.work_id}
+              />
+            ))}
 
           {dots.map((dot) => (
             <circle
-              className={`attr-circle ${isWorkActive(dot.work_id) ? "selected-circle" : ""}`}
+              className={`attr-circle ${isWorkActive(dot.work_id) ? "selected-circle" : ""} ${isFilteredOut(dot.size) ? "filtered-out" : ""}`}
               key={dot.work_id + "-" + dot.operational_id}
               cx={dot.x}
               cy={dot.y}
-              r={dotRadius(dot)}
+              r={dot.radius}
               fill={dot.fill}
               data-work-id={dot.work_id}
               onMouseEnter={(e) => {

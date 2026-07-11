@@ -6,6 +6,7 @@ import ArrowIcon from "@/components/ArrowIcon";
 import { Link } from "react-router-dom";
 import ExpandArrow from "@/components/ExpandArrow";
 import { useArtistSelection } from "@/stores/ArtistSelectionContext";
+import { useArtistFilter } from "@/stores/ArtistFilterContext";
 
 interface WorkCardProps {
   workItem: WorkItem;
@@ -19,12 +20,14 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
   const { selectedIds, toggle, setHoveredWorkId } = useArtistSelection();
   const workId = workItem.id;
   const isSelected = selectedIds.has(workId);
+  const { isFilteredOut } = useArtistFilter();
+  const attributionsLength = Object.keys(workItem.attributions?.attributions || {}).length
 
   return (
     <div
       className={
         "work-card-container" +
-        (isSelected ? " work-card-container-expanded" : "")
+        (isSelected ? " work-card-container-expanded" : "") + (isFilteredOut(attributionsLength) ? " filtered-out" : "")
       }
     >
       <div
@@ -53,10 +56,9 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
             <div className="work-card-attributions">
               <p>
                 {isSelected ? "Collapse" : "Expand"}{" "}
-                {Object.keys(workItem.attributions?.attributions || {}).length}{" "}
+                {attributionsLength}{" "}
                 attribution
-                {Object.keys(workItem.attributions?.attributions || {})
-                  .length !== 1
+                {attributionsLength !== 1
                   ? "s"
                   : ""}
               </p>
