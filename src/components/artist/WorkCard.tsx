@@ -35,7 +35,10 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
     isWorkFilteredOut(attributionsLength) ||
     relevantAttrs.length === 0 ||
     relevantAttrs.every((attr) =>
-      isAttributionFilteredOut(uncertaintyBucket(attr.u_qualifier)),
+      isAttributionFilteredOut(
+        uncertaintyBucket(attr.u_qualifier),
+        attr.type as "accepted" | "discarded",
+      ),
     );
 
   return (

@@ -8,6 +8,8 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
     sizeBounds,
     handleUncertaintyFilter,
     uncertaintyRange,
+    acceptanceRange,
+    handleAcceptanceFilter,
   } = useArtistFilter();
   const [min, max] = sizeBounds;
 
@@ -23,7 +25,12 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
   return (
     <div className="artist-legend">
       <div className="acceptance-legend-items">
-        <div className="accepted-legend-item">
+        <label className="accepted-legend-item">
+          <input
+            type="checkbox"
+            checked={!acceptanceRange.has("accepted")}
+            onChange={() => handleAcceptanceFilter("accepted")}
+          />
           <svg>
             <AttributionCircle
               type="artist"
@@ -32,8 +39,14 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
             />
           </svg>
           <span>Accepted attributions</span>
-        </div>
-        <div className="discarded-legend-item">
+        </label>
+
+        <label className="discarded-legend-item">
+          <input
+            type="checkbox"
+            checked={!acceptanceRange.has("discarded")}
+            onChange={() => handleAcceptanceFilter("discarded")}
+          />
           <svg>
             <AttributionCircle
               type="artist"
@@ -42,7 +55,7 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
             />
           </svg>
           <span>Discarded attributions</span>
-        </div>
+        </label>
       </div>
 
       <div className="size-legend-items">

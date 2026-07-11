@@ -350,7 +350,7 @@ function ArtistVis({
             <circle
               className={`attr-circle
                 ${isWorkActive(dot.work_id) ? " selected-circle" : ""}
-                ${isWorkFilteredOut(dot.size) || isAttributionFilteredOut(dot.uncertaintyStatus) ? "filtered-out" : ""}`}
+                ${isWorkFilteredOut(dot.size) || isAttributionFilteredOut(dot.uncertaintyStatus, dot.type as "accepted" | "discarded") ? "filtered-out" : ""}`}
               key={dot.work_id + "-" + dot.operational_id}
               cx={dot.x}
               cy={dot.y}

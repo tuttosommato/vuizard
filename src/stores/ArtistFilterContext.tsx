@@ -10,8 +10,11 @@ type ArtistFilterContextValue = {
     status: "certain" | "probably" | "uncertain",
   ) => void;
   isAttributionFilteredOut: (
-    status: "certain" | "probably" | "uncertain",
+    uncertaintyStatus: "certain" | "probably" | "uncertain",
+    acceptanceStatus: "accepted" | "discarded",
   ) => boolean;
+  acceptanceRange: Set<"accepted" | "discarded" | null>;
+  handleAcceptanceFilter: (status: "accepted" | "discarded") => void;
 };
 
 const ArtistFilterContext = createContext<ArtistFilterContextValue | null>(
@@ -34,13 +37,29 @@ export function ArtistFilterProvider({
   >(new Set(null));
 
   const isAttributionFilteredOut = (
-    status: "certain" | "probably" | "uncertain",
-  ) => uncertaintyRange && uncertaintyRange.has(status);
+    uncertaintyStatus: "certain" | "probably" | "uncertain",
+    acceptanceStatus: "accepted" | "discarded",
+  ) =>
+    uncertaintyRange.has(uncertaintyStatus) ||
+    acceptanceRange.has(acceptanceStatus);
 
   const handleUncertaintyFilter = (
     status: "certain" | "probably" | "uncertain",
   ) => {
     setUncertaintyRange((prev) => {
+      const next = new Set(prev);
+      if (next.has(status)) next.delete(status);
+      else next.add(status);
+      return next;
+    });
+  };
+
+  const [acceptanceRange, setAcceptanceRange] = useState<
+    Set<"accepted" | "discarded" | null>
+  >(new Set(null));
+
+  const handleAcceptanceFilter = (status: "accepted" | "discarded") => {
+    setAcceptanceRange((prev) => {
       const next = new Set(prev);
       if (next.has(status)) next.delete(status);
       else next.add(status);
@@ -58,6 +77,8 @@ export function ArtistFilterProvider({
         uncertaintyRange,
         handleUncertaintyFilter,
         isAttributionFilteredOut,
+        acceptanceRange,
+        handleAcceptanceFilter,
       }}
     >
       {children}
