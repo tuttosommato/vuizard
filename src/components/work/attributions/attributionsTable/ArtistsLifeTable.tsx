@@ -12,7 +12,7 @@ import QuestionMarkTooltip from "@/components/QuestionMarkTooltip";
 import { useCrossSelection } from "@/stores/CrossSelectionContext";
 import { useHighlight } from "@/stores/HighlightContext";
 
-const barHeight = labelsFontSize / 1.25;
+const barHeight = labelsFontSize / 1.1;
 
 export default function ArtistsLifeTable({
   artists,
