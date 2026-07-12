@@ -118,7 +118,6 @@ const sections: LegendItem[][] = [
   ],
   [
     { el: <Symbolel type="artist" />, label: "Recognised artist" },
-    { el: <Symbolel type="anonym" />, label: "Anonymous artist" },
     {
       el: <Symbolel type="recognised" />,
       label: "Recognised artist helped by an anonymous artist",
@@ -127,6 +126,7 @@ const sections: LegendItem[][] = [
       el: <Symbolel type="unrecognised" />,
       label: "Anonymous artist with a connection to a recognised artist",
     },
+    { el: <Symbolel type="anonym" />, label: "Anonymous artist" },
   ],
   [
     { el: <Lineel kind="confidence" />, label: "Confidence in artist identification", },
