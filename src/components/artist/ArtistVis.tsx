@@ -13,6 +13,7 @@ import { zoomIdentity } from "d3-zoom";
 import uncertaintyBucket from "@/utils/uncertaintyBucket";
 import {
   TIER_RADII,
+  TIER_I,
   colorScale,
   VIS_VIEWBOX_WIDTH,
   VIS_VIEWBOX_HEIGHT,
@@ -145,7 +146,7 @@ function ArtistVis({
             (reason) => reason.rank === 10,
           );
           const relation = attr.r_qualifier;
-          const radius = TIER_RADII[relation] ?? 0;
+          const radius = TIER_RADII[relation] ?? TIER_I;
           return {
             work_id: work.id,
             aut_id: attr.local_id,
