@@ -170,7 +170,6 @@ export default function AttributionsGroup({
             transform={`translate(${rankScale(reason.rank)}, 0)`}
           >
             <AttributionCircle type={circleType} fill={attrFill} r={radius} />
-            <title>{reason.reason}</title>
           </g>
         ))}
 
