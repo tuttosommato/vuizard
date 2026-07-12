@@ -24,58 +24,66 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
 
   return (
     <div className="artist-legend">
+      <h2>Legend and filters</h2>
+      <div className="legend-items-cnt">
       <div className="acceptance-legend-items">
-        <label className="accepted-legend-item">
+        <h3>Attribution status</h3>
+        <label className="accepted-legend-item label-cnt">
           <input
             type="checkbox"
             className="legend-checkbox"
             checked={!acceptanceRange.has("accepted")}
             onChange={() => handleAcceptanceFilter("accepted")}
           />
-          <svg>
+          <div className="svg-span-cnt">
+          <svg viewBox="0 0 16 16">
             <AttributionCircle
               type="artist"
               fill="var(--color-accepted)"
               r={8}
             />
           </svg>
-          <span>Accepted attributions</span>
+          <span className="legend-label">Accepted attribution</span>
+          </div>
         </label>
-
-        <label className="discarded-legend-item">
+        <label className="discarded-legend-item label-cnt">
           <input
             type="checkbox"
             className="legend-checkbox"
             checked={!acceptanceRange.has("discarded")}
             onChange={() => handleAcceptanceFilter("discarded")}
           />
-          <svg>
+          <div className="svg-span-cnt">
+          <svg viewBox="0 0 16 16">
             <AttributionCircle
               type="artist"
               fill="var(--color-discarded)"
               r={8}
             />
           </svg>
-          <span>Discarded attributions</span>
+          <span className="legend-label">Discarded attribution</span>
+          </div>
         </label>
       </div>
 
       <div className="uncertainty-legend-items">
-        <span>Uncertainty</span>
+        <h3>Attribution uncertainty</h3>
         <div className="uncertainty-items-cnt">
-          <label className="uncertainty-legend-item">
+          <label className="uncertainty-legend-item label-cnt">
             <input
               type="checkbox"
               className="legend-checkbox"
               checked={!uncertaintyRange.has("certain")}
               onChange={() => handleUncertaintyFilter("certain")}
             />
-            <svg>
+            <div className="svg-span-cnt">
+            <svg viewBox="0 0 16 16">
               <AttributionCircle type="artist" fill="var(--color-text)" r={8} />
             </svg>
-            <span>Certain</span>
+            <span className="legend-label">Confident attribution</span>
+            </div>
           </label>
-          <label className="uncertainty-legend-item">
+          <label className="uncertainty-legend-item label-cnt">
             <input
               type="checkbox"
               className="legend-checkbox"
@@ -83,36 +91,41 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
               checked={!uncertaintyRange.has("probably")}
               onChange={() => handleUncertaintyFilter("probably")}
             />
-            <svg>
+            <div className="svg-span-cnt">
+              <svg viewBox="0 0 16 16">
               <AttributionCircle
                 type="artist"
                 fill="url(#uncertain-legend-1)"
                 r={8}
               />
             </svg>
-            <span>Less uncertain</span>
+            <span className="legend-label">Probable attribution<br/><span className="legend-xs">(likely the author)</span></span>
+            </div>
+
           </label>
-          <label className="uncertainty-legend-item">
+          <label className="uncertainty-legend-item label-cnt">
             <input
               type="checkbox"
               className="legend-checkbox"
               checked={!uncertaintyRange.has("uncertain")}
               onChange={() => handleUncertaintyFilter("uncertain")}
             />
-            <svg>
+            <div className="svg-span-cnt">
+            <svg viewBox="0 0 16 16">
               <AttributionCircle
                 type="artist"
                 fill="url(#uncertain-legend-2)"
                 r={8}
               />
             </svg>
-            <span>More uncertain</span>
+            <span className="legend-label">Uncertain attribution<br/><span className="legend-xs">(less likely the author)</span></span>
+            </div>
           </label>
         </div>
       </div>
 
-            <div className="size-legend-items">
-        <span>Number of attributions</span>
+      <div className="size-legend-items">
+        <h3>Number of attributions</h3>
         <div className="size-range-slider">
           <div className="size-range-track" />
           <div
@@ -184,8 +197,9 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
           </span>
         </div>
       </div>
-
-      
+<p className="legend-caption"><span className="keyword">Each circle represents a single attribution record</span>. Its <span className="keyword">position</span> reflects how closely the artist named in that record relates to this page's artist (from their own hand to looser connections). The <span className="keyword">size</span> reflects the total number of attribution records for the related work. When a work carries more than one attribution naming the artist, it appears as <span className="keyword">several circles</span> that <span className="keyword">get eventually connected</span> on hover or selection.</p>
     </div>
+    </div>
+    
   );
 }
