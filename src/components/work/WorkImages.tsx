@@ -73,7 +73,6 @@ export default function WorkImages({ photos }: WorkImagesProps) {
             key={ph.link}
             alt={ph.alt}
             src={BASE_URL + ph.link}
-            loading="lazy"
             onClick={() => {
               handleFullScreen(ph);
             }}
