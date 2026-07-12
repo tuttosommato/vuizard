@@ -29,6 +29,25 @@ main.work-layout {
   padding-bottom: var(--space-lg);
 }
 
+.bibliography-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.bibliography-list {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.bibliography-list li {
+  margin-bottom: var(--space-xs);
+}
+
+.bibliography-list li:last-child {
+  margin-bottom: 0;
+}
+
 .table-switch {
   position: relative;
   display: inline-grid;
@@ -56,6 +75,13 @@ main.work-layout {
   transition: color 0.3s ease;
   white-space: nowrap;
   text-align: center;
+}
+
+.table-description {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
 }
 
 /* sliding thumb*/
@@ -123,7 +149,7 @@ main.work-layout {
 .work-details {
   display: grid;
   grid-template-columns: max-content auto;
-  margin: var(--space-md) 0;
+  margin: var(--space-sm) 0 var(--space-md) 0;
 }
 
 .work-details dt {
