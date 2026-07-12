@@ -345,6 +345,27 @@ th {
   text-align: right;
 }
 
+.reliability-column .reason-original-text {
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.reliability-column .reason-label {
+  display: inline-block;
+}
+
+.reliability-column .reason-label::first-letter {
+  text-transform: uppercase;
+}
+
+.reason-tooltip .keyword {
+  display: inline-block;
+}
+
+.reason-tooltip .keyword::first-letter {
+  text-transform: uppercase;
+}
+
 .attributions-table tbody td.type-column {
   font-size: var(--text-xs);
   font-weight: 400;

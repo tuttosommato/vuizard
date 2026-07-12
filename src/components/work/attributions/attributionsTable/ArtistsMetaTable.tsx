@@ -21,7 +21,6 @@ export default function ArtistsMetaTable({
   workTitle: string;
   currentAttributions: AttributionsBundle;
 }) {
-
   // We measure the cellWidth of the "Reason reliability" header cell to adapt the visualization of reasons accordingly
   const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
 
@@ -29,7 +28,7 @@ export default function ArtistsMetaTable({
 
   const rankScale = scaleLinear().domain([0, 11]).range([width, radius]);
 
-  const {selectedIds, toggle} = useCrossSelection();
+  const { selectedIds, toggle } = useCrossSelection();
   const { highlightedId, setHighlightedId } = useHighlight();
 
   return (
@@ -94,15 +93,15 @@ export default function ArtistsMetaTable({
                     (attr.type === "accepted" ? " accepted-artist" : "")
                   }
                 >
-                <ArrowLink
-                target={`/artist/${attr.local_id}`}
-                artistName={attr.author}
-                relation={r}
-                uncertainty={u}
-                isAnonym={attr.is_anonymous}
-                onMouseEnter={() => setHighlightedId(null)}
-                onMouseLeave={() => setHighlightedId(opId)}
-                />
+                  <ArrowLink
+                    target={`/artist/${attr.local_id}`}
+                    artistName={attr.author}
+                    relation={r}
+                    uncertainty={u}
+                    isAnonym={attr.is_anonymous}
+                    onMouseEnter={() => setHighlightedId(null)}
+                    onMouseLeave={() => setHighlightedId(opId)}
+                  />
                 </th>
                 <td className="reliability-column">
                   <svg width="100%" height={height}>
@@ -160,32 +159,57 @@ export default function ArtistsMetaTable({
                   <td className="type-column"></td>
                   <td className="artist-column">
                     {currentArtist && currentArtist.names.length > 0 && (
-                      <div className="artist-names-cnt">Also known as: <span className="names-list">{currentArtist.names.join(", ")}</span></div>
+                      <div className="artist-names-cnt">
+                        Also known as:{" "}
+                        <span className="names-list">
+                          {currentArtist.names.join(", ")}
+                        </span>
+                      </div>
                     )}
-                    {currentArtist && (() => {
-                      const links = [
-                        { label: "ULAN", href: currentArtist.ulan },
-                        { label: "VIAF", href: currentArtist.viaf },
-                        { label: "Wikidata", href: currentArtist.wikidata },
-                        { label: "DBpedia", href: currentArtist.dbpedia },
-                      ].filter((l) => l.href);
-                      return links.length > 0 ? (
-                        <div className="artist-links-cnt">
-                          External links:{" "}
-                          {links.map((l, i) => (
-                            <span key={l.label}>
-                              <a href={l.href!} onClick={(e) => e.stopPropagation()} className="in-text-a" target="_blank" rel="noopener noreferrer">{l.label}</a>
-                              {i < links.length - 1 && ", "}
-                            </span>
-                          ))}
-                        </div>
-                      ) : null;
-                    })()}
+                    {currentArtist &&
+                      (() => {
+                        const links = [
+                          { label: "ULAN", href: currentArtist.ulan },
+                          { label: "VIAF", href: currentArtist.viaf },
+                          { label: "Wikidata", href: currentArtist.wikidata },
+                          { label: "DBpedia", href: currentArtist.dbpedia },
+                        ].filter((l) => l.href);
+                        return links.length > 0 ? (
+                          <div className="artist-links-cnt">
+                            External links:{" "}
+                            {links.map((l, i) => (
+                              <span key={l.label}>
+                                <a
+                                  href={l.href!}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="in-text-a"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {l.label}
+                                </a>
+                                {i < links.length - 1 && ", "}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null;
+                      })()}
                   </td>
                   <td className="reliability-column">
-                    {attr.reasons
-                      .map((reason) => reason.original_text)
-                      .join("; ")}
+                    {attr.reasons.map((reason, i) => (
+                      <Fragment key={i}>
+                        {i > 0 && (
+                          <>
+                            ;<br />
+                          </>
+                        )}
+                        <span className="reason-label">{reason.reason}</span>
+                        <br />
+                        <span className="reason-original-text">
+                          {reason.original_text}
+                        </span>
+                      </Fragment>
+                    ))}
                   </td>
                 </tr>
               )}
