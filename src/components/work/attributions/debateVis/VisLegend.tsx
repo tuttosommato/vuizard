@@ -120,18 +120,18 @@ const sections: LegendItem[][] = [
     { el: <Symbolel type="artist" />, label: "Recognised artist" },
     {
       el: <Symbolel type="recognised" />,
-      label: "Recognised artist helped by an anonymous artist",
+      label: "Recognised artist and collaborating anonyms",
     },
     {
       el: <Symbolel type="unrecognised" />,
-      label: "Anonymous artist with a connection to a recognised artist",
+      label: "Anonymous with a connection to a recognised artist",
     },
-    { el: <Symbolel type="anonym" />, label: "Anonymous artist" },
+    { el: <Symbolel type="anonym" />, label: "Generic anonymous artist" },
   ],
   [
-    { el: <Lineel kind="confidence" />, label: "Confidence in artist identification", },
-    { el: <Lineel kind="uncertainty" />, label: "Uncertainty", description: "(\"probably\")"},
-    { el: <Lineel kind="strong" />, label: "Strong uncertainty" },
+    { el: <Lineel kind="confidence" />, label: "Confident identification", },
+    { el: <Lineel kind="uncertainty" />, label: "Probable identification", description: "(likely the artist)"},
+    { el: <Lineel kind="strong" />, label: "Uncertain identification",  description: "(possibly the artist)" },
   ],
   [
     {
@@ -141,11 +141,11 @@ const sections: LegendItem[][] = [
     },
     {
       el: <Curveel stroke="var(--color-link-1)" />,
-      label: "Same recognised artist involved",
+      label: "Shared recognised artist",
     },
     {
       el: <Curveel stroke="var(--color-link-2)" />,
-      label: "Artist and related anonyms",
+      label: "Artist linked to their anonyms",
     },
   ],
 ]

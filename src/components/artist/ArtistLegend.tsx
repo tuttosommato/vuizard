@@ -80,7 +80,7 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
             <svg viewBox="0 0 16 16">
               <AttributionCircle type="artist" fill="var(--color-text)" r={8} />
             </svg>
-            <span className="legend-label">Confident attribution</span>
+            <span className="legend-label">Confident identification</span>
             </div>
           </label>
           <label className="uncertainty-legend-item label-cnt">
@@ -99,7 +99,7 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
                 r={8}
               />
             </svg>
-            <span className="legend-label">Probable attribution<br/><span className="legend-xs">(likely the author)</span></span>
+            <span className="legend-label">Probable identification<br/><span className="legend-xs">(likely the artist)</span></span>
             </div>
 
           </label>
@@ -118,7 +118,7 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
                 r={8}
               />
             </svg>
-            <span className="legend-label">Uncertain attribution<br/><span className="legend-xs">(less likely the author)</span></span>
+            <span className="legend-label">Uncertain identification<br/><span className="legend-xs">(possibly the artist)</span></span>
             </div>
           </label>
         </div>
