@@ -143,7 +143,7 @@ function ArtistVis({
         .filter((attr) => attr.local_id === artistId)
         .map((attr) => {
           const isDocumented = attr.reasons.some(
-            (reason) => reason.rank === 10,
+            (reason) => reason.rank === 11,
           );
           const relation = attr.r_qualifier;
           const radius = TIER_RADII[relation] ?? TIER_I;
