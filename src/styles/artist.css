@@ -597,15 +597,11 @@ main.artist-layout .artist-vis {
 
 /* Thumbnail */
 
-.attr-circle:hover,
-.attr-circle.selected-circle {
+.attr-circle.selected-circle,
+.attr-circle.hovered-circle {
   stroke: var(--color-text);
   stroke-width: 1px;
   vector-effect: non-scaling-stroke;
-}
-
-.artist-vis {
-  --dim-opacity: 0.2;
 }
 
 .attr-circle {
@@ -616,15 +612,18 @@ main.artist-layout .artist-vis {
 
 .attr-circle.filtered-out,
 .work-card-container.filtered-out {
-  opacity: 0.15;
+  opacity: 0.075;
   pointer-events: none;
 }
 
-.artist-vis:has(.attr-circle.selected-circle)
-  .attr-circle:not(.selected-circle):not(:hover),
-.artist-vis:has(.attr-circle:hover)
-  .attr-circle:not(.selected-circle):not(:hover) {
-  opacity: var(--dim-opacity);
+.artist-vis:has(.attr-circle.selected-circle, .attr-circle.hovered-circle)
+  .attr-circle:not(.selected-circle):not(.hovered-circle):not(.filtered-out) {
+  opacity: 0.55;
+}
+
+.attr-circle.selected-circle:not(.filtered-out),
+.attr-circle.hovered-circle:not(.filtered-out) {
+  opacity: 1;
 }
 
 .work-thumbnail {

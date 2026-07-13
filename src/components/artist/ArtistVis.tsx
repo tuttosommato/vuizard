@@ -108,10 +108,9 @@ function ArtistVis({
   } | null>(null);
   const { selectedIds, toggle, hoveredWorkId } = useArtistSelection();
 
-  const isWorkActive = (workId: string) =>
-    selectedIds.has(workId) ||
-    workId === hoveredWork?.work.id ||
-    workId === hoveredWorkId;
+  const isSelected = (workId: string) => selectedIds.has(workId);
+  const isHovered = (workId: string) =>
+    workId === hoveredWork?.work.id || workId === hoveredWorkId;
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -332,7 +331,9 @@ function ArtistVis({
           <ArtistVisLegend />
 
           {workEdges
-            .filter((edge) => isWorkActive(edge.work_id))
+            .filter(
+              (edge) => isSelected(edge.work_id) || isHovered(edge.work_id),
+            )
             .map((edge) => (
               <line
                 key={`edge-${edge.work_id}-${edge.operational_id}`}
@@ -350,8 +351,9 @@ function ArtistVis({
           {dots.map((dot) => (
             <circle
               className={`attr-circle
-                ${isWorkActive(dot.work_id) ? " selected-circle" : ""}
-                ${isWorkFilteredOut(dot.size) || isAttributionFilteredOut(dot.uncertaintyStatus, dot.type as "accepted" | "discarded") ? "filtered-out" : ""}`}
+                ${isSelected(dot.work_id) ? " selected-circle" : ""}
+                ${isHovered(dot.work_id) ? " hovered-circle" : ""}
+                ${isWorkFilteredOut(dot.size) || isAttributionFilteredOut(dot.uncertaintyStatus, dot.type as "accepted" | "discarded") ? " filtered-out" : ""}`}
               key={dot.work_id + "-" + dot.operational_id}
               cx={dot.x}
               cy={dot.y}
