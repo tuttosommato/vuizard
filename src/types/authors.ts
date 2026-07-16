@@ -21,6 +21,8 @@ export interface Author {
   wikipedia: string | null;
   pharos_actor: string | null;
   names: string[];
+  preferred_name: string;
+  other_names: string[];
   life?: Life;
   stats: { [key: string]: Stats };
 }
