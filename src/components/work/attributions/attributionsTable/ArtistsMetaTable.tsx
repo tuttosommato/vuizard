@@ -95,7 +95,7 @@ export default function ArtistsMetaTable({
                 >
                   <ArrowLink
                     target={`/artist/${attr.local_id}`}
-                    artistName={attr.author}
+                    artistName={currentArtist?.preferred_name || attr.author}
                     relation={r}
                     uncertainty={u}
                     isAnonym={attr.is_anonymous}
@@ -158,11 +158,11 @@ export default function ArtistsMetaTable({
                   <td className="exp-column"></td>
                   <td className="type-column"></td>
                   <td className="artist-column">
-                    {currentArtist && currentArtist.names.length > 0 && (
+                    {currentArtist && currentArtist.other_names.length > 0 && (
                       <div className="artist-names-cnt">
                         Also known as:{" "}
                         <span className="names-list">
-                          {currentArtist.names.join(", ")}
+                          {currentArtist.other_names.join(", ")}
                         </span>
                       </div>
                     )}

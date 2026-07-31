@@ -92,14 +92,14 @@ export default function ArtistsLifeTable({
               <th className={"artist-column" + (attr.type === "accepted" ? " accepted-artist" : "")}>
                 <ArrowLink
                 target={`/artist/${attr.local_id}`}
-                artistName={attr.author}
+                artistName={artist?.preferred_name || attr.author}
                 isAnonym={attr.is_anonymous}
                 onMouseEnter={() => setHighlightedId(null)}
                 onMouseLeave={() => setHighlightedId(attr.operational_id)}
                 />
               </th>
               <td>
-                {attr.r_qualifier && <QuestionMarkTooltip author={attr.author} qualifier={attr.r_qualifier} />}
+                {attr.r_qualifier && <QuestionMarkTooltip author={artist?.preferred_name || attr.author} qualifier={attr.r_qualifier} />}
               </td>
               <td className="dating-column">
                 {life ? (
