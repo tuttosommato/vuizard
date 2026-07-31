@@ -15,7 +15,7 @@ export interface Life {
   parsed: boolean;
 }
 
-export interface Author {
+export interface Artist {
   id: string;
   pharos_id: string;
   name: string;
