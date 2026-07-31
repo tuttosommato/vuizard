@@ -1,4 +1,4 @@
-import type { Author } from "@/types/authors";
+import type { Author } from "@/types/artists";
 import type { AttributionsBundle } from "@/types/attributions";
 import { scaleLinear, extent } from "d3";
 import { labelsFontSize } from "../debateVis/constants";

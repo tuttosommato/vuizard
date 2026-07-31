@@ -1,21 +1,21 @@
 export interface Attribution {
-  type: "accepted" | "discarded" | string;
-  local_id: string;
-  author: string;
-  pseudonym: string;
-  r_qualifier: string;
-  u_qualifier: string;
+  type: "accepted" | "discarded";
+  attribution_id: string;
+  authors: Array<{
+    name: string;
+    local_id: string;
+    composite_id: string;
+    r_qualifier: string;
+    u_qualifier: string;
+    similarity_id: string;
+    is_anonymous: boolean;
+  }>;
   reasons: Array<{
     reason: string;
-    dates: string[];
     original_text: string;
+    date: string;
     rank: number;
-    matched_bibliography: string[];
   }>;
-  operational_id: string;
-  similarity_id: string;
-  base_id: string;
-  is_anonymous: boolean;
 }
 
 export interface AuthorSimilarity {
@@ -30,13 +30,11 @@ export interface AuthorSimilarity {
   n: number;
 }
 
-/** pairs of author identifiers (may include suffixes like "-?", "-BOTTEGA", etc.) */
-export type AuthorPair = [string, string];
-
 export interface AttributionsBundle {
   attributions: Attribution[];
   author_similarities: AuthorSimilarity[];
-  implicit_relations: AuthorPair[];
-  master_relations: AuthorPair[];
-  unmatched_bibliography: string[];
+  implicit_relations: [string, string][];
+  master_relations: [string, string][];
+  n_attributions: number;
+  diversity: number | "";
 }

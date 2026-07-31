@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { getAttributions, getAuthor, getWork } from "@/data/api";
-import type { Author } from "@/types/authors";
+import type { Author } from "@/types/artists";
 import type { WorkItem } from "@/types/artists";
 import NotFoundPage from "./NotFoundPage";
 import ArtistVis, { type ArtistVisHandle } from "@/components/artist/ArtistVis";

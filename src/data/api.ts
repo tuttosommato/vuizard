@@ -2,7 +2,7 @@
 // The rest of the app go through this module instead of fetching directly, so the implementation can be swapped without changing any other code
 
 import type { Work, WorksIndex } from "@/types/works";
-import type { Author } from "@/types/authors";
+import type { Author } from "@/types/artists";
 import type { AttributionsBundle } from "@/types/attributions";
 
 // ---- Configuration ----

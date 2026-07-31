@@ -1,7 +1,7 @@
 import type { Attribution } from "@/types/attributions";
 import uncertaintyLine from "@/utils/uncertaintyLine";
 import AttributionCircle from "@/components/work/attributions/AttributionCircle";
-import type { Author } from "@/types/authors";
+import type { Author } from "@/types/artists";
 import { verticalCenterOffset } from "./geometry";
 import { circleTypeFor } from "@/components/work/attributions/utils";
 import { rankScale, radius, center } from "./constants";

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Attribution } from "@/types/attributions";
-import type { Author } from "@/types/authors";
+import type { Author } from "@/types/artists";
 import { getAuthor } from "@/data/api";
 
 const useArtists = (attributions: Attribution[]) => {

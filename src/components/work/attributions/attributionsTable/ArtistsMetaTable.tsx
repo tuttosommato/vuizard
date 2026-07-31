@@ -1,7 +1,7 @@
 import { scaleLinear } from "d3";
 import { Fragment } from "react";
 import type { AttributionsBundle } from "@/types/attributions";
-import type { Author } from "@/types/authors";
+import type { Author } from "@/types/artists";
 import uncertaintyLine from "@/utils/uncertaintyLine";
 import AttributionCircle from "../AttributionCircle";
 import { circleTypeFor } from "../utils";

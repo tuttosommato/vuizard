@@ -1,13 +1,15 @@
+import type { AttributionsBundle } from "./attributions";
+
 export interface Dating {
   type: "accepted" | "discarded";
   from: string;
   to: string;
-  from_approximation?: string;
-  to_approximation?: string;
+  from_approximation: string;
+  to_approximation: string;
 }
 
 export interface Bibliography {
-  type: string;
+  type: "bibliografia specifica" | "bibliografia di confronto" | "";
   author: string;
   title: string;
   date: string;
@@ -16,8 +18,6 @@ export interface Bibliography {
 export interface Photos {
   link: string;
   alt: string;
-  h: string;
-  w: string;
 }
 
 export interface Work {
@@ -41,3 +41,10 @@ export interface WorksData {
 }
 
 export type WorksIndex = Record<string, string>;
+
+// for artist page
+export type WorkItem = {
+  id: string;
+  work: Work | null;
+  attributions: AttributionsBundle | null;
+};
