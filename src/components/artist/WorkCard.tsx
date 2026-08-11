@@ -26,6 +26,7 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
   const attributionsLength = Object.keys(
     workItem.attributions?.attributions || {},
   ).length;
+  const availablePhotos = workItem.work?.photos.filter((p) => p.image_path);
 
   // Filter out works that have no attributions for the current artist
   const relevantAttrs =
@@ -60,8 +61,8 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
         <div className="work-card-upper">
           <div className="work-card-img-container">
             <img
-              src={BASE_URL + workItem.work?.photos[0].image_path}
-              alt={workItem.work?.photos[0].alt || "Untitled"}
+              src={BASE_URL + availablePhotos?.[0]?.image_path}
+              alt={availablePhotos?.[0]?.alt || "Untitled"}
             />
           </div>
           <div className="work-card-info">
@@ -86,23 +87,32 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
         </div>
         {isSelected && (
           <div className="work-card-attributions-expanded">
-            {workItem.attributions ? (
-              <>
-                <p className="work-card-attributions-header">
-                  <span>Artists</span>
-                  <span>Type</span>
-                </p>
-                <ul>
-                  {Object.values(workItem.attributions.attributions).map(
-                    (attr) => {
-                      const involvesThisArtist = attr.authors.some(
-                        (a) => a.local_id === artistId,
-                      );
-                      return (
-                        <li key={attr.attribution_id}>
-                          <div className="work-card-attribution-authors">
-                            {attr.authors.map((author) => (
+            <table className="work-card-attributions-table">
+              <thead className="work-card-attributions-header">
+                <tr>
+                  <th>Artists</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.values(workItem.attributions?.attributions || {}).map(
+                  (attr) => {
+                    const involvesThisArtist = attr.authors.some(
+                      (a) => a.local_id === artistId,
+                    );
+                    const authorsLength = attr.authors.length;
+                    return (
+                      <>
+                        {attr.authors.map((author, idx) => (
+                          <tr
+                            key={attr.attribution_id}
+                            className={
+                              idx + 1 === authorsLength ? "last-row" : ""
+                            }
+                          >
+                            <td className="work-card-attribution-authors">
                               <ArrowLink
+                                key={author.local_id}
                                 target={`/artist/${author.local_id}`}
                                 artistName={author.name}
                                 relation={
@@ -116,29 +126,31 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
                                   author.local_id === artistId
                                 }
                               />
-                            ))}
-                          </div>
+                            </td>
 
-                          <span
-                            className={
-                              "work-card-attributions-type-span" +
-                              (attr.type === "accepted"
-                                ? " type-span-accepted"
-                                : " type-span-discarded") +
-                              (involvesThisArtist
-                                ? " type-span-highlighted"
-                                : "")
-                            }
-                          >
-                            {attr.type}
-                          </span>
-                        </li>
-                      );
-                    },
-                  )}
-                </ul>
-              </>
-            ) : null}
+                            <td
+                              className={
+                                "work-card-attributions-type-span" +
+                                (attr.type === "accepted"
+                                  ? " type-span-accepted"
+                                  : " type-span-discarded") +
+                                (involvesThisArtist
+                                  ? " type-span-highlighted"
+                                  : "")
+                              }
+                            >
+                              {idx + 1 != authorsLength || authorsLength === 1
+                                ? attr.type
+                                : ""}
+                            </td>
+                          </tr>
+                        ))}
+                      </>
+                    );
+                  },
+                )}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

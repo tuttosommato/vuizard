@@ -264,48 +264,49 @@ main.artist-layout .artist-vis {
   color: var(--color-text);
 }
 
+.work-card-attributions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.work-card-attributions-table tr.last-row td {
+  padding-bottom: var(--space-xs);
+}
+
+.work-card-attributions-table tr:first-child td {
+  padding-top: var(--space-xs);
+}
+
 .work-card-attribution-authors {
   display: flex;
   flex-direction: column;
   gap: var(--space-2xs);
+  align-items: flex-start;
 }
 
 .work-card-attributions-expanded {
   font-size: var(--text-sm);
 }
 
-.work-card-attributions-expanded ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.work-card-attributions-header {
+.work-card-attributions-header th {
   text-transform: uppercase;
   font-size: var(--text-2xs);
-  font-weight: 600;
+  font-weight: 500;
 }
 
-.work-card-attributions-expanded ul li,
-.work-card-attributions-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: var(--space-2xs) 0;
+.work-card-attributions-header tr th:nth-child(1) {
+  text-align: left;
 }
 
-.work-card-attributions-header {
-  align-items: flex-end;
+.work-card-attributions-header tr th:nth-child(2) {
+  text-align: right;
 }
 
-.work-card-attributions-expanded ul li {
-  align-items: flex-start;
-}
-
-.work-card-attributions-expanded ul li .work-card-attributions-type-span {
+.work-card-attributions-type-span {
   text-transform: uppercase;
   font-size: var(--text-2xs);
   color: var(--color-text-muted);
+  text-align: right;
 }
 
 .work-card-attributions-type-span.type-span-highlighted.type-span-accepted {
