@@ -103,17 +103,15 @@ export default function ArtistsLifeTable({
                 }
               >
                 {attr.authors.map((author) => {
-                  const artist = artists[author.local_id];
                   return (
                     <div className="arrow-link-cnt">
                       <ArrowLink
-                        target={`/artist/${author.local_id}`}
-                        artistName={artist.name}
                         isAnonym={author.is_anonymous}
                         onMouseEnter={() => setHighlightedId(null)}
                         onMouseLeave={() =>
                           setHighlightedId(attr.attribution_id)
                         }
+                        author={author}
                       />
                     </div>
                   );

@@ -1,44 +1,36 @@
 import { Link } from "react-router-dom";
 import ArrowIcon from "./ArrowIcon";
+import type { AttributionAuthor } from "@/types/attributions";
+import { formatAuthorLabel } from "./work/attributions/utils";
 
 export default function ArrowLink({
-  target,
-  artistName = "",
-  relation = "",
-  uncertainty = "",
   isAnonym = false,
   onMouseEnter,
   onMouseLeave,
+  author,
 }: {
-  target: string;
-  artistName?: string;
-  relation?: string;
-  uncertainty?: string;
   isAnonym?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  author: AttributionAuthor;
 }) {
   if (isAnonym) {
     return (
       <span className="anonymous-artist">
-        {artistName && artistName +
-          (relation ? ", " + relation : "") +
-          (uncertainty ? " " + uncertainty : "")}
+        {formatAuthorLabel(author)}
       </span>
     );
   }
   
   return (
     <Link
-      to={target}
+      to={`/artist/${author.local_id}`}
       className="arrow-link"
       onClick={(e) => e.stopPropagation()} /* don't toggle the row */
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {artistName +
-        (relation ? ", " + relation : "") +
-        (uncertainty ? " " + uncertainty : "")}
+      {formatAuthorLabel(author)}
       <span className="arrow-link-arrow" aria-hidden="true">
         <ArrowIcon />
       </span>

@@ -1,7 +1,16 @@
 export interface Attribution {
   type: "accepted" | "discarded";
   attribution_id: string;
-  authors: Array<{
+  authors: AttributionAuthor[];
+  reasons: Array<{
+    reason: string;
+    original_text: string;
+    date: string;
+    rank: number;
+  }>;
+}
+
+export interface AttributionAuthor {
     name: string;
     local_id: string;
     composite_id: string;
@@ -9,13 +18,6 @@ export interface Attribution {
     u_qualifier: string;
     similarity_id: string;
     is_anonymous: boolean;
-  }>;
-  reasons: Array<{
-    reason: string;
-    original_text: string;
-    date: string;
-    rank: number;
-  }>;
 }
 
 export interface AuthorSimilarity {

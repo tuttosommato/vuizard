@@ -113,18 +113,11 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
                             <td className="work-card-attribution-authors">
                               <ArrowLink
                                 key={author.local_id}
-                                target={`/artist/${author.local_id}`}
-                                artistName={author.name}
-                                relation={
-                                  representativeAuthor(attr).r_qualifier
-                                }
-                                uncertainty={
-                                  representativeAuthor(attr).u_qualifier
-                                }
                                 isAnonym={
                                   author.is_anonymous ||
                                   author.local_id === artistId
                                 }
+                                author={author}
                               />
                             </td>
 

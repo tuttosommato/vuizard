@@ -17,19 +17,23 @@ export function circleTypeFor(
   return "unrecognised";
 }
 
-export function formatAttriutionLabel(attr: Attribution): string {
-  return attr.authors
-    .map((a) => {
-      return (
-        (a.r_qualifier && !a.r_qualifier.includes("e ")
-          ? a.r_qualifier + " di "
-          : "") +
-        a.name +
-        (a.r_qualifier && a.r_qualifier.includes("e ")
-          ? a.r_qualifier + " "
-          : "") +
-        (a.u_qualifier ? a.u_qualifier : "")
-      );
-    })
-    .join(" & ");
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+export function formatAttributionLabel(attr: Attribution): string {
+  return attr.authors.map(formatAuthorLabel).join(" & ");
+}
+
+export function formatAuthorLabel(a: AttributionAuthor): string {
+  const label =
+    (a.r_qualifier && !a.r_qualifier.includes("e ")
+      ? a.r_qualifier + " di "
+      : "") +
+    a.name +
+    (a.r_qualifier && a.r_qualifier.includes("e ")
+      ? a.r_qualifier + " "
+      : "") +
+    (a.u_qualifier ? ` (${a.u_qualifier})` : "");
+  return capitalize(label);
 }

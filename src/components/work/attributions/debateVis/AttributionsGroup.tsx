@@ -4,7 +4,7 @@ import AttributionCircle from "@/components/work/attributions/AttributionCircle"
 import { verticalCenterOffset } from "./geometry";
 import {
   circleTypeFor,
-  formatAttriutionLabel,
+  formatAttributionLabel,
   representativeAuthor,
 } from "@/components/work/attributions/utils";
 import { rankScale, radius, center } from "./constants";
@@ -184,7 +184,7 @@ export default function AttributionsGroup({
           dominantBaseline="middle"
           fill="var(--color-text)"
         >
-          {formatAttriutionLabel(attr)}
+          {formatAttributionLabel(attr)}
         </text>
       </g>
     </>
