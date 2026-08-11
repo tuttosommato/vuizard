@@ -72,6 +72,10 @@ function FullScreenImage({
 export default function WorkImages({ photos }: WorkImagesProps) {
   const [selectedImage, setSelectedImage] = useState<Photos | null>(null);
 
+  // filter out photos without image_path, as they cannot be rendered. Note that the lack of image_path is a problem coming from the data source
+  // eventually, other images are still rendered and available at the original catalog link
+  const renderablePhotos = photos.filter((ph) => ph.image_path);
+
   const handleFullScreen = (photo: Photos) => {
     if (!photo) return;
     setSelectedImage(photo);
@@ -87,7 +91,7 @@ export default function WorkImages({ photos }: WorkImagesProps) {
       )}
 
       <div className="img-cnt">
-        {photos.map((ph) => (
+        {renderablePhotos.map((ph) => (
           <img
             key={ph.image_path}
             alt={ph.alt}
