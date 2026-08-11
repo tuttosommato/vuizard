@@ -37,8 +37,11 @@ export function CrossSelectionProvider({
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      const target = e.target instanceof Element ? e.target : null;
-      if (target?.closest(PRESERVE_SELECTION)) return;
+      const path = e.composedPath();
+      const preserved = path.some(
+        (el) => el instanceof Element && el.matches(PRESERVE_SELECTION),
+      );
+      if (preserved) return;
       clear();
     };
     document.addEventListener("click", handleClick);
@@ -52,9 +55,7 @@ export function CrossSelectionProvider({
   };
 
   return (
-    <CrossSelectionContext value={value}>
-      {children}
-    </CrossSelectionContext>
+    <CrossSelectionContext value={value}>{children}</CrossSelectionContext>
   );
 }
 
