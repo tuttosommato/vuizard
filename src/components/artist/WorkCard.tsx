@@ -1,4 +1,4 @@
-import type { WorkItem } from "@/types/artists";
+import type { WorkItem } from "@/types/works";
 import { BASE_URL } from "@/utils/constants.ts";
 import { formatDating } from "@/utils/formatDating";
 import ArrowLink from "@/components/ArrowLink";
@@ -8,6 +8,7 @@ import ExpandArrow from "@/components/ExpandArrow";
 import { useArtistSelection } from "@/stores/ArtistSelectionContext";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
 import uncertaintyBucket from "@/utils/uncertaintyBucket";
+import { representativeAuthor } from "../work/attributions/utils";
 
 interface WorkCardProps {
   workItem: WorkItem;
@@ -26,9 +27,10 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
     workItem.attributions?.attributions || {},
   ).length;
 
+  // Filter out works that have no attributions for the current artist
   const relevantAttrs =
-    workItem.attributions?.attributions.filter(
-      (a) => a.local_id === artistId,
+    workItem.attributions?.attributions.filter((a) =>
+      a.authors.map((author) => author.local_id).includes(artistId),
     ) ?? [];
 
   const isFilteredOut =
@@ -36,7 +38,7 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
     relevantAttrs.length === 0 ||
     relevantAttrs.every((attr) =>
       isAttributionFilteredOut(
-        uncertaintyBucket(attr.u_qualifier),
+        uncertaintyBucket(representativeAuthor(attr).u_qualifier),
         attr.type as "accepted" | "discarded",
       ),
     );
@@ -58,8 +60,8 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
         <div className="work-card-upper">
           <div className="work-card-img-container">
             <img
-              src={BASE_URL + workItem.work?.photos[0].link}
-              alt={workItem.work?.title || "Untitled"}
+              src={BASE_URL + workItem.work?.photos[0].image_path}
+              alt={workItem.work?.photos[0].alt || "Untitled"}
             />
           </div>
           <div className="work-card-info">
@@ -93,24 +95,37 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
                 <ul>
                   {Object.values(workItem.attributions.attributions).map(
                     (attr) => {
+                      const involvesThisArtist = attr.authors.some(
+                        (a) => a.local_id === artistId,
+                      );
                       return (
-                        <li key={attr.local_id}>
-                          <ArrowLink
-                            target={`/artist/${attr.local_id}`}
-                            artistName={attr.author}
-                            relation={attr.r_qualifier}
-                            uncertainty={attr.u_qualifier}
-                            isAnonym={
-                              attr.is_anonymous || attr.local_id === artistId
-                            }
-                          />
+                        <li key={attr.attribution_id}>
+                          <div className="work-card-attribution-authors">
+                            {attr.authors.map((author) => (
+                              <ArrowLink
+                                target={`/artist/${author.local_id}`}
+                                artistName={author.name}
+                                relation={
+                                  representativeAuthor(attr).r_qualifier
+                                }
+                                uncertainty={
+                                  representativeAuthor(attr).u_qualifier
+                                }
+                                isAnonym={
+                                  author.is_anonymous ||
+                                  author.local_id === artistId
+                                }
+                              />
+                            ))}
+                          </div>
+
                           <span
                             className={
                               "work-card-attributions-type-span" +
                               (attr.type === "accepted"
                                 ? " type-span-accepted"
                                 : " type-span-discarded") +
-                              (attr.local_id === artistId
+                              (involvesThisArtist
                                 ? " type-span-highlighted"
                                 : "")
                             }

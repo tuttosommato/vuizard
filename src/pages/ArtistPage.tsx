@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { getAttributions, getAuthor, getWork } from "@/data/api";
-import type { Author } from "@/types/artists";
-import type { WorkItem } from "@/types/artists";
+import type { Artist } from "@/types/artists";
+import type { WorkItem } from "@/types/works";
 import NotFoundPage from "./NotFoundPage";
 import ArtistVis, { type ArtistVisHandle } from "@/components/artist/ArtistVis";
 import "@/styles/artist.css";
@@ -16,10 +16,10 @@ import { ArtistFilterProvider } from "@/stores/ArtistFilterContext";
 
 type LoadState =
   | { status: "loading"; phase: "artist" }
-  | { status: "loading"; phase: "works"; artist: Author; workCount: number }
+  | { status: "loading"; phase: "works"; artist: Artist; workCount: number }
   | {
       status: "loaded";
-      artist: Author;
+      artist: Artist;
       worksList: WorkItem[];
       artistId: string;
     }
@@ -45,7 +45,11 @@ export default function ArtistPage() {
           return;
         }
         const workIds = [
-          ...new Set(Object.values(artist.stats).flatMap((s) => s.works)),
+          ...new Set(
+            Object.values(
+              artist.stats as Record<string, { works: string[] }>,
+            ).flatMap((s) => s.works),
+          ),
         ];
         setState({
           status: "loading",
@@ -168,7 +172,9 @@ function ArtistPageContent({
 
   const dotsLength = state.worksList.flatMap((work) => {
     const attributions = work.attributions?.attributions ?? [];
-    return attributions.filter((attr) => attr.local_id === artistId);
+    return attributions.filter((attr) =>
+      attr.authors.map((a) => a.local_id).includes(artistId),
+    );
   }).length;
 
   const multiplier =
@@ -220,23 +226,35 @@ function ArtistPageContent({
       <div className="artist-left">
         <div className="artist-header">
           <p>Navigate the works with attributions to</p>
-          <h1 className="artist-name">{state.artist.names[0]}</h1>
-          {state.artist.life ? (
+          <h1 className="artist-name">{state.artist.name}</h1>
+          {state.artist.life.raw && state.artist.life.start ? (
             <p className="artist-life life-known">
-              {state.artist.life.birth +
-                (state.artist.life.birth_qualifier ? "ca." : "")}{" "}
+              {state.artist.life.start +
+                (state.artist.life.start_approx ? "ca." : "")}{" "}
               -{" "}
-              {state.artist.life.death +
-                (state.artist.life.death_qualifier ? "ca." : "")}
+              {state.artist.life.end
+                ? state.artist.life.end +
+                  (state.artist.life.end_approx ? "ca." : "")
+                : "present"}
             </p>
+          ) : state.artist.life.raw ? (
+            <p>{state.artist.life.raw}</p>
           ) : (
             <p className="artist-life life-unknown">Life dates unknown</p>
           )}
 
-          {state.artist.names.length > 1 && (
+          {[
+            ...state.artist.pseudonyms,
+            ...state.artist.pseudonym_alts,
+            ...state.artist.variant_names,
+          ].length > 0 && (
             <p>
               Also known as{" "}
-              {state.artist.names.slice(1).map((name, i) => (
+              {[
+                ...state.artist.pseudonyms,
+                ...state.artist.pseudonym_alts,
+                ...state.artist.variant_names,
+              ].map((name, i) => (
                 <span key={name}>
                   {i > 0 && ", "}
                   <span className="alternative-name">{name}</span>
@@ -259,7 +277,7 @@ function ArtistPageContent({
           <div className="works-list-header">
             <h3 className="work-list-stats-title">
               {state.worksList.length} works with attributions to{" "}
-              {state.artist.names[0]}.
+              {state.artist.name}.
             </h3>
             <p className="work-list-stats">
               Includes{" "}

@@ -5,7 +5,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { zoom } from "d3-zoom";
 import type { ZoomBehavior } from "d3-zoom";
 import { select } from "d3-selection";
-import type { WorkItem } from "@/types/artists";
+import type { WorkItem } from "@/types/works";
 import { easeCubicInOut } from "d3-ease";
 import { useImperativeHandle } from "react";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
@@ -34,6 +34,7 @@ import UncertaintyPatternDefs from "./defs/UncertaintyPatternDefs";
 import RadialHalftonePatternDefs from "./defs/RadialHalftonePatternDefs";
 import { createPortal } from "react-dom";
 import { useArtistSelection } from "@/stores/ArtistSelectionContext";
+import { representativeAuthor } from "../work/attributions/utils";
 
 function ZoomControls({
   svgRef,
@@ -67,7 +68,7 @@ function WorkThumbnail({
   work: WorkItem;
   coords: { x: number; y: number };
 }) {
-  const src = work.work?.photos[0]?.link;
+  const src = work.work?.photos[0]?.image_path;
   if (!src) return null;
 
   return createPortal(
@@ -139,28 +140,32 @@ function ArtistVis({
       const attributions = work.attributions?.attributions ?? [];
       const nAttributions = attributions.length;
       return attributions
-        .filter((attr) => attr.local_id === artistId)
+        .filter((attr) =>
+          attr.authors.map((a) => a.local_id).includes(artistId),
+        )
         .map((attr) => {
           const isDocumented = attr.reasons.some(
             (reason) => reason.rank === 11,
           );
-          const relation = attr.r_qualifier;
+          const relation = representativeAuthor(attr).r_qualifier;
           const radius = TIER_RADII[relation] ?? TIER_I;
           return {
             work_id: work.id,
-            aut_id: attr.local_id,
-            operational_id: attr.operational_id,
+            aut_id: attr.attribution_id,
+            operational_id: attr.attribution_id,
             x: VIS_CX - radius,
             y: VIS_CY,
             tierRadius: radius,
-            fill: attr.u_qualifier
-              ? attr.u_qualifier === "?"
+            fill: representativeAuthor(attr).u_qualifier
+              ? representativeAuthor(attr).u_qualifier === "?"
                 ? `url(#uncertain-${attr.type}-1)`
                 : `url(#uncertain-${attr.type}-2)`
               : colorScale(attr.type),
             size: nAttributions,
             type: attr.type,
-            uncertaintyStatus: uncertaintyBucket(attr.u_qualifier),
+            uncertaintyStatus: uncertaintyBucket(
+              representativeAuthor(attr).u_qualifier,
+            ),
             radius: Math.sqrt(nAttributions) * multiplier,
             isDocumented,
           };
@@ -372,7 +377,7 @@ function ArtistVis({
               onMouseLeave={() => setHoveredWork(null)}
               onClick={() => toggle(dot.work_id)}
               /* stroke={dot.type === "accepted" ? "var(--color-accepted)" : "var(--color-discarded)"}
-              strokeWidth={0.25} */
+            strokeWidth={0.25} */
             />
           ))}
         </g>

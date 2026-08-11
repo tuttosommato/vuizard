@@ -264,6 +264,12 @@ main.artist-layout .artist-vis {
   color: var(--color-text);
 }
 
+.work-card-attribution-authors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
 .work-card-attributions-expanded {
   font-size: var(--text-sm);
 }
@@ -284,9 +290,16 @@ main.artist-layout .artist-vis {
 .work-card-attributions-header {
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
   justify-content: space-between;
   padding: var(--space-2xs) 0;
+}
+
+.work-card-attributions-header {
+  align-items: flex-end;
+}
+
+.work-card-attributions-expanded ul li {
+  align-items: flex-start;
 }
 
 .work-card-attributions-expanded ul li .work-card-attributions-type-span {
@@ -395,7 +408,7 @@ main.artist-layout .artist-vis {
 }
 
 .artist-legend .svg-span-cnt {
-    display: flex;
+  display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: flex-start;
@@ -452,7 +465,9 @@ main.artist-layout .artist-vis {
   outline-offset: 2px;
 }
 
-.uncertainty-legend-item, .accepted-legend-item, .discarded-legend-item {
+.uncertainty-legend-item,
+.accepted-legend-item,
+.discarded-legend-item {
   cursor: pointer;
 }
 
@@ -481,7 +496,6 @@ main.artist-layout .artist-vis {
   display: inline-block;
   width: 16px;
   height: 16px;
-
 }
 
 .accepted-legend-item svg circle,
