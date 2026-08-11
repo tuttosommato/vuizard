@@ -560,7 +560,6 @@ td.details-cell {
 .attributions-table .visible-row,
 .artists-life-table tbody tr:not(tr.dating-row) {
   cursor: pointer;
-  opacity: 0.8;
 }
 
 .attributions-table .visible-row[aria-expanded="true"],
