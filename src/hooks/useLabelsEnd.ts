@@ -14,11 +14,11 @@ const useLabelsEnd = (attributions: Attribution[], rotations: number[]) => {
   const labelsEnd = useMemo(() => {
     const result: Record<string, { x: number; y: number }> = {};
     attributions.forEach((d, i) => {
-      const g = labelsGeometry[d.operational_id];
+      const g = labelsGeometry[d.attribution_id];
       if (!g) return;
       const rotDeg = rotations[i];
       const rotRad = (rotDeg * Math.PI) / 180;
-      result[d.operational_id] = {
+      result[d.attribution_id] = {
         x: rankScale(-0.2) * Math.cos(rotRad) + g.textWidth + curveGap,
         y: rankScale(-0.2) * Math.sin(rotRad) + verticalCenterOffset(rotDeg),
       };

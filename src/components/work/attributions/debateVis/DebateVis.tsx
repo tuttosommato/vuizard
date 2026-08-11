@@ -2,7 +2,6 @@ import type { AttributionsBundle } from "@/types/attributions";
 import BackgroundArcs from "@/components/work/attributions/debateVis/BackgroundArcs";
 import AttributionsGroup from "@/components/work/attributions/debateVis/AttributionsGroup";
 import { slotRotationDeg } from "./geometry";
-import useArtists from "@/hooks/useArtists";
 import useLabelsEnd from "@/hooks/useLabelsEnd";
 import { useMemo } from "react";
 import { useHighlight } from "@/stores/HighlightContext";
@@ -33,8 +32,6 @@ export default function DebateVis({
     implicit_relations,
     master_relations,
   } = currentAttributions;
-
-  const artists = useArtists(attributions);
 
   const highlightedId = useHighlight().highlightedId;
 
@@ -81,16 +78,16 @@ export default function DebateVis({
   const highlightedAttributions = useMemo(() => {
     if (!highlightedId) return attributions;
     const anchorIdx = attributions.findIndex(
-      (a) => a.operational_id === highlightedId,
+      (a) => a.attribution_id === highlightedId,
     );
     const above = attributions.slice(0, anchorIdx);
     const below = attributions.slice(anchorIdx + 1);
     return [
-      ...above.filter((a) => !clusterMembers?.has(a.operational_id)),
-      ...above.filter((a) => clusterMembers?.has(a.operational_id)),
+      ...above.filter((a) => !clusterMembers?.has(a.attribution_id)),
+      ...above.filter((a) => clusterMembers?.has(a.attribution_id)),
       attributions[anchorIdx],
-      ...below.filter((a) => clusterMembers?.has(a.operational_id)),
-      ...below.filter((a) => !clusterMembers?.has(a.operational_id)),
+      ...below.filter((a) => clusterMembers?.has(a.attribution_id)),
+      ...below.filter((a) => !clusterMembers?.has(a.attribution_id)),
     ];
   }, [attributions, highlightedId, clusterMembers]);
 
@@ -165,11 +162,10 @@ export default function DebateVis({
           const attrLength = displayAttributions.length;
           return (
             <AttributionsGroup
-              key={attr.operational_id}
+              key={attr.attribution_id}
               attr={attr}
               rotation={rotations[i]}
               labelsRef={labelsRef}
-              artists={artists}
               highlightMembers={highlightMembers}
               tooltipPosition={i + 1 <= attrLength / 2 ? "bottom" : "top"}
             />

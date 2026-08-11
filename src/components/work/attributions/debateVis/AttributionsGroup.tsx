@@ -1,9 +1,12 @@
 import type { Attribution } from "@/types/attributions";
 import uncertaintyLine from "@/utils/uncertaintyLine";
 import AttributionCircle from "@/components/work/attributions/AttributionCircle";
-import type { Author } from "@/types/artists";
 import { verticalCenterOffset } from "./geometry";
-import { circleTypeFor } from "@/components/work/attributions/utils";
+import {
+  circleTypeFor,
+  formatAttriutionLabel,
+  representativeAuthor,
+} from "@/components/work/attributions/utils";
 import { rankScale, radius, center } from "./constants";
 import { colorScale } from "@/utils/constants.ts";
 import { createPortal } from "react-dom";
@@ -15,7 +18,6 @@ type GroupProps = {
   attr: Attribution;
   rotation: number;
   labelsRef: React.RefObject<Map<string, SVGTextElement>>;
-  artists: { [key: string]: Author };
   highlightMembers: Set<string> | null;
   tooltipPosition: "top" | "bottom";
 };
@@ -62,12 +64,10 @@ export default function AttributionsGroup({
   attr,
   rotation,
   labelsRef,
-  artists,
   highlightMembers,
   tooltipPosition,
 }: GroupProps) {
   const attrFill = colorScale(attr.type);
-  const artistStats = artists[attr.local_id]?.stats?.[attr.operational_id];
   const circleType = circleTypeFor(attr);
 
   const symbolRefs = useRef<Map<number, SVGElement>>(new Map());
@@ -77,11 +77,12 @@ export default function AttributionsGroup({
 
   const { selectedIds, toggle } = useCrossSelection();
   const { highlightedId, setHighlightedId } = useHighlight();
-  const isHighlighted = highlightedId === attr.operational_id;
-  
-  const isSelected = selectedIds.has(attr.operational_id);
+  const isHighlighted = highlightedId === attr.attribution_id;
+
+  const isSelected = selectedIds.has(attr.attribution_id);
   const isSymbolActive = isSelected || isHighlighted;
-  const isLabelActive = highlightMembers?.has(attr.operational_id) || isHighlighted || isSelected; 
+  const isLabelActive =
+    highlightMembers?.has(attr.attribution_id) || isHighlighted || isSelected;
 
   useEffect(() => {
     const next = attr.reasons.map((_, ri) => {
@@ -96,16 +97,14 @@ export default function AttributionsGroup({
     setCoordsList(next);
   }, [isHighlighted, attr.reasons, tooltipPosition]);
 
-  
-
   return (
     <>
       {isHighlighted &&
         attr.reasons.map((reason, ri) => {
-          const date = reason.dates.length > 0 ? reason.dates[0] : null;
+          const date = reason.date != "" ? reason.date : null;
           return (
             <ReasonTooltip
-              key={`${attr.operational_id}-tooltip-${ri}`}
+              key={`${attr.attribution_id}-tooltip-${ri}`}
               reason={reason.reason}
               date={date}
               coords={coordsList[ri] ?? null}
@@ -120,23 +119,24 @@ export default function AttributionsGroup({
         data-label-active={isLabelActive || undefined}
         transform={`${center} rotate(${rotation})`}
         fill={attrFill}
-        onClick={() => toggle(attr.operational_id)}
-        onMouseEnter={() => setHighlightedId(attr.operational_id)}
+        onClick={() => toggle(attr.attribution_id)}
+        onMouseEnter={() => setHighlightedId(attr.attribution_id)}
         onMouseLeave={() => setHighlightedId(null)}
       >
         {/* Edges */}
         {attr.reasons.map((reason) => {
           const x1 = rankScale(reason.rank) + radius; // edge is traced from the right edge of the circle so that it is not visible when opacity is reduced
           const x2 = rankScale(0);
-          const key = `${attr.operational_id}-${reason.reason}`;
+          const key = `${attr.attribution_id}-${reason.reason}`;
 
-          return attr.u_qualifier ? (
+          // call representativeAuthor since the relation is shared among all reasons of the same attribution
+          return representativeAuthor(attr).u_qualifier ? (
             <path
               className="reason-edge"
               key={key}
               d={uncertaintyLine(
                 [x1, 0, x2, 0],
-                attr.u_qualifier === "?" ? 0.85 : 0.6,
+                representativeAuthor(attr).u_qualifier === "?" ? 0.85 : 0.6,
               )}
               fill="none"
               stroke="var(--color-text)"
@@ -162,7 +162,7 @@ export default function AttributionsGroup({
         {attr.reasons.map((reason, ri) => (
           <g
             className="reason-symbol"
-            key={`${attr.operational_id}-sym-${ri}`}
+            key={`${attr.attribution_id}-sym-${ri}`}
             ref={(el) => {
               if (el) symbolRefs.current.set(ri, el);
               else symbolRefs.current.delete(ri);
@@ -173,36 +173,18 @@ export default function AttributionsGroup({
           </g>
         ))}
 
-        {/* Average */}
-        {artistStats && (
-          <circle
-            className="average-marker"
-            cx={rankScale(artistStats.counts.mean)}
-            cy={0}
-            r={radius / 1.5}
-            fill="var(--color-text)"
-            stroke="var(--color-text)"
-            strokeWidth={0.75}
-            fillOpacity={0.1}
-            strokeOpacity={0.7}
-            vectorEffect="non-scaling-stroke"
-          />
-        )}
-
         {/* Labels */}
         <text
           ref={(el) => {
-            if (el) labelsRef.current.set(attr.operational_id, el);
-            else labelsRef.current.delete(attr.operational_id);
+            if (el) labelsRef.current.set(attr.attribution_id, el);
+            else labelsRef.current.delete(attr.attribution_id);
           }}
           className="vis-artist-label"
           transform={`translate(${rankScale(-0.2)}, 0) rotate(${-rotation}) translate(0, ${verticalCenterOffset(rotation)})`}
           dominantBaseline="middle"
           fill="var(--color-text)"
         >
-          {attr.author +
-            (attr.r_qualifier ? " " + attr.r_qualifier : "") +
-            (attr.u_qualifier ? " " + attr.u_qualifier : "")}
+          {formatAttriutionLabel(attr)}
         </text>
       </g>
     </>
