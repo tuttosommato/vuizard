@@ -10,7 +10,13 @@ type WorkImagesProps = {
   photos: Work["photos"];
 };
 
-function FullScreenImage({ photo, onClose }: { photo: Photos; onClose: () => void }) {
+function FullScreenImage({
+  photo,
+  onClose,
+}: {
+  photo: Photos;
+  onClose: () => void;
+}) {
   const [buttonPos, setButtonPos] = useState<{
     top: number;
     right: number;
@@ -31,25 +37,33 @@ function FullScreenImage({ photo, onClose }: { photo: Photos; onClose: () => voi
 
   return createPortal(
     <div className="full-screen-image">
-      {buttonPos && <button style={{ position: "absolute", top: buttonPos?.top , right: buttonPos?.right-closeIconSize*2 }} onClick={onClose}>
-        <svg
-          viewBox={`0 0 ${closeIconSize} ${closeIconSize}`}
-          width={closeIconSize}
-          height={closeIconSize}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+      {buttonPos && (
+        <button
+          style={{
+            position: "absolute",
+            top: buttonPos?.top,
+            right: buttonPos?.right - closeIconSize * 2,
+          }}
+          onClick={onClose}
         >
-          <path d={
-            `M${closeIconSize / 4} ${closeIconSize / 4} l${closeIconSize / 2} ${closeIconSize / 2} M${(closeIconSize / 4) * 3} ${closeIconSize / 4} l-${closeIconSize / 2} ${closeIconSize / 2}`
-          } />
+          <svg
+            viewBox={`0 0 ${closeIconSize} ${closeIconSize}`}
+            width={closeIconSize}
+            height={closeIconSize}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path
+              d={`M${closeIconSize / 4} ${closeIconSize / 4} l${closeIconSize / 2} ${closeIconSize / 2} M${(closeIconSize / 4) * 3} ${closeIconSize / 4} l-${closeIconSize / 2} ${closeIconSize / 2}`}
+            />
+          </svg>
+        </button>
+      )}
 
-        </svg>
-      </button>}
-      
-      <img ref={imageRef} alt={photo.alt} src={BASE_URL + photo.link} />
+      <img ref={imageRef} alt={photo.alt} src={BASE_URL + photo.image_path} />
     </div>,
     document.body,
   );
@@ -65,14 +79,19 @@ export default function WorkImages({ photos }: WorkImagesProps) {
 
   return (
     <>
-      {selectedImage && <FullScreenImage photo={selectedImage} onClose={() => setSelectedImage(null)} />}
+      {selectedImage && (
+        <FullScreenImage
+          photo={selectedImage}
+          onClose={() => setSelectedImage(null)}
+        />
+      )}
 
       <div className="img-cnt">
         {photos.map((ph) => (
           <img
-            key={ph.link}
+            key={ph.image_path}
             alt={ph.alt}
-            src={BASE_URL + ph.link}
+            src={BASE_URL + ph.image_path}
             onClick={() => {
               handleFullScreen(ph);
             }}

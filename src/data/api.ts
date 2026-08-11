@@ -2,7 +2,7 @@
 // The rest of the app go through this module instead of fetching directly, so the implementation can be swapped without changing any other code
 
 import type { Work, WorksIndex } from "@/types/works";
-import type { Author } from "@/types/artists";
+import type { Artist } from "@/types/artists";
 import type { AttributionsBundle } from "@/types/attributions";
 
 // ---- Configuration ----
@@ -17,7 +17,7 @@ const BASE = `/data/${DATA_VERSION}`;
 const indexCache: { current: Promise<WorksIndex> | null } = { current: null };
 const workCache = new Map<string, Promise<Work | null>>();
 const attributionsCache = new Map<string, Promise<AttributionsBundle | null>>();
-const authorCache = new Map<string, Promise<Author | null>>();
+const authorCache = new Map<string, Promise<Artist | null>>();
 
 // Internal fetch helpers
 
@@ -67,10 +67,10 @@ export function getAttributions(
   return p;
 }
 
-export function getAuthor(id: string): Promise<Author | null> {
+export function getAuthor(id: string): Promise<Artist | null> {
   const cached = authorCache.get(id);
   if (cached) return cached;
-  const p = fetchJsonOrNull<Author>(`${BASE}/authors/${id}.json`);
+  const p = fetchJsonOrNull<Artist>(`${BASE}/authors/${id}.json`);
   authorCache.set(id, p);
   return p;
 }

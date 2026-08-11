@@ -18,6 +18,7 @@ export interface Bibliography {
 export interface Photos {
   link: string;
   alt: string;
+  image_path: string;
 }
 
 export interface Work {
