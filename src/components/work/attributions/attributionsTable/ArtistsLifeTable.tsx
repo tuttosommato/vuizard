@@ -1,4 +1,4 @@
-import type { Author } from "@/types/artists";
+import type { Artist } from "@/types/artists";
 import type { AttributionsBundle } from "@/types/attributions";
 import { scaleLinear, extent } from "d3";
 import { labelsFontSize } from "../debateVis/constants";
@@ -20,21 +20,28 @@ export default function ArtistsLifeTable({
   acceptedDating,
   discardedDating,
 }: {
-  artists: Record<string, Author>;
+  artists: Record<string, Artist>;
   currentAttributions: AttributionsBundle;
   acceptedDating: Work["dating"];
   discardedDating: Work["dating"];
 }) {
   const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
 
-  const {selectedIds, toggle} = useCrossSelection();
+  const { selectedIds, toggle } = useCrossSelection();
   const { highlightedId, setHighlightedId } = useHighlight();
 
   const domain = useMemo(() => {
-    const values = currentAttributions.attributions.flatMap((attr) => {
-      const artist = artists[attr.local_id];
-      return artist?.life ? [+artist.life.birth, +artist.life.death] : [];
-    });
+    const values = currentAttributions.attributions.flatMap((attr) =>
+      attr.authors.flatMap((author) => {
+        const artist = artists[author.local_id];
+        if (!artist.life) return [];
+        return [
+          ...(artist.life.start ? [+artist.life.start] : []),
+          ...(artist.life.end ? [+artist.life.end] : []),
+        ];
+      }),
+    );
+
     acceptedDating.forEach((d) => {
       if (d.from) values.push(+d.from);
       if (d.to) values.push(+d.to);
@@ -70,8 +77,7 @@ export default function ArtistsLifeTable({
           <th scope="col" className="artist-column">
             Artist
           </th>
-          <th scope="col" className="uncertain-column">
-          </th>
+          <th scope="col" className="uncertain-column"></th>
           <th ref={ref} scope="col">
             Life data
           </th>
@@ -79,81 +85,117 @@ export default function ArtistsLifeTable({
       </thead>
       <tbody>
         {currentAttributions.attributions.map((attr) => {
-          const artist = artists[attr.local_id];
-          const life = artist?.life;
           return (
             <tr
-            className={highlightedId === attr.operational_id ? "tr-highlighted" : ""}
-            key={attr.operational_id}
-            onMouseEnter={() => setHighlightedId(attr.operational_id)}
-            onMouseLeave={() => setHighlightedId(null)}
-            onClick={() => toggle(attr.operational_id)}
-            aria-selected={selectedIds.has(attr.operational_id)}>
-              <th className={"artist-column" + (attr.type === "accepted" ? " accepted-artist" : "")}>
-                <ArrowLink
-                target={`/artist/${attr.local_id}`}
-                artistName={artist?.preferred_name || attr.author}
-                isAnonym={attr.is_anonymous}
-                onMouseEnter={() => setHighlightedId(null)}
-                onMouseLeave={() => setHighlightedId(attr.operational_id)}
-                />
+              className={
+                highlightedId === attr.attribution_id ? "tr-highlighted" : ""
+              }
+              key={attr.attribution_id}
+              onMouseEnter={() => setHighlightedId(attr.attribution_id)}
+              onMouseLeave={() => setHighlightedId(null)}
+              onClick={() => toggle(attr.attribution_id)}
+              aria-selected={selectedIds.has(attr.attribution_id)}
+            >
+              <th
+                className={
+                  "artist-column" +
+                  (attr.type === "accepted" ? " accepted-artist" : "")
+                }
+              >
+                {attr.authors.map((author) => {
+                  const artist = artists[author.local_id];
+                  return (
+                    <div className="arrow-link-cnt">
+                      <ArrowLink
+                        target={`/artist/${author.local_id}`}
+                        artistName={artist.name}
+                        isAnonym={author.is_anonymous}
+                        onMouseEnter={() => setHighlightedId(null)}
+                        onMouseLeave={() =>
+                          setHighlightedId(attr.attribution_id)
+                        }
+                      />
+                    </div>
+                  );
+                })}
               </th>
-              <td>
-                {attr.r_qualifier && <QuestionMarkTooltip author={artist?.preferred_name || attr.author} qualifier={attr.r_qualifier} />}
-              </td>
-              <td className="dating-column">
-                {life ? (
-                  <svg width="100%" height={height}>
-                    {acceptedDating.map(
-                      (d, i) =>
-                        d.from &&
-                        d.to && (
-                          <Fragment key={i}>
-                            <line
-                              x1={timeScale(+d.from)}
-                              y1={0}
-                              x2={timeScale(+d.from)}
-                              y2={height}
-                              stroke="var(--color-text)"
-                              strokeWidth={1}
-                              strokeDasharray="4 4"
-                              opacity={0.4}
-                            />
-                            <line
-                              x1={timeScale(+d.to)}
-                              y1={0}
-                              x2={timeScale(+d.to)}
-                              y2={height}
-                              stroke="var(--color-text)"
-                              strokeWidth={1}
-                              strokeDasharray="4 4"
-                              opacity={0.4}
-                            />
-                          </Fragment>
-                        ),
-                    )}
 
-                    <TimeSpan
-                      from={+life.birth}
-                      to={+life.death}
-                      fromQ={life.birth_qualifier}
-                      toQ={life.death_qualifier}
-                      scale={timeScale}
-                      height={height}
-                      barHeight={barHeight}
-                      fill={colorScale(attr.type)}
-                    />
-                  </svg>
-                ) : (
-                  "N/A"
-                )}
+              <td>
+                {attr.authors.map((author) => {
+                  const artist = artists[author.local_id];
+                  if (author.r_qualifier)
+                    return (
+                      <QuestionMarkTooltip
+                        author={artist.name}
+                        qualifier={author.r_qualifier}
+                      />
+                    );
+                })}
+              </td>
+
+              <td className="dating-column">
+                {attr.authors.map((author) => {
+                  const artist = artists[author.local_id];
+                  const life = artist.life;
+
+                  if (life.start) {
+                    return (
+                      <svg width="100%" height={height}>
+                        {acceptedDating.map(
+                          (d, i) =>
+                            d.from &&
+                            d.to && (
+                              <Fragment key={i}>
+                                <line
+                                  x1={timeScale(+d.from)}
+                                  y1={0}
+                                  x2={timeScale(+d.from)}
+                                  y2={height}
+                                  stroke="var(--color-text)"
+                                  strokeWidth={1}
+                                  strokeDasharray="4 4"
+                                  opacity={0.4}
+                                />
+                                <line
+                                  x1={timeScale(+d.to)}
+                                  y1={0}
+                                  x2={timeScale(+d.to)}
+                                  y2={height}
+                                  stroke="var(--color-text)"
+                                  strokeWidth={1}
+                                  strokeDasharray="4 4"
+                                  opacity={0.4}
+                                />
+                              </Fragment>
+                            ),
+                        )}
+
+                        <TimeSpan
+                          from={+life.start}
+                          to={life.end ? +life.end : +life.start}
+                          fromQ={life.start_approx}
+                          toQ={life.end ? life.end_approx : ""}
+                          scale={timeScale}
+                          height={height}
+                          barHeight={barHeight}
+                          fill={colorScale(attr.type)}
+                        />
+                      </svg>
+                    );
+                  } else {
+                    return life.raw;
+                  }
+                })}
               </td>
             </tr>
           );
         })}
+
         {/* Work of art dating rows */}
         <tr className="dating-row accepted-dating-row">
-          <th className="artist-column work-dating">Work creation (accepted)</th>
+          <th className="artist-column work-dating">
+            Work creation (accepted)
+          </th>
           <td></td>
           <td>
             <svg width="100%" height={height}>
@@ -199,7 +241,9 @@ export default function ArtistsLifeTable({
         </tr>
         {discardedDating.length > 0 && (
           <tr className="dating-row discarded-dating-row">
-            <th className="artist-column work-dating-discarded">Work creation (discarded)</th>
+            <th className="artist-column work-dating-discarded">
+              Work creation (discarded)
+            </th>
             <td>
               <svg width="100%" height={height}>
                 {discardedDating.map((d) => (
