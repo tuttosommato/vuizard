@@ -341,8 +341,10 @@ main.work-layout {
    artists-life-table)
    ============================================================= */
 
-td,
-th {
+.attributions-table td,
+.attributions-table th,
+.artists-life-table td,
+.artists-life-table th {
   padding: 0 var(--space-sm);
 }
 
@@ -579,8 +581,8 @@ td.details-cell {
   cursor: pointer;
 }
 
-tr.last-row:not(tr.last-row[aria-expanded="true"]),
-tr.last-detail-row[aria-expanded="true"],
+.attributions-table tr.last-row:not(tr.last-row[aria-expanded="true"]),
+.attributions-table tr.last-detail-row[aria-expanded="true"],
 .artists-life-table tbody tr:not(tr.dating-row) {
   border-bottom: 1px solid var(--color-text-muted);
 }

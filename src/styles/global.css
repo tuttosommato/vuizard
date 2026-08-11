@@ -197,9 +197,9 @@ a:hover {
   color: var(--color-text-muted);
 }
 
-tr:hover .anonymous-artist,
-tr[aria-selected="true"] .anonymous-artist,
-tr[aria-expanded="true"] .anonymous-artist {
+:is(.attributions-table, .artists-life-table)
+  tr:is(:hover, [aria-selected="true"], [aria-expanded="true"])
+  .anonymous-artist {
   color: var(--color-text);
 }
 
