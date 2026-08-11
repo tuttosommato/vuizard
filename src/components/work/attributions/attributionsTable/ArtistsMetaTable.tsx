@@ -24,7 +24,7 @@ export default function ArtistsMetaTable({
   // We measure the cellWidth of the "Reason reliability" header cell to adapt the visualization of reasons accordingly
   const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
 
-  const radius = height / 3.75;
+  const radius = height / 5.85;
 
   const rankScale = scaleLinear().domain([0, 11]).range([width, radius]);
 
@@ -66,7 +66,7 @@ export default function ArtistsMetaTable({
                   <>
                     <tr
                       key={attrId + "-" + author.local_id}
-                      className={`visible-row ${highlightedId === attrId ? "tr-highlighted" : ""} ${idx + 1 === authorsLength ? "last-row" : ""}`}
+                      className={`visible-row ${highlightedId === attrId ? "tr-highlighted" : ""}${idx + 1 === authorsLength ? " last-row" : ""}${authorsLength === 1 ? " only-row" : ""}`}
                       onMouseEnter={() => setHighlightedId(attrId)}
                       onMouseLeave={() => setHighlightedId(null)}
                       onClick={() => {
