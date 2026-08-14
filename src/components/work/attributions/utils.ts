@@ -32,7 +32,7 @@ export function formatAuthorLabel(a: AttributionAuthor): string {
       : "") +
     a.name +
     (a.r_qualifier && a.r_qualifier.includes("e ")
-      ? a.r_qualifier + " "
+      ? " " +a.r_qualifier
       : "") +
     (a.u_qualifier ? ` (${a.u_qualifier})` : "");
   return capitalize(label);
