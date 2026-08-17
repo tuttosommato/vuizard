@@ -48,7 +48,12 @@ main.work-layout {
   margin-bottom: 0;
 }
 
-.table-switch {
+.table-switch, .debate-vis-ordering-switch {
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.button-switch {
   position: relative;
   display: inline-grid;
   grid-template-columns: 1fr 1fr;
@@ -57,14 +62,12 @@ main.work-layout {
   padding: var(--space-2xs);
   border-radius: calc(var(--radius-lg) + var(--space-2xs));
   background-color: var(--color-text-muted);
-  margin-top: var(--space-md);
-  margin-bottom: var(--space-sm);
 }
 
 .toggle-button {
   position: relative;
   z-index: 1;
-  padding: var(--space-sm) var(--space-sm);
+  padding: var(--space-sm) var(--space-base);
   border: 0;
   background: none;
   color: var(--color-bg);
@@ -85,7 +88,7 @@ main.work-layout {
 }
 
 /* sliding thumb*/
-.table-switch::before {
+.button-switch::before {
   content: "";
   position: absolute;
   top: var(--space-2xs);
@@ -98,8 +101,8 @@ main.work-layout {
   z-index: 0;
 }
 
-.table-switch[data-active="artists"]::before {
-  transform: translateX(100%); /* moves by its own width = one button */
+.button-switch:has(.toggle-button:last-child[aria-pressed="true"])::before {
+  transform: translateX(100%);
 }
 
 .toggle-button[aria-pressed="true"] {
@@ -261,6 +264,12 @@ main.work-layout {
 
 .debate-vis {
   --dim-opacity: 0.2;
+}
+
+.debate-vis-ordering-switch {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 .reason-edge,

@@ -4,37 +4,7 @@ import ArtistsMetaTable from "./ArtistsMetaTable";
 import useArtists from "@/hooks/useArtists";
 import { useState } from "react";
 import ArtistsLifeTable from "./ArtistsLifeTable";
-
-type View = "attributions" | "artists";
-
-function TableSwitcher({
-  view,
-  setView,
-}: {
-  view: View;
-  setView: (view: View) => void;
-}) {
-  return (
-    <div className="table-switch" data-active={view}>
-      <button
-        className="toggle-button"
-        type="button"
-        aria-pressed={view === "attributions"}
-        onClick={() => setView("attributions")}
-      >
-        Attributions
-      </button>
-      <button
-        className="toggle-button"
-        type="button"
-        aria-pressed={view === "artists"}
-        onClick={() => setView("artists")}
-      >
-        Timeline
-      </button>
-    </div>
-  );
-}
+import Switch from "@/components/work/Switch";
 
 function AttributionsSection({
   currentAttributions,
@@ -48,7 +18,7 @@ function AttributionsSection({
   discardedDating: Work["dating"];
 }) {
   const artists = useArtists(currentAttributions.attributions);
-  const [view, setView] = useState<View>("attributions");
+  const [view, setView] = useState<"attributions" | "timeline">("attributions");
 
   return (
     <>
@@ -67,7 +37,16 @@ function AttributionsSection({
             life with the work's proposed dates.
           </p>
         </div>
-        <TableSwitcher view={view} setView={setView} />
+        <div className="table-switch">
+          <Switch
+            currentState={view}
+            setNewState={setView}
+            options={[
+              { value: "attributions", label: "Attributions" },
+              { value: "timeline", label: "Timeline" },
+            ]}
+          />
+        </div>
         {view === "attributions" ? (
           <ArtistsMetaTable
             artists={artists}

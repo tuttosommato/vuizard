@@ -10,6 +10,7 @@ import VisLegend from "./VisLegend";
 import AxisLegend from "./AxisLegend";
 import ArrowMarkerDef from "@/components/ArrowMarkerDef";
 import { attributionIdsByCompositeId } from "@/components/work/attributions/utils";
+import Switch from "@/components/work/Switch";
 
 // a drawable connection line between two attributions
 type LinkSpec = {
@@ -235,8 +236,15 @@ export default function DebateVis({
         <ArrowMarkerDef />
         <AxisLegend />
       </svg>
-      <div>
-        <button onClick={() => setActiveOrdering("standard")}>standard</button><button onClick={() => setActiveOrdering("authoritativeness")}>authoritativeness</button>
+      <div className="debate-vis-ordering-switch">
+        <Switch
+          currentState={activeOrdering}
+          setNewState={setActiveOrdering}
+          options={[
+            { value: "standard", label: "Catalogue order" },
+            { value: "authoritativeness", label: "By reason reliability" },
+          ]}
+        />
       </div>
     </div>
   );
