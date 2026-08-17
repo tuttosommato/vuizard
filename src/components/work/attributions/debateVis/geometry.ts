@@ -1,11 +1,20 @@
 import type { Attribution } from "@/types/attributions";
 import { labelsFontSize } from "@/components/work/attributions/debateVis/constants";
+import { rankScale, curveGap } from "@/components/work/attributions/debateVis/constants";
 
 // Visual half-height for most sans-serif fonts at labelsFontSize, used to vertically center label text against the line it sits on in the vis
 const offsetAmplitude = labelsFontSize * 0.35;
 
 export function verticalCenterOffset(rotDeg: number) {
   return offsetAmplitude * Math.sin((rotDeg * Math.PI) / 180);
+}
+
+export function labelEndPoint(rotDeg: number, textWidth: number) {
+  const rotRad = (rotDeg * Math.PI) / 180;
+  return {
+    x: rankScale(-0.2) * Math.cos(rotRad) + textWidth + curveGap,
+    y: rankScale(-0.2) * Math.sin(rotRad) + verticalCenterOffset(rotDeg),
+  };
 }
 
 // Divides the semicircle (180deg) evenly across 'total' slots and returns the rotation dor the slot at index 'slot'
