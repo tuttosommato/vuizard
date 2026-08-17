@@ -1,6 +1,6 @@
 import { range } from "d3-array";
 import { arc } from "d3-shape";
-import { min, max, increment, center } from "./constants";
+import { min, max, increment, center } from "@/components/work/attributions/debateVis/constants";
 
 const arcGenerator = arc<null>().innerRadius(0).startAngle(0).endAngle(Math.PI);
 const radii = range(max, min, - increment);

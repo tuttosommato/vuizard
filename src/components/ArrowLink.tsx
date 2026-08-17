@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import ArrowIcon from "./ArrowIcon";
+import ArrowIcon from "@/components/ArrowIcon";
 import type { AttributionAuthor } from "@/types/attributions";
-import { formatAuthorLabel } from "./work/attributions/utils";
+import { formatAuthorLabel } from "@/components/work/attributions/utils";
 
 export default function ArrowLink({
   isAnonym = false,

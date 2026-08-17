@@ -1,4 +1,4 @@
-import AttributionCircle from "../work/attributions/AttributionCircle";
+import AttributionCircle from "@/components/work/attributions/AttributionCircle";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
 
 export default function ArtistLegend({ multiplier }: { multiplier: number }) {

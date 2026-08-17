@@ -1,5 +1,5 @@
-import TierArcs from "./TierArcs";
-import ArtistVisLegend from "./ArtistVisLegend";
+import TierArcs from "@/components/artist/TierArcs";
+import ArtistVisLegend from "@/components/artist/ArtistVisLegend";
 import ArrowMarkerDef from "@/components/ArrowMarkerDef";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { zoom } from "d3-zoom";
@@ -30,11 +30,11 @@ import {
   forceX,
   forceY,
 } from "d3-force";
-import UncertaintyPatternDefs from "./defs/UncertaintyPatternDefs";
-import RadialHalftonePatternDefs from "./defs/RadialHalftonePatternDefs";
+import UncertaintyPatternDefs from "@/components/artist/defs/UncertaintyPatternDefs";
+import RadialHalftonePatternDefs from "@/components/artist/defs/RadialHalftonePatternDefs";
 import { createPortal } from "react-dom";
 import { useArtistSelection } from "@/stores/ArtistSelectionContext";
-import { representativeAuthor } from "../work/attributions/utils";
+import { representativeAuthor } from "@/components/work/attributions/utils";
 
 function ZoomControls({
   svgRef,

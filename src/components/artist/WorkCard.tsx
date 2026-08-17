@@ -8,7 +8,7 @@ import ExpandArrow from "@/components/ExpandArrow";
 import { useArtistSelection } from "@/stores/ArtistSelectionContext";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
 import uncertaintyBucket from "@/utils/uncertaintyBucket";
-import { representativeAuthor } from "../work/attributions/utils";
+import { representativeAuthor } from "@/components/work/attributions/utils";
 
 interface WorkCardProps {
   workItem: WorkItem;

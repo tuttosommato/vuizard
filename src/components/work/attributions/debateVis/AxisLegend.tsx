@@ -1,4 +1,4 @@
-import { center, rankScale } from "./constants";
+import { center, rankScale } from "@/components/work/attributions/debateVis/constants";
 
 const textX = rankScale(12.5);
 const textArrowX = rankScale(12.8);

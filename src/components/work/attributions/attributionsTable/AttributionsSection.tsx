@@ -1,9 +1,9 @@
 import type { AttributionsBundle } from "@/types/attributions";
 import type { Work } from "@/types/works";
-import ArtistsMetaTable from "./ArtistsMetaTable";
+import ArtistsMetaTable from "@/components/work/attributions/attributionsTable/ArtistsMetaTable";
 import useArtists from "@/hooks/useArtists";
 import { useState } from "react";
-import ArtistsLifeTable from "./ArtistsLifeTable";
+import ArtistsLifeTable from "@/components/work/attributions/attributionsTable/ArtistsLifeTable";
 import Switch from "@/components/work/Switch";
 
 function AttributionsSection({

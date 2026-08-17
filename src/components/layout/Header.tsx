@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import AttributionCircle from "../work/attributions/AttributionCircle";
+import AttributionCircle from "@/components/work/attributions/AttributionCircle";
 
 export default function Header() {
   return (

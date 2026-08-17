@@ -1,13 +1,13 @@
 import type { Attribution } from "@/types/attributions";
 import uncertaintyLine from "@/utils/uncertaintyLine";
 import AttributionCircle from "@/components/work/attributions/AttributionCircle";
-import { verticalCenterOffset } from "./geometry";
+import { verticalCenterOffset } from "@/components/work/attributions/debateVis/geometry";
 import {
   circleTypeFor,
   formatAttributionLabel,
   representativeAuthor,
 } from "@/components/work/attributions/utils";
-import { rankScale, radius, center } from "./constants";
+import { rankScale, radius, center } from "@/components/work/attributions/debateVis/constants";
 import { colorScale } from "@/utils/constants.ts";
 import { createPortal } from "react-dom";
 import { useState, useRef, useEffect } from "react";

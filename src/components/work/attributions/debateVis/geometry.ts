@@ -1,5 +1,5 @@
 import type { Attribution } from "@/types/attributions";
-import { labelsFontSize } from "./constants";
+import { labelsFontSize } from "@/components/work/attributions/debateVis/constants";
 
 // Visual half-height for most sans-serif fonts at labelsFontSize, used to vertically center label text against the line it sits on in the vis
 const offsetAmplitude = labelsFontSize * 0.35;

@@ -1,5 +1,5 @@
 import uncertaintyLine from "@/utils/uncertaintyLine";
-import AttributionCircle from "../AttributionCircle";
+import AttributionCircle from "@/components/work/attributions/AttributionCircle";
 import type { ReactNode } from "react";
 
 const w = 14;

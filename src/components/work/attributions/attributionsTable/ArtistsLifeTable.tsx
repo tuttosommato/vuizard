@@ -1,11 +1,11 @@
 import type { Artist } from "@/types/artists";
 import type { AttributionsBundle } from "@/types/attributions";
 import { scaleLinear, extent } from "d3";
-import { labelsFontSize } from "../debateVis/constants";
+import { labelsFontSize } from "@/components/work/attributions/debateVis/constants";
 import { colorScale } from "@/utils/constants.ts";
 import type { Work } from "@/types/works";
 import useMeasuredSize from "@/hooks/useMeasuredSize";
-import TimeSpan from "./TimeSpan";
+import TimeSpan from "@/components/work/attributions/attributionsTable/TimeSpan";
 import { Fragment, useMemo } from "react";
 import ArrowLink from "@/components/ArrowLink";
 import QuestionMarkTooltip from "@/components/QuestionMarkTooltip";

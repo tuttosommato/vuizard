@@ -1,13 +1,13 @@
 import type { AttributionsBundle } from "@/types/attributions";
 import BackgroundArcs from "@/components/work/attributions/debateVis/BackgroundArcs";
 import AttributionsGroup from "@/components/work/attributions/debateVis/AttributionsGroup";
-import { authoritativenessOrdering, slotRotationDeg, standardOrdering } from "./geometry";
+import { authoritativenessOrdering, slotRotationDeg, standardOrdering } from "@/components/work/attributions/debateVis/geometry";
 import useLabelsEnd from "@/hooks/useLabelsEnd";
 import { useMemo, useState } from "react";
 import { useHighlight } from "@/stores/HighlightContext";
-import { VIEW_W, VIEW_H, center, outerX } from "./constants";
-import VisLegend from "./VisLegend";
-import AxisLegend from "./AxisLegend";
+import { VIEW_W, VIEW_H, center, outerX } from "@/components/work/attributions/debateVis/constants";
+import VisLegend from "@/components/work/attributions/debateVis/VisLegend";
+import AxisLegend from "@/components/work/attributions/debateVis/AxisLegend";
 import ArrowMarkerDef from "@/components/ArrowMarkerDef";
 import { attributionIdsByCompositeId } from "@/components/work/attributions/utils";
 import Switch from "@/components/work/Switch";
