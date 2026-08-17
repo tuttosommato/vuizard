@@ -1,9 +1,9 @@
 import type { AttributionsBundle } from "@/types/attributions";
 import BackgroundArcs from "@/components/work/attributions/debateVis/BackgroundArcs";
 import AttributionsGroup from "@/components/work/attributions/debateVis/AttributionsGroup";
-import { slotRotationDeg } from "./geometry";
+import { authoritativenessOrdering, slotRotationDeg, standardOrdering } from "./geometry";
 import useLabelsEnd from "@/hooks/useLabelsEnd";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useHighlight } from "@/stores/HighlightContext";
 import { VIEW_W, VIEW_H, center, outerX } from "./constants";
 import VisLegend from "./VisLegend";
@@ -34,6 +34,16 @@ export default function DebateVis({
     implicit_relations, // [composite_id, composite_id][] — same-artist link (directly involved in the connected attributions)
     master_relations, // [composite_id, composite_id][] — same-artist link between the artist itself and one anonymous related to the artist
   } = currentAttributions;
+
+
+  const [activeOrdering, setActiveOrdering] = useState<"standard" | "authoritativeness">("standard");
+  const orderedAttributions = useMemo(() => {
+    if(activeOrdering === "standard") return standardOrdering(attributions);
+    if(activeOrdering === "authoritativeness") return authoritativenessOrdering(attributions);
+    return attributions;
+  }, [activeOrdering, attributions]);
+
+
 
   // composite_id -> every attribution_id that has an author with that composite_id.
   // computed once, from the full (unreordered) attribution list
@@ -95,29 +105,27 @@ export default function DebateVis({
   ]);
 
   const highlightedAttributions = useMemo(() => {
-    if (!highlightedId) return attributions;
-    const anchorIdx = attributions.findIndex(
+    if (!highlightedId) return orderedAttributions;
+    const anchorIdx = orderedAttributions.findIndex(
       (a) => a.attribution_id === highlightedId,
     );
-    const above = attributions.slice(0, anchorIdx);
-    const below = attributions.slice(anchorIdx + 1);
+    const above = orderedAttributions.slice(0, anchorIdx);
+    const below = orderedAttributions.slice(anchorIdx + 1);
     return [
       ...above.filter((a) => !clusterMembers?.has(a.attribution_id)),
       ...above.filter((a) => clusterMembers?.has(a.attribution_id)),
-      attributions[anchorIdx],
+      orderedAttributions[anchorIdx],
       ...below.filter((a) => clusterMembers?.has(a.attribution_id)),
       ...below.filter((a) => !clusterMembers?.has(a.attribution_id)),
     ];
-  }, [attributions, highlightedId, clusterMembers]);
-
-  const displayAttributions = highlightedAttributions ?? attributions;
+  }, [orderedAttributions, highlightedId, clusterMembers]);
 
   // derived geometry
-  const rotations = displayAttributions.map((_, i) =>
-    slotRotationDeg(i, displayAttributions.length),
+  const rotations = highlightedAttributions.map((_, i) =>
+    slotRotationDeg(i, highlightedAttributions.length),
   );
 
-  const { labelsRef, labelsEnd } = useLabelsEnd(displayAttributions, rotations);
+  const { labelsRef, labelsEnd } = useLabelsEnd(highlightedAttributions, rotations);
 
   // render-only helpers
   const curvePath = (idA: string, idB: string): string | null => {
@@ -189,8 +197,8 @@ export default function DebateVis({
       >
         <BackgroundArcs />
 
-        {displayAttributions.map((attr, i) => {
-          const attrLength = displayAttributions.length;
+        {highlightedAttributions.map((attr, i) => {
+          const attrLength = highlightedAttributions.length;
           return (
             <AttributionsGroup
               key={attr.attribution_id}
@@ -227,6 +235,9 @@ export default function DebateVis({
         <ArrowMarkerDef />
         <AxisLegend />
       </svg>
+      <div>
+        <button onClick={() => setActiveOrdering("standard")}>standard</button><button onClick={() => setActiveOrdering("authoritativeness")}>authoritativeness</button>
+      </div>
     </div>
   );
 }
