@@ -31,9 +31,18 @@ export function formatAuthorLabel(a: AttributionAuthor): string {
       ? a.r_qualifier + " di "
       : "") +
     a.name +
-    (a.r_qualifier && a.r_qualifier.includes("e ")
-      ? " " +a.r_qualifier
-      : "") +
+    (a.r_qualifier && a.r_qualifier.includes("e ") ? " " + a.r_qualifier : "") +
     (a.u_qualifier ? ` (${a.u_qualifier})` : "");
   return capitalize(label);
+}
+
+// composite_id -> every attribution_id that has an author with that composite_id
+export function attributionIdsByCompositeId( attributions: Attribution[] ): Record<string, string[]> {
+  const map: Record<string, string[]> = {};
+  attributions.forEach((attr) => {
+    attr.authors.forEach((author) => {
+      (map[author.composite_id] ??= []).push(attr.attribution_id);
+    });
+  });
+  return map;
 }
