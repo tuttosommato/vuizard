@@ -1,11 +1,18 @@
-// Reads the three source JSONs from data-source/ and writes:
+// Reads the four source JSONs from data-source/ and writes:
 //   public/data/v1/works/<workId>.json          (one per work IN SCOPE)
 //   public/data/v1/authors/<authorId>.json      (one per author — all)
 //   public/data/v1/attributions/<workId>.json   (one per work IN SCOPE)
 //   public/data/v1/works-index.json             ({ [workId]: title })
+//   public/data/v1/authors-full.json            (authors.json, copied as-is)
+//   public/data/v1/authors-co-full.json         (authors_co.json, copied as-is)
 //
 // "In scope" = work IDs present in attributions.json. works.json is treated
 // as a lookup table for enrichment (title, dating, etc.) of those works.
+//
+// authors-full.json / authors-co-full.json are bulk bundles, not split per-id —
+// the third visualisation needs every author available at once (e.g. one point
+// per author, cross-filtering), so per-id lazy files would just mean fetching
+// all of them anyway. See the "all authors + co-occurrences" discussion.
 //
 // Run with: npm run split-data
 
@@ -85,8 +92,21 @@ async function splitAuthors() {
   console.log(`  wrote ${ids.length} author files`);
 }
 
+async function copyAuthorsBundles() {
+  console.log("→ copying authors.json and authors_co.json as-is (bulk bundles, no splitting)...");
+  const authors = await readJson(join(SOURCE, "authors.json"));
+  const authorsCo = await readJson(join(SOURCE, "authors_co.json"));
+
+  await writeJson(join(OUT, "authors-full.json"), authors);
+  await writeJson(join(OUT, "authors-co-full.json"), authorsCo);
+
+  console.log(`  wrote authors-full.json (${Object.keys(authors).length} authors)`);
+  console.log(`  wrote authors-co-full.json (${Object.keys(authorsCo).length} authors)`);
+}
+
 console.time("split-data");
 await splitInScopeWorksAndAttributions();
 await splitAuthors();
+await copyAuthorsBundles();
 console.timeEnd("split-data");
 console.log("✓ done. Output is in public/data/v1/");
