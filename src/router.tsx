@@ -5,6 +5,7 @@ import SearchPage from "@/pages/SearchPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import ErrorPage from "@/pages/ErrorPage";
 import ArtistPage from "@/pages/ArtistPage";
+import OverviewPage from "@/pages/OverviewPage";
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <SearchPage />,
+      },
+      {
+        path: "overview",
+        element: <OverviewPage />,
       },
       {
         path: "work/:workId",

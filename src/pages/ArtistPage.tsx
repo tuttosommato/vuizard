@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { getAttributions, getAuthor, getWork } from "@/data/api";
 import type { Artist } from "@/types/artists";
@@ -263,6 +263,9 @@ function ArtistPageContent({
             </p>
           )}
         </div>
+        <Link to={`/overview`} className="button-link">
+          View artists overview
+        </Link>
         <ArtistLegend multiplier={multiplier} />
       </div>
       <ArtistVis
