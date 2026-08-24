@@ -4,6 +4,7 @@
 import type { Work, WorksIndex } from "@/types/works";
 import type { Artist } from "@/types/artists";
 import type { AttributionsBundle } from "@/types/attributions";
+import type { AuthorsCoBundle } from "@/types/coOccurrences";
 
 // ---- Configuration ----
 
@@ -18,6 +19,12 @@ const indexCache: { current: Promise<WorksIndex> | null } = { current: null };
 const workCache = new Map<string, Promise<Work | null>>();
 const attributionsCache = new Map<string, Promise<AttributionsBundle | null>>();
 const authorCache = new Map<string, Promise<Artist | null>>();
+const authorsFullCache: { current: Promise<Record<string, Artist>> | null } = {
+  current: null,
+};
+const authorsCoCache: { current: Promise<AuthorsCoBundle> | null } = {
+  current: null,
+};
 
 // Internal fetch helpers
 
@@ -45,6 +52,24 @@ export function getWorksIndex(): Promise<WorksIndex> {
     indexCache.current = fetchJson<WorksIndex>(`${BASE}/works-index.json`);
   }
   return indexCache.current;
+}
+
+export function getAllAuthors(): Promise<Record<string, Artist>> {
+  if (!authorsFullCache.current) {
+    authorsFullCache.current = fetchJson<Record<string, Artist>>(
+      `${BASE}/authors-full.json`,
+    );
+  }
+  return authorsFullCache.current;
+}
+
+export function getAllAuthorsCo(): Promise<AuthorsCoBundle> {
+  if (!authorsCoCache.current) {
+    authorsCoCache.current = fetchJson<AuthorsCoBundle>(
+      `${BASE}/authors-co-full.json`,
+    );
+  }
+  return authorsCoCache.current;
 }
 
 export function getWork(id: string): Promise<Work | null> {
