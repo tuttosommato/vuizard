@@ -2,6 +2,8 @@ import type { Artist } from "@/types/artists";
 import type { AuthorsCoBundle } from "@/types/coOccurrences";
 import { useState, useEffect } from "react";
 import { getAllAuthors, getAllAuthorsCo } from "@/data/api";
+import PackingVis from "@/components/overview/PackingVis"
+import "@/styles/overview.css"
 
 type LoadState =
   | { status: "loading" }
@@ -74,7 +76,16 @@ export default function OverviewPage() {
       />
 
       <main className="overview-layout">
-        <p>Carichi</p>
+        <div className="overview-left">
+          <p>Navigate the artists by school and time</p>
+          <h1 className="artist-name">Artists</h1>
+        </div>
+        <div className="overview-vis-cnt">
+          <PackingVis artists={loadState.artists} coOccurrences={loadState.coOccurrences} />
+        </div>
+        <div className="overview-cards-cnt">
+          Cards here
+        </div>
       </main>
     </>
   );
