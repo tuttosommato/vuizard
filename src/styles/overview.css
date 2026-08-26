@@ -55,3 +55,9 @@
   opacity: 0.075;
   pointer-events: none;
 }
+.overview-cards-cnt {
+  padding-left: calc(var(--space-lg) + var(--space-sm));
+  overflow-x: hidden;
+  overflow-y: scroll;
+  gap: var(--space-md);
+}

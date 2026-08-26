@@ -1,12 +1,14 @@
 import type { Artist } from "@/types/artists";
 import type { AuthorsCoBundle } from "@/types/coOccurrences";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getAllAuthors, getAllAuthorsCo } from "@/data/api";
 import PackingVis from "@/components/overview/PackingVis";
 import PackingLegend from "@/components/overview/PackingLegend";
 import "@/styles/shared.css";
 import "@/styles/overview.css";
 import { OverviewFilterProvider } from "@/stores/OverviewFilterContext";
+import ArtistCard from "@/components/overview/ArtistCard";
+import { getArtistTotal } from "@/utils/getArtistTotal";
 
 type LoadState =
   | { status: "loading" }
@@ -97,6 +99,14 @@ function OverviewPageContent({
   artists: Record<string, Artist>;
   coOccurrences: AuthorsCoBundle;
 }) {
+  const sortedArtists = useMemo(
+    () =>
+      Object.values(artists).sort(
+        (a, b) => getArtistTotal(b) - getArtistTotal(a),
+      ),
+    [artists],
+  );
+
   return (
     <>
       <title>Artists overview</title>
@@ -115,7 +125,12 @@ function OverviewPageContent({
         <div className="overview-vis-cnt">
           <PackingVis artists={artists} coOccurrences={coOccurrences} />
         </div>
-        <div className="overview-cards-cnt page-side-panel">Cards here</div>
+        <div className="overview-cards-cnt page-side-panel">
+          <h3 className="work-list-stats-title">Artists</h3>
+          {sortedArtists.map((artist) => (
+            <ArtistCard key={artist.id} artist={artist} />
+          ))}
+        </div>
       </main>
     </>
   );

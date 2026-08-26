@@ -233,6 +233,13 @@ main.artist-layout .artist-vis {
   margin: 0;
 }
 
+.work-card .work-card-context {
+  font-size: var(--text-sm);
+  font-weight: 300;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
 .work-card-attributions {
   display: flex;
   justify-content: space-between;
