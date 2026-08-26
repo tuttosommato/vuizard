@@ -1,72 +1,10 @@
-main.overview-layout {
-  display: grid;
-  grid-template-columns: 1fr 3fr 1.4fr;
-  grid-template-rows: 1fr;
-  gap: var(--space-md);
-  height: calc(100vh - var(--nav-height));
-  width: 100%;
-}
+/* Page shell (.page-layout, .page-side-panel) and legend structure
+   (.temp-legend-items, .no-dates-item, checkbox, range-slider base
+   mechanics) now live in shared.css — identical to ArtistLegend's
+   equivalents. Only what's specific to this page's century slider
+   (tick marks, thumb shape, label behavior) stays here. */
 
-.overview-left,
-.overview-cards-cnt {
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-  padding: var(--space-lg) var(--space-lg) 0 var(--space-lg);
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-.temp-legend-items {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.temp-items-cnt {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.temp-legend-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.temp-legend-item svg {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-}
-
-.temp-legend-item svg circle {
-  transform: translate(10px, 10px);
-}
-
-/* double range slider */
-
-.temp-range-slider {
-  position: relative;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.temp-range-track {
-  position: absolute;
-  width: 100%;
-  height: 2px;
-  background: var(--color-text-muted);
-  border-radius: 1px;
-}
+/* double range slider — century-specific bits */
 
 .temp-range-ticks {
   position: absolute;
@@ -83,57 +21,18 @@ main.overview-layout {
   transform: translate(-50%, -50%);
 }
 
-.temp-range-fill {
-  position: absolute;
-  height: 2px;
-  background: var(--color-text);
-  border-radius: 1px;
-}
-
-.temp-range-input {
-  position: absolute;
-  width: 100%;
-  margin: 0;
-  background: transparent;
-  pointer-events: none;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.temp-range-input::-webkit-slider-runnable-track {
-  background: transparent;
-}
-.temp-range-input::-moz-range-track {
-  background: transparent;
+.temp-range-input::-webkit-slider-thumb,
+.temp-range-input::-moz-range-thumb {
+  border-radius: 2px;
+  width: 6px;
 }
 
 .temp-range-input::-webkit-slider-thumb {
-  pointer-events: auto;
-  -webkit-appearance: none;
-  appearance: none;
-  border-radius: 2px;
-  width: 6px;
   height: 14px;
-  background: var(--color-text);
-  cursor: pointer;
 }
 
 .temp-range-input::-moz-range-thumb {
-  pointer-events: auto;
-  background: var(--color-text);
-  border-radius: 2px;
-  width: 6px;
   height: 18px;
-  border: none;
-  cursor: pointer;
-}
-
-.temp-range-input::-webkit-slider-thumb:hover {
-  box-shadow: 0px 0px 2px 2px rgba(255, 255, 255, 0.1);
-}
-
-.temp-range-input::-moz-range-thumb:hover {
-  box-shadow: 0px 0px 2px 2px rgba(255, 255, 255, 0.1);
 }
 
 .temp-range-labels {
@@ -155,12 +54,4 @@ main.overview-layout {
 .author-dot.filtered-out {
   opacity: 0.075;
   pointer-events: none;
-}
-
-.no-dates-item {
-  cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--space-sm);
 }

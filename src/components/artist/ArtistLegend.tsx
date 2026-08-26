@@ -23,7 +23,7 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
   };
 
   return (
-    <div className="artist-legend">
+    <div className="artist-legend legend">
       <h2>Legend and filters</h2>
       <div className="legend-items-cnt">
       <div className="acceptance-legend-items">

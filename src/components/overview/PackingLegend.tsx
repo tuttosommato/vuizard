@@ -21,7 +21,7 @@ export default function PackingLegend() {
   }, [min, PRESENT]);
 
   return (
-    <div className="packing-legend">
+    <div className="packing-legend legend">
       <h2>Legend and filters</h2>
       <div className="legend-items-cnt">
         <div className="temp-legend-items">

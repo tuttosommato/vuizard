@@ -5,6 +5,7 @@ import type { Artist } from "@/types/artists";
 import type { WorkItem } from "@/types/works";
 import NotFoundPage from "./NotFoundPage";
 import ArtistVis, { type ArtistVisHandle } from "@/components/artist/ArtistVis";
+import "@/styles/shared.css";
 import "@/styles/artist.css";
 import ArtistLegend from "../components/artist/ArtistLegend";
 import WorkCard from "../components/artist/WorkCard";
@@ -226,8 +227,8 @@ function ArtistPageContent({
   }, [selectedIds]);
 
   return (
-    <main className="artist-layout">
-      <div className="artist-left">
+    <main className="artist-layout page-layout">
+      <div className="artist-left page-side-panel">
         <div className="artist-header">
           <p>Navigate the works with attributions to</p>
           <h1 className="artist-name">{state.artist.name}</h1>
@@ -279,7 +280,7 @@ function ArtistPageContent({
         works={state.worksList}
         multiplier={multiplier}
       />
-      <div className="works-list" ref={listRef}>
+      <div className="works-list page-side-panel" ref={listRef}>
         {
           <div className="works-list-header">
             <h3 className="work-list-stats-title">

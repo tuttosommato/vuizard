@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { getAllAuthors, getAllAuthorsCo } from "@/data/api";
 import PackingVis from "@/components/overview/PackingVis";
 import PackingLegend from "@/components/overview/PackingLegend";
+import "@/styles/shared.css";
 import "@/styles/overview.css";
 import { OverviewFilterProvider } from "@/stores/OverviewFilterContext";
 
@@ -104,8 +105,8 @@ function OverviewPageContent({
         content="Overview of all artists in the catalogue."
       />
 
-      <main className="overview-layout">
-        <div className="overview-left">
+      <main className="overview-layout page-layout">
+        <div className="overview-left page-side-panel">
           <div className="overview-header">
             <h1>Artists and cultural contexts</h1>
           </div>
@@ -114,7 +115,7 @@ function OverviewPageContent({
         <div className="overview-vis-cnt">
           <PackingVis artists={artists} coOccurrences={coOccurrences} />
         </div>
-        <div className="overview-cards-cnt">Cards here</div>
+        <div className="overview-cards-cnt page-side-panel">Cards here</div>
       </main>
     </>
   );
