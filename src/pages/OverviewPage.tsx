@@ -2,8 +2,10 @@ import type { Artist } from "@/types/artists";
 import type { AuthorsCoBundle } from "@/types/coOccurrences";
 import { useState, useEffect } from "react";
 import { getAllAuthors, getAllAuthorsCo } from "@/data/api";
-import PackingVis from "@/components/overview/PackingVis"
-import "@/styles/overview.css"
+import PackingVis from "@/components/overview/PackingVis";
+import PackingLegend from "@/components/overview/PackingLegend";
+import "@/styles/overview.css";
+import { OverviewFilterProvider } from "@/stores/OverviewFilterContext";
 
 type LoadState =
   | { status: "loading" }
@@ -67,6 +69,35 @@ export default function OverviewPage() {
     );
   }
 
+  const temps = Object.values(loadState.artists)
+    .map((w) => {
+      return w.cultural_context_info.century_bucket ?? 0;
+    })
+    .filter((temp) => temp !== 0);
+  const tempBounds = [Math.min(...temps), Math.max(...temps)] as [
+    number,
+    number,
+  ];
+
+  return (
+    <>
+      <OverviewFilterProvider tempBounds={tempBounds}>
+        <OverviewPageContent
+          artists={loadState.artists}
+          coOccurrences={loadState.coOccurrences}
+        />
+      </OverviewFilterProvider>
+    </>
+  );
+}
+
+function OverviewPageContent({
+  artists,
+  coOccurrences,
+}: {
+  artists: Record<string, Artist>;
+  coOccurrences: AuthorsCoBundle;
+}) {
   return (
     <>
       <title>Artists overview</title>
@@ -77,15 +108,15 @@ export default function OverviewPage() {
 
       <main className="overview-layout">
         <div className="overview-left">
-          <p>Navigate the artists by school and time</p>
-          <h1 className="artist-name">Artists</h1>
+          <div className="overview-header">
+            <h1>Artists and cultural contexts</h1>
+          </div>
+          <PackingLegend />
         </div>
         <div className="overview-vis-cnt">
-          <PackingVis artists={loadState.artists} coOccurrences={loadState.coOccurrences} />
+          <PackingVis artists={artists} coOccurrences={coOccurrences} />
         </div>
-        <div className="overview-cards-cnt">
-          Cards here
-        </div>
+        <div className="overview-cards-cnt">Cards here</div>
       </main>
     </>
   );

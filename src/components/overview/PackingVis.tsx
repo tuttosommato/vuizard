@@ -13,6 +13,7 @@ import {
   VIS_MIN_ZOOM,
   VIS_MAX_ZOOM,
 } from "@/utils/constants.ts";
+import { useOverviewFilter } from "@/stores/OverviewFilterContext";
 
 type LeafRecord = {
   id: string;
@@ -28,7 +29,7 @@ type TreeNode =
 type PackedNode = HierarchyCircularNode<TreeNode>;
 
 type RenderCircle = { key: string; x: number; y: number; r: number };
-type LeafRenderCircle = RenderCircle & { groupKey: string | null };
+type LeafRenderCircle = RenderCircle & { groupKey: string | null, centuryBucket: number | null };
 
 const TOOLTIP_GAP = 4;
 
@@ -127,6 +128,7 @@ export default function PackingVis({
   artists: Record<string, Artist>;
   coOccurrences: AuthorsCoBundle;
 }) {
+  const { isArtistFilteredOut } = useOverviewFilter();
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [transform, setTransform] = useState("translate(0, 0) scale(1)");
@@ -233,11 +235,12 @@ export default function PackingVis({
         // hovering an author dot shows the tooltip for
         // whichever bubble directly contains it 
         const parentKey = node.parent ? pathKey(node.parent) : null;
-        leafCircles.push({ key, x: node.x, y: node.y, r: node.r, groupKey: parentKey });
+        const centuryBucket = artists[node.data.id].cultural_context_info.century_bucket ?? null;
+        leafCircles.push({ key, x: node.x, y: node.y, r: node.r, groupKey: parentKey, centuryBucket });
       }
     }
     return { groupCircles, leafCircles, nationByKey, labelByKey };
-  }, [packedRoot]);
+  }, [packedRoot, artists]);
 
   return (
     <div className="overview-vis-cnt">
@@ -276,7 +279,7 @@ export default function PackingVis({
           {leafCircles.map((c) => (
             <circle
               key={c.key}
-              className="author-dot"
+              className={`author-dot${isArtistFilteredOut(c.centuryBucket ?? 0) ? " filtered-out" : ""}`}
               cx={c.x}
               cy={c.y}
               r={c.r}
