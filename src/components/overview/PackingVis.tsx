@@ -7,6 +7,7 @@ import type { HierarchyCircularNode } from "d3";
 import { zoom } from "d3-zoom";
 import type { ZoomBehavior } from "d3-zoom";
 import { select } from "d3-selection";
+import { easeCubicInOut } from "d3-ease";
 import {
   VIS_VIEWBOX_WIDTH,
   VIS_VIEWBOX_HEIGHT,
@@ -94,6 +95,33 @@ function nationOf(node: PackedNode): string {
   return nationNode && nationNode.data.type === "group"
     ? nationNode.data.name
     : "unknown";
+}
+
+// Same zoom-control buttons as ArtistVis (+/- via d3-zoom's scaleBy,
+// eased over the existing svgRef/zoomRef).
+function ZoomControls({
+  svgRef,
+  zoomRef,
+}: {
+  svgRef: React.RefObject<SVGSVGElement | null>;
+  zoomRef: React.RefObject<ZoomBehavior<SVGSVGElement, unknown> | null>;
+}) {
+  const handleZoom = (direction: "+" | "-") => {
+    if (!svgRef.current || !zoomRef.current) return;
+    const factor = direction === "+" ? 1.6 : 0.6;
+    select(svgRef.current)
+      .transition()
+      .duration(200)
+      .ease(easeCubicInOut)
+      .call(zoomRef.current.scaleBy, factor);
+  };
+
+  return (
+    <div className="zoom-controls">
+      <button onClick={() => handleZoom("+")}>+</button>
+      <button onClick={() => handleZoom("-")}>-</button>
+    </div>
+  );
 }
 
 // Same tooltip styling used elsewhere in the app (see .reason-tooltip in
@@ -305,6 +333,8 @@ export default function PackingVis({
           ))}
         </g>
       </svg>
+
+      <ZoomControls svgRef={svgRef} zoomRef={zoomRef} />
 
       {hoveredGroupKey && (
         <AreaTooltip
