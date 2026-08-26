@@ -4,6 +4,11 @@ type OverviewFilterContextValue = {
   tempRange: [number, number];
   setTempRange: (range: [number, number]) => void;
   tempBounds: [number, number];
+  // Sentinel meaning "no upper limit" — one step past the real data max,
+  // so the default range covers everything without needing to know the
+  // exact max. Kept here (not recomputed in PackingLegend) since it's
+  // also what tempRange defaults to.
+  present: number;
   isArtistFilteredOut: (bucket: number | null) => boolean;
   noDatesFilter: boolean;
   handleNoDatesFilter: (status: boolean) => void;
@@ -20,7 +25,11 @@ export function OverviewFilterProvider({
   children: ReactNode;
   tempBounds: [number, number];
 }) {
-  const [tempRange, setTempRange] = useState<[number, number]>(tempBounds);
+  const present = tempBounds[1] + 100;
+  const [tempRange, setTempRange] = useState<[number, number]>([
+    tempBounds[0],
+    present,
+  ]);
   const [noDatesFilter, setNoDatesFilter] = useState<boolean>(true);
 
   const isArtistFilteredOut = (bucket: number | null) =>
@@ -38,6 +47,7 @@ export function OverviewFilterProvider({
         tempRange,
         setTempRange,
         tempBounds,
+        present,
         isArtistFilteredOut,
         noDatesFilter,
         handleNoDatesFilter

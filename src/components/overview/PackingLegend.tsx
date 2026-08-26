@@ -6,19 +6,19 @@ export default function PackingLegend() {
     tempRange,
     setTempRange,
     tempBounds,
+    present,
     noDatesFilter,
     handleNoDatesFilter,
   } = useOverviewFilter();
-  const [min, max] = tempBounds;
-  const PRESENT = max + 100;
+  const [min] = tempBounds;
   const formatUpperLabel = (value: number) =>
-    value === PRESENT ? "Present" : String(value - 1);
+    value === present ? "Present" : String(value - 1);
 
   const steps = useMemo(() => {
     const out: number[] = [];
-    for (let v = min; v <= PRESENT; v += 100) out.push(v);
+    for (let v = min; v <= present; v += 100) out.push(v);
     return out;
-  }, [min, PRESENT]);
+  }, [min, present]);
 
   return (
     <div className="packing-legend legend">
@@ -44,21 +44,21 @@ export default function PackingLegend() {
                 <div
                   key={v}
                   className="temp-range-tick"
-                  style={{ left: `${((v - min) / (PRESENT - min)) * 100}%` }}
+                  style={{ left: `${((v - min) / (present - min)) * 100}%` }}
                 />
               ))}
             </div>
             <div
               className="temp-range-fill"
               style={{
-                left: `${((tempRange[0] - min) / (PRESENT - min)) * 100}%`,
-                right: `${100 - ((tempRange[1] - min) / (PRESENT - min)) * 100}%`,
+                left: `${((tempRange[0] - min) / (present - min)) * 100}%`,
+                right: `${100 - ((tempRange[1] - min) / (present - min)) * 100}%`,
               }}
             />
             <input
               type="range"
               min={min}
-              max={PRESENT}
+              max={present}
               step={100}
               value={tempRange[0]}
               onChange={(e) =>
@@ -72,7 +72,7 @@ export default function PackingLegend() {
             <input
               type="range"
               min={min}
-              max={PRESENT}
+              max={present}
               step={100}
               value={tempRange[1]}
               onChange={(e) =>
