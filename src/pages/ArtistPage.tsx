@@ -264,7 +264,7 @@ function ArtistPageContent({
           )}
         </div>
         <Link to={`/overview`} className="button-link">
-          View artists overview
+          View in artists overview
         </Link>
         <ArtistLegend multiplier={multiplier} />
       </div>
