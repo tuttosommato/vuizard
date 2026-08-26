@@ -112,6 +112,11 @@ function ArtistVis({
   const isSelected = (workId: string) => selectedIds.has(workId);
   const isHovered = (workId: string) =>
     workId === hoveredWork?.work.id || workId === hoveredWorkId;
+  // Same condition that puts any circle into .selected-circle/.hovered-circle
+  // — drives the ambient dimming via a plain descendant selector instead
+  // of :has(), which the previous rule depended on.
+  const isDimming =
+    selectedIds.size > 0 || hoveredWorkId !== null || hoveredWork !== null;
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -322,7 +327,7 @@ function ArtistVis({
         <WorkThumbnail work={hoveredWork.work} coords={hoveredWork.coords} />
       )}
       <svg
-        className="artist-vis"
+        className={"artist-vis" + (isDimming ? " dimming" : "")}
         ref={svgRef}
         viewBox={`0 0 ${VIS_VIEWBOX_WIDTH} ${VIS_VIEWBOX_HEIGHT}`}
       >

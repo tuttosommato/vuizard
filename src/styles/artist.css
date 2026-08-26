@@ -399,7 +399,7 @@ main.artist-layout .artist-vis {
   pointer-events: none;
 }
 
-.artist-vis:has(.attr-circle.selected-circle, .attr-circle.hovered-circle)
+.artist-vis.dimming
   .attr-circle:not(.selected-circle):not(.hovered-circle):not(.filtered-out) {
   opacity: 0.55;
 }
