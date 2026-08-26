@@ -1,12 +1,18 @@
 import { useOverviewFilter } from "@/stores/OverviewFilterContext";
 import { useMemo } from "react";
 
-
 export default function PackingLegend() {
-  const { tempRange, setTempRange, tempBounds } = useOverviewFilter();
+  const {
+    tempRange,
+    setTempRange,
+    tempBounds,
+    noDatesFilter,
+    handleNoDatesFilter,
+  } = useOverviewFilter();
   const [min, max] = tempBounds;
   const PRESENT = max + 100;
-  const formatUpperLabel = (value: number) => value === PRESENT ? "Present" : String(value - 1);
+  const formatUpperLabel = (value: number) =>
+    value === PRESENT ? "Present" : String(value - 1);
 
   const steps = useMemo(() => {
     const out: number[] = [];
@@ -14,13 +20,23 @@ export default function PackingLegend() {
     return out;
   }, [min, PRESENT]);
 
-
   return (
     <div className="packing-legend">
       <h2>Legend and filters</h2>
       <div className="legend-items-cnt">
         <div className="temp-legend-items">
           <h3>Century</h3>
+          <label className="no-dates-item label-cnt">
+            <input
+              type="checkbox"
+              className="legend-checkbox"
+              checked={noDatesFilter}
+              onChange={() => handleNoDatesFilter(!noDatesFilter)}
+            />
+            <div className="svg-span-cnt">
+              <span className="legend-label">Artists with no dates</span>
+            </div>
+          </label>
           <div className="temp-range-slider">
             <div className="temp-range-track" />
             <div className="temp-range-ticks">
@@ -70,7 +86,9 @@ export default function PackingLegend() {
           </div>
           <div className="temp-range-labels">
             <span className="temp-range-label">{tempRange[0]}</span>
-            <span className="temp-range-label">{formatUpperLabel(tempRange[1])}</span>
+            <span className="temp-range-label">
+              {formatUpperLabel(tempRange[1])}
+            </span>
           </div>
         </div>
 

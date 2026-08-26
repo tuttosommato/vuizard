@@ -156,3 +156,11 @@ main.overview-layout {
   opacity: 0.075;
   pointer-events: none;
 }
+
+.no-dates-item {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-sm);
+}

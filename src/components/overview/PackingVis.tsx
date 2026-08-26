@@ -29,7 +29,10 @@ type TreeNode =
 type PackedNode = HierarchyCircularNode<TreeNode>;
 
 type RenderCircle = { key: string; x: number; y: number; r: number };
-type LeafRenderCircle = RenderCircle & { groupKey: string | null, centuryBucket: number | null };
+type LeafRenderCircle = RenderCircle & {
+  groupKey: string | null;
+  centuryBucket: number | null;
+};
 
 const TOOLTIP_GAP = 4;
 
@@ -60,7 +63,7 @@ function buildTree(records: LeafRecord[], depth: number): TreeNode[] {
   return Array.from(byKey.entries()).map(([name, recs]) => {
     const endsHere = recs.filter((r) => r.chain.length === depth + 1);
     const continues = recs.filter((r) => r.chain.length > depth + 1);
-    
+
     const children: TreeNode[] = [
       ...buildTree(continues, depth + 1),
       ...endsHere.map((r) => ({
@@ -171,14 +174,14 @@ export default function PackingVis({
         const t = event.transform;
         setTransform(`translate(${t.x}, ${t.y}) scale(${t.k})`);
       });
-    
+
     zoomRef.current = z;
     select(currentSvg).call(z);
 
     return () => {
       select(currentSvg).on(".zoom", null);
     };
-  }, [])
+  }, []);
 
   // Compute leaf records and packed layout (only when artists data changes)
   const leafRecords: LeafRecord[] = useMemo(() => {
@@ -194,7 +197,9 @@ export default function PackingVis({
 
   const areaColor = useMemo(() => {
     const nations = new Set(leafRecords.map((r) => r.chain[0]));
-    return scaleOrdinal<string>().domain([...nations]).range(schemeTableau10);
+    return scaleOrdinal<string>()
+      .domain([...nations])
+      .range(schemeTableau10);
   }, [leafRecords]);
 
   // Everything in one global nested pack
@@ -233,10 +238,18 @@ export default function PackingVis({
         labelByKey.set(key, node.data.name);
       } else {
         // hovering an author dot shows the tooltip for
-        // whichever bubble directly contains it 
+        // whichever bubble directly contains it
         const parentKey = node.parent ? pathKey(node.parent) : null;
-        const centuryBucket = artists[node.data.id].cultural_context_info.century_bucket ?? null;
-        leafCircles.push({ key, x: node.x, y: node.y, r: node.r, groupKey: parentKey, centuryBucket });
+        const centuryBucket =
+          artists[node.data.id].cultural_context_info.century_bucket ?? null;
+        leafCircles.push({
+          key,
+          x: node.x,
+          y: node.y,
+          r: node.r,
+          groupKey: parentKey,
+          centuryBucket,
+        });
       }
     }
     return { groupCircles, leafCircles, nationByKey, labelByKey };
@@ -279,7 +292,7 @@ export default function PackingVis({
           {leafCircles.map((c) => (
             <circle
               key={c.key}
-              className={`author-dot${isArtistFilteredOut(c.centuryBucket ?? 0) ? " filtered-out" : ""}`}
+              className={`author-dot${isArtistFilteredOut(c.centuryBucket) ? " filtered-out" : ""}`}
               cx={c.x}
               cy={c.y}
               r={c.r}

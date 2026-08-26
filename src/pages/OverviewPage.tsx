@@ -70,10 +70,8 @@ export default function OverviewPage() {
   }
 
   const temps = Object.values(loadState.artists)
-    .map((w) => {
-      return w.cultural_context_info.century_bucket ?? 0;
-    })
-    .filter((temp) => temp !== 0);
+    .map((w) => w.cultural_context_info.century_bucket)
+    .filter((temp): temp is number => temp !== null);
   const tempBounds = [Math.min(...temps), Math.max(...temps)] as [
     number,
     number,
