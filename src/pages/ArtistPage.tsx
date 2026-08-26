@@ -178,13 +178,17 @@ function ArtistPageContent({
   }).length;
 
   const multiplier =
-    dotsLength >= 400
+    dotsLength >= 500
       ? 2
-      : dotsLength >= 300
-        ? 3
-        : dotsLength >= 200
-          ? 3.25
-          : 4;
+      : dotsLength >= 450
+        ? 2.35
+        : dotsLength >= 400
+          ? 2.75
+          : dotsLength >= 300
+            ? 3
+            : dotsLength >= 200
+              ? 3.25
+              : 4;
 
   useEffect(() => {
     if (!triggerNewSelection) return;
