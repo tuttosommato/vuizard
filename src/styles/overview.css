@@ -64,11 +64,17 @@
 }
 
 /* Toggled directly via classList (hoverBus.ts / PackingVis.tsx), cheap at 5000+ dots since it's a plain descendant selector */
-.author-dots-group.dimming .author-dot:not(.hovered):not(.filtered-out) {
+.author-dots-group.dimming .author-dot:not(.hovered):not(.selected):not(.dimmed-by-selection):not(.filtered-out) {
   opacity: 0.55;
 }
 
-.author-dot.filtered-out {
+.author-dot.selected {
+  stroke: var(--color-text);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.author-dot.filtered-out, .author-dot.dimmed-by-selection {
   opacity: 0.075;
   pointer-events: none;
 }

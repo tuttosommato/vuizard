@@ -22,6 +22,9 @@ import {
   showArtistTooltip,
   hideArtistTooltip,
 } from "@/stores/hoverBus";
+import { useOverviewSelection } from "@/stores/OverviewSelectionContext";
+import { getHighlightedIds } from "@/utils/coOccurrences";
+import { getCoOccurrenceColor } from "@/utils/coOccurrenceColor";
 
 type LeafRecord = {
   id: string;
@@ -197,6 +200,12 @@ export default function PackingVis({
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [transform, setTransform] = useState("translate(0, 0) scale(1)");
+  const { selectedIds, toggle } = useOverviewSelection();
+  // Selected authors + whoever co-occurs with all of them.
+  const highlightedIds = useMemo(
+    () => getHighlightedIds(selectedIds, coOccurrences),
+    [selectedIds, coOccurrences],
+  );
 
   const groupCircleRefs = useRef<Map<string, SVGCircleElement>>(new Map());
   const [hoveredGroupKey, setHoveredGroupKey] = useState<string | null>(null);
@@ -398,31 +407,64 @@ export default function PackingVis({
               />
             ))}
 
-            {leafCircles.map((c) => (
-              <circle
-                key={c.key}
-                data-artist-id={c.id}
-                className={`author-dot${isArtistFilteredOut(c.centuryBucket) ? " filtered-out" : ""}`}
-                cx={c.x}
-                cy={c.y}
-                r={c.r}
-                fill="var(--color-text)"
-                onMouseEnter={(e) => {
-                  highlightDot(c.id);
-                  if (c.groupKey) setHoveredGroupKey(c.groupKey);
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  showArtistTooltip(c.name, {
-                    x: rect.right + TOOLTIP_GAP,
-                    y: rect.bottom - rect.height / 2,
-                  });
-                }}
-                onMouseLeave={() => {
-                  highlightDot(null);
-                  setHoveredGroupKey((k) => (k === c.groupKey ? null : k));
-                  hideArtistTooltip();
-                }}
-              />
-            ))}
+            {leafCircles.map((c) => {
+              const isSelected = selectedIds.has(c.id);
+              const isCoOccurring = !isSelected && highlightedIds.has(c.id);
+              const isDimmedBySelection =
+                selectedIds.size > 0 && !highlightedIds.has(c.id);
+
+              // Only the small co-occurring subset needs the actual ratio/color
+              let fill = "var(--color-text)";
+              if (isCoOccurring) {
+                let ratio = 0;
+                for (const selectedId of selectedIds) {
+                  const connection =
+                    coOccurrences[selectedId]?.co_authors?.[c.id];
+                  if (connection) {
+                    // by now it considers only the first selected author
+                    ratio =
+                      connection.co_author_counts.accepted /
+                      connection.co_author_counts.total;
+                    break;
+                  }
+                }
+                fill = getCoOccurrenceColor(ratio);
+              }
+
+              return (
+                <circle
+                  key={c.key}
+                  data-artist-id={c.id}
+                  className={
+                    "author-dot" +
+                    (isSelected ? " selected" : "") +
+                    (isDimmedBySelection ? " dimmed-by-selection" : "") +
+                    (isArtistFilteredOut(c.centuryBucket)
+                      ? " filtered-out"
+                      : "")
+                  }
+                  cx={c.x}
+                  cy={c.y}
+                  r={c.r}
+                  fill={fill}
+                  onClick={() => toggle(c.id)}
+                  onMouseEnter={(e) => {
+                    highlightDot(c.id);
+                    if (c.groupKey) setHoveredGroupKey(c.groupKey);
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    showArtistTooltip(c.name, {
+                      x: rect.right + TOOLTIP_GAP,
+                      y: rect.bottom - rect.height / 2,
+                    });
+                  }}
+                  onMouseLeave={() => {
+                    highlightDot(null);
+                    setHoveredGroupKey((k) => (k === c.groupKey ? null : k));
+                    hideArtistTooltip();
+                  }}
+                />
+              );
+            })}
           </g>
         </g>
       </svg>

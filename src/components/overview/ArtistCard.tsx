@@ -1,17 +1,17 @@
-import { useState } from "react";
 import type { Artist } from "@/types/artists";
 import { Link } from "react-router-dom";
 import ArrowIcon from "@/components/ArrowIcon";
 import { getArtistTotal } from "@/utils/getArtistTotal";
 import { highlightDot } from "@/stores/hoverBus";
+import { useOverviewSelection } from "@/stores/OverviewSelectionContext";
 
 interface ArtistCardProps {
   artist: Artist;
 }
 
 export default function ArtistCard({ artist }: ArtistCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+  const { toggle, selectedIds } = useOverviewSelection();
+  const isSelected = selectedIds.has(artist.id);
   const totalAttributions = getArtistTotal(artist);
 
   const culturalContext = artist.cultural_context_info.declarations
@@ -22,12 +22,14 @@ export default function ArtistCard({ artist }: ArtistCardProps) {
     <div
       className={
         "work-card-container" +
-        (isExpanded ? " work-card-container-expanded" : "")
+        (isSelected ? " work-card-container-expanded" : "")
       }
     >
       <div
         className="work-card"
-        onClick={() => setIsExpanded((v) => !v)}
+        onClick={() => {
+          toggle(artist.id);
+        }}
         onMouseEnter={() => highlightDot(artist.id)}
         onMouseLeave={() => highlightDot(null)}
       >
@@ -45,7 +47,9 @@ export default function ArtistCard({ artist }: ArtistCardProps) {
                   : artist.life.raw || "Life dates unknown"}
               </p>
               {culturalContext && (
-                <p className="work-card-context">Artistic school (cultural context): {culturalContext}</p>
+                <p className="work-card-context">
+                  Artistic school (cultural context): {culturalContext}
+                </p>
               )}
             </div>
             <div className="work-card-attributions">

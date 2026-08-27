@@ -9,6 +9,11 @@ import "@/styles/overview.css";
 import { OverviewFilterProvider } from "@/stores/OverviewFilterContext";
 import ArtistCard from "@/components/overview/ArtistCard";
 import { getArtistTotal } from "@/utils/getArtistTotal";
+import {
+  OverviewSelectionProvider,
+  useOverviewSelection,
+} from "@/stores/OverviewSelectionContext";
+import { getHighlightedIds } from "@/utils/coOccurrences";
 
 type LoadState =
   | { status: "loading" }
@@ -83,10 +88,12 @@ export default function OverviewPage() {
   return (
     <>
       <OverviewFilterProvider tempBounds={tempBounds}>
-        <OverviewPageContent
-          artists={loadState.artists}
-          coOccurrences={loadState.coOccurrences}
-        />
+        <OverviewSelectionProvider>
+          <OverviewPageContent
+            artists={loadState.artists}
+            coOccurrences={loadState.coOccurrences}
+          />
+        </OverviewSelectionProvider>
       </OverviewFilterProvider>
     </>
   );
@@ -106,6 +113,31 @@ function OverviewPageContent({
       ),
     [artists],
   );
+
+  const { selectedIds } = useOverviewSelection();
+
+  const highlightedIds = useMemo(
+    () => getHighlightedIds(selectedIds, coOccurrences),
+    [selectedIds, coOccurrences],
+  );
+
+  const visibleArtists = useMemo(() => {
+    if (selectedIds.size === 0) return sortedArtists;
+
+    const selectionOrder = [...selectedIds]; // insertion order = selection order
+    const rankOf = (id: string) => selectionOrder.indexOf(id); // -1 if not selected
+
+    return sortedArtists
+      .filter((artist) => highlightedIds.has(artist.id))
+      .sort((a, b) => {
+        const rankA = rankOf(a.id);
+        const rankB = rankOf(b.id);
+        if (rankA !== -1 && rankB !== -1) return rankA - rankB; // both selected: earlier-selected first
+        if (rankA !== -1) return -1; // a selected, b isn't: a goes first
+        if (rankB !== -1) return 1; // b selected, a isn't: b goes first
+        return 0; // neither selected: leave as-is
+      });
+  }, [sortedArtists, selectedIds, highlightedIds]);
 
   return (
     <>
@@ -127,7 +159,7 @@ function OverviewPageContent({
         </div>
         <div className="overview-cards-cnt page-side-panel">
           <h3 className="work-list-stats-title">Artists</h3>
-          {sortedArtists.map((artist) => (
+          {visibleArtists.map((artist) => (
             <ArtistCard key={artist.id} artist={artist} />
           ))}
         </div>
