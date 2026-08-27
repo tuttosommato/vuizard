@@ -15,7 +15,13 @@ import {
   VIS_MAX_ZOOM,
 } from "@/utils/constants.ts";
 import { useOverviewFilter } from "@/stores/OverviewFilterContext";
-import { registerDotsContainer, highlightDot } from "@/stores/hoverBus";
+import {
+  registerDotsContainer,
+  highlightDot,
+  registerArtistTooltipEl,
+  showArtistTooltip,
+  hideArtistTooltip,
+} from "@/stores/hoverBus";
 
 type LeafRecord = {
   id: string;
@@ -33,6 +39,7 @@ type PackedNode = HierarchyCircularNode<TreeNode>;
 type RenderCircle = { key: string; x: number; y: number; r: number };
 type LeafRenderCircle = RenderCircle & {
   id: string;
+  name: string;
   groupKey: string | null;
   centuryBucket: number | null;
 };
@@ -162,6 +169,23 @@ function AreaTooltip({
   );
 }
 
+function ArtistTooltip() {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    registerArtistTooltipEl(ref.current);
+    return () => registerArtistTooltipEl(null);
+  }, []);
+
+  return createPortal(
+    <div
+      ref={ref}
+      className="reason-tooltip"
+      style={{ position: "fixed", opacity: 0, pointerEvents: "none" }}
+    />,
+    document.body,
+  );
+}
+
 export default function PackingVis({
   artists,
   coOccurrences,
@@ -283,6 +307,7 @@ export default function PackingVis({
         leafCircles.push({
           key,
           id: node.data.id,
+          name: node.data.name,
           x: node.x,
           y: node.y,
           r: node.r,
@@ -382,14 +407,19 @@ export default function PackingVis({
                 cy={c.y}
                 r={c.r}
                 fill="var(--color-text)"
-                onMouseEnter={() => {
-                  // Same function a card's hover calls (see HoverBus.ts)
+                onMouseEnter={(e) => {
                   highlightDot(c.id);
                   if (c.groupKey) setHoveredGroupKey(c.groupKey);
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  showArtistTooltip(c.name, {
+                    x: rect.right + TOOLTIP_GAP,
+                    y: rect.bottom - rect.height / 2,
+                  });
                 }}
                 onMouseLeave={() => {
                   highlightDot(null);
                   setHoveredGroupKey((k) => (k === c.groupKey ? null : k));
+                  hideArtistTooltip();
                 }}
               />
             ))}
@@ -398,6 +428,8 @@ export default function PackingVis({
       </svg>
 
       <ZoomControls svgRef={svgRef} zoomRef={zoomRef} />
+
+      <ArtistTooltip />
 
       {hoveredGroupKey && (
         <AreaTooltip

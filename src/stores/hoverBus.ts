@@ -24,3 +24,21 @@ export function highlightDot(id: string | null) {
       .forEach((el) => el.classList.add("hovered"));
   }
 }
+
+let tooltipEl: HTMLDivElement | null = null;
+
+export function registerArtistTooltipEl(el: HTMLDivElement | null) {
+  tooltipEl = el;
+}
+
+export function showArtistTooltip(name: string, coords: { x: number; y: number }) {
+  if (!tooltipEl) return;
+  tooltipEl.textContent = name;
+  tooltipEl.style.left = `${coords.x}px`;
+  tooltipEl.style.top = `${coords.y}px`;
+  tooltipEl.style.opacity = "1";
+}
+
+export function hideArtistTooltip() {
+  if (tooltipEl) tooltipEl.style.opacity = "0";
+}
