@@ -3,6 +3,7 @@ import type { Artist } from "@/types/artists";
 import { Link } from "react-router-dom";
 import ArrowIcon from "@/components/ArrowIcon";
 import { getArtistTotal } from "@/utils/getArtistTotal";
+import { highlightDot } from "@/stores/hoverBus";
 
 interface ArtistCardProps {
   artist: Artist;
@@ -24,7 +25,12 @@ export default function ArtistCard({ artist }: ArtistCardProps) {
         (isExpanded ? " work-card-container-expanded" : "")
       }
     >
-      <div className="work-card" onClick={() => setIsExpanded((v) => !v)}>
+      <div
+        className="work-card"
+        onClick={() => setIsExpanded((v) => !v)}
+        onMouseEnter={() => highlightDot(artist.id)}
+        onMouseLeave={() => highlightDot(null)}
+      >
         <div className="work-card-upper">
           <div className="work-card-info">
             <div className="work-card-description">

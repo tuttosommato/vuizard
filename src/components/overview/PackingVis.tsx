@@ -15,6 +15,7 @@ import {
   VIS_MAX_ZOOM,
 } from "@/utils/constants.ts";
 import { useOverviewFilter } from "@/stores/OverviewFilterContext";
+import { registerDotsContainer, highlightDot } from "@/stores/hoverBus";
 
 type LeafRecord = {
   id: string;
@@ -31,8 +32,17 @@ type PackedNode = HierarchyCircularNode<TreeNode>;
 
 type RenderCircle = { key: string; x: number; y: number; r: number };
 type LeafRenderCircle = RenderCircle & {
+  id: string;
   groupKey: string | null;
   centuryBucket: number | null;
+};
+type ArtistEdge = {
+  key: string;
+  id: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
 };
 
 const TOOLTIP_GAP = 4;
@@ -272,6 +282,7 @@ export default function PackingVis({
           artists[node.data.id].cultural_context_info.century_bucket ?? null;
         leafCircles.push({
           key,
+          id: node.data.id,
           x: node.x,
           y: node.y,
           r: node.r,
@@ -282,6 +293,35 @@ export default function PackingVis({
     }
     return { groupCircles, leafCircles, nationByKey, labelByKey };
   }, [packedRoot, artists]);
+
+  // One artist can own more than one leaf circle (multiple cultural-
+  // context declarations) — same shape as ArtistVis's workEdges: group
+  // by id, and for any group with more than one member, connect each
+  // circle to the group's centroid. Only rendered/visible when that
+  // artist's id is hovered (see hoverBus.ts + the "hovered" class).
+  const artistEdges: ArtistEdge[] = useMemo(() => {
+    const groups = new Map<string, LeafRenderCircle[]>();
+    for (const c of leafCircles) {
+      const group = groups.get(c.id) ?? [];
+      group.push(c);
+      groups.set(c.id, group);
+    }
+
+    return [...groups.entries()]
+      .filter(([, group]) => group.length > 1)
+      .flatMap(([id, group]) => {
+        const cx = group.reduce((sum, c) => sum + c.x, 0) / group.length;
+        const cy = group.reduce((sum, c) => sum + c.y, 0) / group.length;
+        return group.map((c) => ({
+          key: `edge-${c.key}`,
+          id,
+          x1: c.x,
+          y1: c.y,
+          x2: cx,
+          y2: cy,
+        }));
+      });
+  }, [leafCircles]);
 
   return (
     <div className="overview-vis-cnt">
@@ -317,20 +357,43 @@ export default function PackingVis({
             );
           })}
 
-          {leafCircles.map((c) => (
-            <circle
-              key={c.key}
-              className={`author-dot${isArtistFilteredOut(c.centuryBucket) ? " filtered-out" : ""}`}
-              cx={c.x}
-              cy={c.y}
-              r={c.r}
-              fill="var(--color-text)"
-              onMouseEnter={() => c.groupKey && setHoveredGroupKey(c.groupKey)}
-              onMouseLeave={() =>
-                setHoveredGroupKey((k) => (k === c.groupKey ? null : k))
-              }
-            />
-          ))}
+          <g className="author-dots-group" ref={registerDotsContainer}>
+            {artistEdges.map((edge) => (
+              <line
+                key={edge.key}
+                data-artist-id={edge.id}
+                className="artist-edge"
+                x1={edge.x1}
+                y1={edge.y1}
+                x2={edge.x2}
+                y2={edge.y2}
+                stroke="var(--color-text-muted)"
+                strokeWidth={1}
+                vectorEffect="non-scaling-stroke"
+              />
+            ))}
+
+            {leafCircles.map((c) => (
+              <circle
+                key={c.key}
+                data-artist-id={c.id}
+                className={`author-dot${isArtistFilteredOut(c.centuryBucket) ? " filtered-out" : ""}`}
+                cx={c.x}
+                cy={c.y}
+                r={c.r}
+                fill="var(--color-text)"
+                onMouseEnter={() => {
+                  // Same function a card's hover calls (see HoverBus.ts)
+                  highlightDot(c.id);
+                  if (c.groupKey) setHoveredGroupKey(c.groupKey);
+                }}
+                onMouseLeave={() => {
+                  highlightDot(null);
+                  setHoveredGroupKey((k) => (k === c.groupKey ? null : k));
+                }}
+              />
+            ))}
+          </g>
         </g>
       </svg>
 
