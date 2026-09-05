@@ -245,7 +245,7 @@ main.work-layout {
 }
 
 .vis-arcs-legend text {
-  font-size: var(--text-md);
+  font-size: calc(var(--text-legend) * 1.55);
 }
 
 .reason-tooltip {
