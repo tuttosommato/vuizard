@@ -245,7 +245,7 @@ main.work-layout {
 }
 
 .vis-arcs-legend text {
-  font-size: calc(var(--text-legend) * 1.55);
+  font-size: calc(var(--text-legend) * 1.35);
 }
 
 .reason-tooltip {
@@ -304,17 +304,19 @@ main.work-layout {
    ============================================================= */
 
 .vis-legend {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-sm);
+  display: flex;
+  flex-direction: row;
   width: 95%;
   margin-bottom: var(--space-md);
+  justify-content: space-between;
 }
 
 .vis-legend-col {
   display: flex;
   flex-direction: column;
   gap: calc(var(--space-sm) * 1.5);
+  width: fit-content;
+  max-width: 25%;
 }
 
 .vis-legend-item {
