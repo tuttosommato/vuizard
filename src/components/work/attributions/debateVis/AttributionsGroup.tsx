@@ -29,11 +29,13 @@ function ReasonTooltip({
   date,
   coords,
   tooltipPosition,
+  rawReason,
 }: {
   reason: string;
   date: string | null;
   coords: { x: number; y: number } | null;
   tooltipPosition: "top" | "bottom";
+  rawReason: string;
 }) {
   if (!coords) return null;
   const reasonClean = reason.replace(/[-–—]/g, " ").trim();
@@ -53,7 +55,9 @@ function ReasonTooltip({
       <p>
         <span className="keyword">{reasonClean}</span>
         <br />
-        {date ? `${date}` : "date: n/a"}
+        {rawReason}
+        <br />
+        {date ? '' : "date: n/a"}
       </p>
     </div>,
     document.body,
@@ -109,6 +113,7 @@ export default function AttributionsGroup({
               date={date}
               coords={coordsList[ri] ?? null}
               tooltipPosition={tooltipPosition}
+              rawReason={reason.original_text}
             />
           );
         })}
