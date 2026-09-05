@@ -21,7 +21,7 @@ export default function ArtistsMetaTable({
   workTitle: string;
   currentAttributions: AttributionsBundle;
 }) {
-  // We measure the cellWidth of the "Reason reliability" header cell to adapt the visualization of reasons accordingly
+  // We measure the cellWidth of the "source authoritativeness" header cell to adapt the visualization of reasons accordingly
   const { ref, width, height } = useMeasuredSize<HTMLTableCellElement>();
 
   const radius = height / 5.85;
@@ -46,7 +46,7 @@ export default function ArtistsMetaTable({
             Artist
           </th>
           <th ref={ref} scope="col" className="reliability-column">
-            Reason reliability
+            Source authoritativeness
           </th>
         </tr>
       </thead>
@@ -194,6 +194,23 @@ export default function ArtistsMetaTable({
                                   ...coArtist.pseudonym_alts,
                                   ...coArtist.variant_names,
                                 ].join(", ")}
+                              </span>
+                            </div>
+                          )}
+                                                    {coArtist.cultural_context_info?.declarations.length >
+                            0 && (
+                            <div className="artist-context-cnt">
+                              Cultural context:{" "}
+                              <span className="context-list"> {"scuola "}
+                                {coArtist.cultural_context_info.declarations
+                                  .map((d) => {
+                                    if (d.chain.length === 0) return "n.d.";
+                                    if (d.chain.length === 1) return d.chain[0];
+                                    if (d.chain.length === 2)
+                                      return d.chain[0] + ` (${d.chain[1]})`;
+                                    return d.chain[0] + ` (${d.chain[2]})`;
+                                  })
+                                  .join("; ")}
                               </span>
                             </div>
                           )}
