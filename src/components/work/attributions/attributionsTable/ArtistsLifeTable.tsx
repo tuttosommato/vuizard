@@ -78,8 +78,11 @@ export default function ArtistsLifeTable({
             Artist
           </th>
           <th scope="col" className="uncertain-column"></th>
+          <th scope="col" className="dating-type-column">
+            Type
+          </th>
           <th ref={ref} scope="col">
-            Life data
+            Biographical dates
           </th>
         </tr>
       </thead>
@@ -130,7 +133,16 @@ export default function ArtistsLifeTable({
                     );
                 })}
               </td>
-
+              <td className="dating-type-column">
+                {attr.authors.map((author) => {
+                  const artist = artists[author.local_id];
+                  return (
+                    <span>
+                      {author.is_anonymous ? "approx. century" : artist.life.type}
+                    </span>
+                  );
+                })}
+              </td>
               <td className="dating-column">
                 {attr.authors.map((author) => {
                   const artist = artists[author.local_id];
@@ -175,8 +187,11 @@ export default function ArtistsLifeTable({
                           toQ={life.end ? life.end_approx : ""}
                           scale={timeScale}
                           height={height}
-                          barHeight={barHeight}
+                          barHeight={author.is_anonymous ? barHeight * 0.6 : barHeight}
+                          fillOpacity={author.is_anonymous ? 0.5 : 1}
                           fill={colorScale(attr.type)}
+                          raw={author.is_anonymous ? life.raw : ''}
+                          fontSize={barHeight}
                         />
                       </svg>
                     );
@@ -194,6 +209,7 @@ export default function ArtistsLifeTable({
           <th className="artist-column work-dating">
             Work creation (accepted)
           </th>
+          <td></td>
           <td></td>
           <td>
             <svg width="100%" height={height}>
@@ -230,6 +246,7 @@ export default function ArtistsLifeTable({
                       height={height}
                       barHeight={barHeight}
                       fill={"var(--color-text)"}
+                      raw={''}
                     />
                   </Fragment>
                 </>
@@ -255,6 +272,7 @@ export default function ArtistsLifeTable({
                     barHeight={barHeight}
                     fill={"var(--color-text)"}
                     fillOpacity={0.5}
+                    raw={''}
                   />
                 ))}
               </svg>

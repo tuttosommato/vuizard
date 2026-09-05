@@ -513,6 +513,13 @@ td.details-cell {
   font-weight: 400;
 }
 
+.dating-type-column span {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
 .artists-life-table tbody .artist-column.work-dating-discarded {
   color: var(--color-text-muted);
 }

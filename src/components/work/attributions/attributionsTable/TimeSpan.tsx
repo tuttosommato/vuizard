@@ -8,6 +8,8 @@ type TimeSpanProp = {
   barHeight: number;
   fill: string;
   fillOpacity?: number;
+  raw: string;
+  fontSize?: number;
 };
 
 export default function TimeSpan({
@@ -20,12 +22,15 @@ export default function TimeSpan({
   barHeight,
   fill,
   fillOpacity = 1,
+  raw,
+  fontSize
 }: TimeSpanProp) {
   const y = height / 2;
   const labelY = y - 3;
   const x1 = scale(from);
   const x2 = scale(to);
   const r = barHeight / 2.5;
+  const labelFontSize = fontSize ?? barHeight;
 
   if (from === to) {
     const n = 3;
@@ -63,12 +68,12 @@ export default function TimeSpan({
         <text
           x={x1}
           y={labelY}
-          fontSize={barHeight}
+          fontSize={labelFontSize}
           textAnchor="middle"
           dominantBaseline="alphabetic"
           fill="var(--color-text)"
         >
-          {from + fromQ}
+          {raw || `${from}${fromQ}`}
         </text>
       </>
     );
@@ -78,7 +83,7 @@ export default function TimeSpan({
     <>
       {fromQ &&
         (() => {
-          const n = 3;
+          const n = 5;
           const unitW = (scale(from) - scale(from - 1)) / 2;
           return Array.from({ length: n }).map((_, i) => {
             return (
@@ -97,7 +102,7 @@ export default function TimeSpan({
 
       {toQ &&
         (() => {
-          const n = 3;
+          const n = 5;
           const unitW = (scale(to + 1) - scale(to)) / 2;
           return Array.from({ length: n }).map((_, i) => {
             return (
@@ -123,14 +128,14 @@ export default function TimeSpan({
         fillOpacity={fillOpacity}
       />
       <text
-        fontSize={barHeight}
+        fontSize={labelFontSize}
         x={x1 + (x2 - x1) / 2}
         y={labelY}
         textAnchor="middle"
         dominantBaseline="alphabetic"
         fill="var(--color-text)"
       >
-        {from + (fromQ ? "ca." : "")} - {to + (toQ ? "ca." : "")}
+        {raw || `${from}${fromQ ? " ca." : ""} - ${to}${toQ ? " ca." : ""}`}
       </text>
     </>
   );
