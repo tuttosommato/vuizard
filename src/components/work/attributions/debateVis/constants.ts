@@ -10,7 +10,7 @@ export const labelsFontSize = 14   // viewBox units (will be overridden by CSS f
 
 // Radial geometry
 const size = Math.min(VIEW_W, VIEW_H)
-export const centerX = VIEW_W / 4
+export const centerX = VIEW_W / 8
 export const centerY = VIEW_H / 2
 export const min = size / 25
 export const max = min * 12 + 1

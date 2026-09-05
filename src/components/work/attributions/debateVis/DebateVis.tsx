@@ -38,6 +38,8 @@ function easeInOutCubic(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
+const LEFT_MARGIN = 120; // for horizontal viewbox on debate vis in order to fit legend axis labels
+
 export default function DebateVis({
 currentAttributions,
 }: {
@@ -317,7 +319,7 @@ currentAttributions,
       {/* Avoid rendering if width is not available yet */}
       <svg
         className="debate-vis"
-        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+        viewBox={`${- LEFT_MARGIN} 0 ${VIEW_W + LEFT_MARGIN} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
       >
         <BackgroundArcs />
@@ -375,7 +377,7 @@ currentAttributions,
           setNewState={setActiveOrdering}
           options={[
             { value: "standard", label: "Catalogue order" },
-            { value: "authoritativeness", label: "By reason reliability" },
+            { value: "authoritativeness", label: "By source authoritativeness" },
           ]}
         />
       </div>

@@ -39,7 +39,7 @@ export function authoritativenessOrdering(attributions: Attribution[]): Attribut
     }))
     .sort(
       (a, b) =>
-        b.maxRank - a.maxRank || // higher reliability
+        b.maxRank - a.maxRank || // higher authoritativeness
         b.numReasons - a.numReasons || // more reasons
         a.originalIndex - b.originalIndex // standard order
     )
