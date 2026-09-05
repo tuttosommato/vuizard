@@ -2,7 +2,12 @@
    Work page layout
    ============================================================= */
 main.work-layout {
-  padding: var(--space-lg) var(--space-lg) 0 var(--space-lg);
+  /* left padding = nav clearance + the same breathing room .page-side-panel
+     gives artist/overview pages next to the nav - kept on the container
+     (not a margin on whichever section happens to render first) so it stays
+     correct regardless of work-left/work-right DOM order. */
+  padding: var(--space-layout) var(--space-layout) 0
+    calc(var(--nav-width) + var(--space-layout));
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -17,16 +22,17 @@ main.work-layout {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
-  padding-bottom: var(--space-lg);
+  padding-bottom: var(--space-layout);
 }
 
 .work-right {
   flex: 1;
   min-width: 0;
   position: sticky;
-  top: calc(var(--nav-height) + var(--space-lg));
-  height: calc(100vh - var(--nav-height) - var(--space-lg));
-  padding-bottom: var(--space-lg);
+  top: var(--space-layout);
+  height: calc(100vh - 4px - var(--space-layout));
+  padding-top: 4px;
+  padding-bottom: var(--space-layout);
 }
 
 .bibliography-section {

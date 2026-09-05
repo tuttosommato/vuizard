@@ -10,7 +10,7 @@
   grid-template-columns: 1fr 3fr 1.4fr;
   grid-template-rows: 1fr;
   gap: var(--space-md);
-  height: calc(100vh - var(--nav-height));
+  height: 100vh;
   width: 100%;
 }
 
@@ -19,7 +19,7 @@
   height: 100%;
   min-width: 0;
   min-height: 0;
-  padding: var(--space-lg) var(--space-lg) 0 var(--space-lg);
+  padding: var(--space-layout) var(--space-layout) 0 var(--space-layout);
   z-index: 1;
   display: flex;
   flex-direction: column;

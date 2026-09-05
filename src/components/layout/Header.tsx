@@ -5,12 +5,12 @@ export default function Header() {
   return (
     <nav id="nav">
       <Link to={`/`}>
-      <svg width="40" height="20" viewBox="0 0 40 20">
-        <g transform="translate(10, 10)">
-                    <AttributionCircle type="artist" fill="var(--color-accepted)" r={10} />
-          </g>
+      <svg width="20" height="40" viewBox="0 0 20 40">
+        <g transform="translate(10, 15)">
+          <AttributionCircle type="artist" fill="var(--color-accepted)" r={10} />
+        </g>
 
-          <g transform="translate(20, 10)">
+          <g transform="translate(10, 25)">
           <AttributionCircle type="artist" fill="var(--color-discarded)" r={10} />
         </g>
       

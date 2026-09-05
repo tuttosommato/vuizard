@@ -49,6 +49,7 @@
   --space-lg: 2rem;
   --space-xl: 3rem;
   --space-2xl: 4rem;
+  --space-layout: 1.5rem;
 
   /* Borders */
   --radius-xs: 4px;
@@ -61,7 +62,7 @@
   --border: 1px solid var(--color-text);
 
   /* Navigation */
-  --nav-height: 40px;
+  --nav-width: 50px;
 }
 
 *,
@@ -92,15 +93,26 @@ body::after {
  */
 
 nav {
-  display: flex;
-  height: var(--nav-height);
-  align-items: center;
-  border-bottom: var(--border);
-  padding: 0 var(--space-lg);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--nav-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: var(--color-bg);
   z-index: 100;
+  border-right: var(--border);
+  padding: var(--space-layout) 0;
+}
+
+/* nav is a fixed left sidebar (not in normal flow), so every page's root
+   needs this reserved regardless of its own layout - set it once here
+   instead of repeating it per page. Pages that need extra clearance (see
+   artist.css/overview.css/work.css) still layer their own spacing on top. */
+main {
+  padding-left: var(--nav-width);
 }
 
 nav a {

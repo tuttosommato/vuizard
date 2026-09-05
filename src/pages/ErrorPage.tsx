@@ -16,7 +16,12 @@ export default function ErrorPage() {
       : "An unexpected error occurred.";
 
   return (
-    <main style={{ padding: "var(--space-lg)" }}>
+    <main
+      style={{
+        padding: "var(--space-lg)",
+        paddingLeft: "calc(var(--nav-width) + var(--space-lg))",
+      }}
+    >
       <h1>Something went wrong</h1>
       <p>{message}</p>
       <Link to="/">← Back to search</Link>
