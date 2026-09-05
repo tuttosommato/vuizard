@@ -149,7 +149,7 @@ const sections: LegendItem[][] = [
     {
       el: <Curveel stroke="var(--color-text)" />,
       label: "Similar artists",
-      description: "(based on attributions co-occurrence)",
+      description: "(artists that frequently co-occur in attributions for the same works)",
     },
     {
       el: <Curveel stroke="var(--color-link-1)" />,
