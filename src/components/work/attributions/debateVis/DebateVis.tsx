@@ -19,7 +19,11 @@ import {
 import VisLegend from "@/components/work/attributions/debateVis/VisLegend";
 import AxisLegend from "@/components/work/attributions/debateVis/AxisLegend";
 import ArrowMarkerDef from "@/components/ArrowMarkerDef";
-import { attributionIdsByCompositeId } from "@/components/work/attributions/utils";
+import {
+  attributionIdsByCompositeId,
+  circleTypeFor,
+  representativeAuthor,
+} from "@/components/work/attributions/utils";
 import Switch from "@/components/work/Switch";
 
 // a drawable connection line between two attributions
@@ -41,7 +45,7 @@ function easeInOutCubic(t: number) {
 const LEFT_MARGIN = 120; // for horizontal viewbox on debate vis in order to fit legend axis labels
 
 export default function DebateVis({
-currentAttributions,
+  currentAttributions,
 }: {
   currentAttributions: AttributionsBundle;
 }) {
@@ -54,7 +58,9 @@ currentAttributions,
   } = currentAttributions;
 
   // Base ordering
-  const [activeOrdering, setActiveOrdering] = useState<"standard" | "authoritativeness">("standard");
+  const [activeOrdering, setActiveOrdering] = useState<
+    "standard" | "authoritativeness"
+  >("standard");
 
   const orderedAttributions = useMemo(() => {
     if (activeOrdering === "standard") return standardOrdering(attributions);
@@ -175,7 +181,7 @@ currentAttributions,
     rotations,
   );
 
-  // 
+  //
   // Connection curves (author_similarities / implicit_relations / master_relations)
   // Expanded from author-level (composite_id) relations into one LinkSpec per attribution-pair combination,
   // since the same author can appear in multiple attributions for this work
@@ -231,14 +237,39 @@ currentAttributions,
     attributionIdsForComposite,
   ]);
 
-  // 
+  //
   // Animation: tween rotations from wherever they currently are to their targets, via requestAnimationFrame, driven into React state so both the
   // attribution groups and the connection curves re-render from the same live interpolated values every frame
   //
-  const [interpolatedRotations, setInterpolatedRotations] = useState<Map<string, number>>(new Map());
+  const [interpolatedRotations, setInterpolatedRotations] = useState<
+    Map<string, number>
+  >(new Map());
   const currentRotationsRef = useRef(new Map<string, number>());
   const rafId = useRef<number | null>(null);
   const hasInitialized = useRef(false);
+
+  // define legendKeys to render the legend conditionally
+  const legendKeys = useMemo(() => {
+    const keys = new Set<string>();
+
+    attributions.forEach((attr) => {
+      keys.add(attr.type); // "accepted" | "discarded"
+      keys.add(circleTypeFor(attr)); // "artist" | "recognised" | "unrecognised" | "anonym"
+
+      const u = representativeAuthor(attr).u_qualifier;
+      if (!u) keys.add("confident");
+      else if (u === "?") keys.add("probable");
+      else keys.add("uncertain");
+    });
+
+    if (author_similarities.some((s) => s.npmi > similarity_threshold)) {
+      keys.add("similar");
+    }
+    if (implicit_relations.length > 0) keys.add("same-artist");
+    if (master_relations.length > 0) keys.add("artist-anonym");
+
+    return keys;
+  }, [attributions, author_similarities, implicit_relations, master_relations]);
 
   useEffect(() => {
     // First run: nothing to animate from yet — snap straight to target.
@@ -315,11 +346,11 @@ currentAttributions,
   //
   return (
     <div className="debate-vis-cnt">
-      <VisLegend />
+      <VisLegend keys={[...legendKeys]} />
       {/* Avoid rendering if width is not available yet */}
       <svg
         className="debate-vis"
-        viewBox={`${- LEFT_MARGIN} 0 ${VIEW_W + LEFT_MARGIN} ${VIEW_H}`}
+        viewBox={`${-LEFT_MARGIN} 0 ${VIEW_W + LEFT_MARGIN} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
       >
         <BackgroundArcs />
@@ -377,7 +408,10 @@ currentAttributions,
           setNewState={setActiveOrdering}
           options={[
             { value: "standard", label: "Catalogue order" },
-            { value: "authoritativeness", label: "By source authoritativeness" },
+            {
+              value: "authoritativeness",
+              label: "By source authoritativeness",
+            },
           ]}
         />
       </div>

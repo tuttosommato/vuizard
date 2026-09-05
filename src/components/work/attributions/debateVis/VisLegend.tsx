@@ -10,6 +10,7 @@ const rB = 7;
 type LegendItem = {
   el: ReactNode;
   label: string;
+  key: string;
   description?: string; // optional second line
 };
 
@@ -110,10 +111,12 @@ const sections: LegendItem[][] = [
     {
       el: <ColorDot fill="var(--color-accepted)" />,
       label: "Accepted attribution",
+      key: "accepted",
     },
     {
       el: <ColorDot fill="var(--color-discarded)" />,
       label: "Discarded attribution",
+      key: "discarded",
     },
     /*     {
       el: <MeanReliabilityDot />,
@@ -121,77 +124,89 @@ const sections: LegendItem[][] = [
     }, */
   ],
   [
-    { el: <Symbolel type="artist" />, label: "Recognised artist" },
+    {
+      el: <Symbolel type="artist" />,
+      label: "Recognised artist",
+      key: "artist",
+    },
     {
       el: <Symbolel type="recognised" />,
       label: "Recognised artist and collaborating anonyms",
+      key: "recognised",
     },
     {
       el: <Symbolel type="unrecognised" />,
       label: "Anonymous with a connection to a recognised artist",
+      key: "unrecognised",
     },
-    { el: <Symbolel type="anonym" />, label: "Generic anonymous artist" },
+    {
+      el: <Symbolel type="anonym" />,
+      label: "Generic anonymous artist",
+      key: "anonym",
+    },
   ],
   [
-    { el: <Lineel kind="confidence" />, label: "Confident identification" },
+    {
+      el: <Lineel kind="confidence" />,
+      label: "Confident identification",
+      key: "confident",
+    },
     {
       el: <Lineel kind="uncertainty" />,
       label: "Probable identification",
       description: "(likely the artist)",
+      key: "probable",
     },
     {
       el: <Lineel kind="strong" />,
       label: "Uncertain identification",
       description: "(possibly the artist)",
+      key: "uncertain",
     },
   ],
   [
     {
       el: <Curveel stroke="var(--color-text)" />,
       label: "Similar artists",
-      description: "(artists that frequently co-occur in attributions for the same works)",
+      description:
+        "(artists that frequently co-occur in attributions for the same works)",
+      key: "similar",
     },
     {
       el: <Curveel stroke="var(--color-link-1)" />,
-      label: "Shared recognised artist",
+      label: "Same recognised artist",
+      key: "same-artist",
     },
     {
       el: <Curveel stroke="var(--color-link-2)" />,
       label: "Artist linked to their anonyms",
+      key: "artist-anonym",
     },
   ],
 ];
 
-export default function VisLegend() {
+export default function VisLegend({ keys }: { keys: string[] }) {
   return (
     <div className="vis-legend">
       {sections.map((row, i) => (
         <div key={i} className="vis-legend-col">
-          {row.map((item, j) => (
-            <div key={j} className="vis-legend-item">
-              <div className="vis-legend-icon">{item.el}</div>
-              <div
-                className={
-                  "vis-legend-label" +
-                  (i === 0
-                    ? " vis-legend-label--first"
-                    : i === 1
-                      ? " vis-legend-label--second"
-                      : i === 2
-                        ? " vis-legend-label--third"
-                        : " vis-legend-label--fourth")
-                }
-              >
-                {item.label}
-                {item.description && (
-                  <span className="vis-legend-description">
-                    {" "}
-                    {item.description}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
+          {row.map(
+            (item, j) =>
+              keys.includes(item.key) && (
+                <div key={j} className="vis-legend-item">
+                  <div className="vis-legend-icon">{item.el}</div>
+                  <div className="vis-legend-label">
+                    {item.label}
+                    {item.description && (
+                      <span className="vis-legend-description">
+                        {" "}
+                        {item.description}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ),
+          )}
         </div>
       ))}
     </div>
