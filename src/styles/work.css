@@ -55,8 +55,7 @@ main.work-layout {
 }
 
 .table-switch, .debate-vis-ordering-switch {
-  margin-top: var(--space-md);
-  margin-bottom: var(--space-sm);
+  margin-top: var(--space-lg);
 }
 
 .button-switch {
@@ -230,6 +229,7 @@ main.work-layout {
   display: block;
   width: 100%;
   height: 100%;
+  overflow: visible;
 }
 
 .debate-vis g.attribution-group {
@@ -241,11 +241,11 @@ main.work-layout {
 }
 
 .vis-arcs-legend {
-  opacity: 0.7;
+  opacity: 0.575;
 }
 
 .vis-arcs-legend text {
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
 }
 
 .reason-tooltip {
