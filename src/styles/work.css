@@ -17,7 +17,7 @@ main.work-layout {
 }
 
 .work-left {
-  width: 40%;
+  width: 45%;
   overflow: hidden;
   display: flex;
   flex-direction: column;

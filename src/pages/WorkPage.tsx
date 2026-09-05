@@ -121,6 +121,9 @@ function WorkPage() {
       <main className="work-layout">
         <CrossSelectionProvider>
         <HighlightProvider>
+        <section className="work-right">
+          <DebateVis currentAttributions={currentAttributions} />
+        </section>
         <section className="work-left">
           <WorkHeader currentWork={currentWork} />
           <AttributionsSection
@@ -130,9 +133,6 @@ function WorkPage() {
             discardedDating={currentWork.dating.filter((d) => d.type === "discarded")}
           />
           {/* <CriticalDebateTimeline /> */}
-        </section>
-        <section className="work-right">
-          <DebateVis currentAttributions={currentAttributions} />
         </section>
         </HighlightProvider>
         </CrossSelectionProvider>
