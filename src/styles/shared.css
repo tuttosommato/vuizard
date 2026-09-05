@@ -262,8 +262,18 @@
   -webkit-appearance: none;
   appearance: none;
   background: var(--color-text);
-  cursor: pointer;
+  cursor: grab;
 }
+
+.range-input::-webkit-slider-thumb:active,
+.range-input::-moz-range-thumb:active,
+.size-range-input::-webkit-slider-thumb:active,
+.size-range-input::-moz-range-thumb:active,
+.temp-range-input::-webkit-slider-thumb:active,
+.temp-range-input::-moz-range-thumb:active {
+  cursor: grabbing;
+}
+
 
 .range-input::-moz-range-thumb,
 .size-range-input::-moz-range-thumb,
