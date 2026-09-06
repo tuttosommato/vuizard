@@ -38,6 +38,7 @@ export default function ArtistCard({ artist }: ArtistCardProps) {
             <div className="work-card-description">
               <h4 className="work-card-title">{artist.name}</h4>
               <p className="work-card-dating">
+                <span className="work-card-dating-note">{artist.life.raw && artist.life.start && `${artist.life.precision === "century" ? "Approx. century" : String(artist.life.type).charAt(0).toUpperCase() + String(artist.life.type).slice(1)}: `}</span>
                 {artist.life.raw && artist.life.start
                   ? `${artist.life.start}${artist.life.start_approx ? " ca." : ""} - ${
                       artist.life.end
@@ -48,7 +49,7 @@ export default function ArtistCard({ artist }: ArtistCardProps) {
               </p>
               {culturalContext && (
                 <p className="work-card-context">
-                  Artistic school (cultural context): {culturalContext}
+                  Cultural context: <span className="work-card-context-value">{culturalContext.toLowerCase() != "unknown" ? "scuola" : ""} {culturalContext.toLowerCase()}</span>
                 </p>
               )}
             </div>

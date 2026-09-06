@@ -96,3 +96,7 @@ just invisible until hoverBus adds .hovered to it alongside the matching dots. *
   overflow-y: scroll;
   gap: var(--space-md);
 }
+
+.work-card-context-value {
+  color: var(--color-text);
+}
