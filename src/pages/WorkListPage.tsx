@@ -1,9 +1,10 @@
 import { useMemo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getWorksIndex } from "@/data/api";
-import type { WorksIndex } from "@/types/works";
+import { getWorksIndex, getWork, getAttributions } from "@/data/api";
+import type { WorksIndex, WorkItem } from "@/types/works";
 import "@/styles/shared.css";
 import "@/styles/artist.css";
+import WorkCardBody from "@/components/WorkCardBody";
 
 const PAGE_SIZE = 100;
 
@@ -13,6 +14,7 @@ export default function WorksListPage() {
   const [rawQuery, setRawQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [prevQuery, setPrevQuery] = useState(query);
+  const [worksById, setWorksById] = useState<Map<string, WorkItem>>(new Map());
 
   useEffect(() => {
     let canceled = false;
@@ -42,8 +44,37 @@ export default function WorksListPage() {
     setVisibleCount(PAGE_SIZE);
   }
 
-  const visibleFiltered = filtered.slice(0, visibleCount);
+  const visibleFiltered = useMemo(
+    () => filtered.slice(0, visibleCount),
+    [filtered, visibleCount],
+  );
   const hasMore = visibleCount < filtered.length;
+
+  useEffect(() => {
+    const idsToFetch = visibleFiltered
+      .map(([id]) => id)
+      .filter((id) => !worksById.has(id));
+    if (idsToFetch.length === 0) return;
+
+    let canceled = false;
+    Promise.all([
+      Promise.all(idsToFetch.map((id) => getWork(id))),
+      Promise.all(idsToFetch.map((id) => getAttributions(id))),
+    ]).then(([works, attributions]) => {
+      if (canceled) return;
+      setWorksById((prev) => {
+        const next = new Map(prev);
+        idsToFetch.forEach((id, i) => {
+          next.set(id, { id, work: works[i], attributions: attributions[i] });
+        });
+        return next;
+      });
+    });
+
+    return () => {
+      canceled = true;
+    };
+  }, [visibleFiltered, worksById]);
 
   return (
     <main className="list-page">
@@ -62,11 +93,18 @@ export default function WorksListPage() {
       </div>
       <div className="list-page-content">
         <div className="card-grid-2col">
-          {visibleFiltered.map(([id, label]) => (
-            <Link key={id} to={`/work/${id}`} className="work-card">
-              <h4 className="work-card-title">{label}</h4>
-            </Link>
-          ))}
+          {visibleFiltered.map(([id, label]) => {
+            const workItem = worksById.get(id);
+            return (
+              <Link key={id} to={`/work/${id}`} className="work-card">
+                {workItem ? (
+                  <WorkCardBody workItem={workItem} isList={true} />
+                ) : (
+                  <h4 className="work-card-title">{label}</h4>
+                )}
+              </Link>
+            );
+          })}
         </div>
         {hasMore && (
           <button
