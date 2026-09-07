@@ -64,7 +64,10 @@
 }
 
 /* Toggled directly via classList (hoverBus.ts / PackingVis.tsx), cheap at 5000+ dots since it's a plain descendant selector */
-.author-dots-group.dimming .author-dot:not(.hovered):not(.selected):not(.dimmed-by-selection):not(.filtered-out) {
+.author-dots-group.dimming
+  .author-dot:not(.hovered):not(.selected):not(.dimmed-by-selection):not(
+    .filtered-out
+  ) {
   opacity: 0.55;
 }
 
@@ -74,7 +77,8 @@
   vector-effect: non-scaling-stroke;
 }
 
-.author-dot.filtered-out, .author-dot.dimmed-by-selection {
+.author-dot.filtered-out,
+.author-dot.dimmed-by-selection {
   opacity: 0.075;
   pointer-events: none;
 }
@@ -95,8 +99,4 @@ just invisible until hoverBus adds .hovered to it alongside the matching dots. *
   overflow-x: hidden;
   overflow-y: scroll;
   gap: var(--space-md);
-}
-
-.work-card-context-value {
-  color: var(--color-text);
 }

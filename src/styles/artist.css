@@ -227,17 +227,28 @@ main.artist-layout .artist-vis {
   text-overflow: ellipsis;
 }
 
-.work-card .work-card-dating {
+.work-card .work-card-dating,
+.work-card .work-card-context,
+.work-card .work-card-alt-names {
   font-size: var(--text-sm);
   font-weight: 300;
   margin: 0;
 }
 
-.work-card .work-card-context {
-  font-size: var(--text-sm);
-  font-weight: 300;
+.work-card .work-card-dating,
+.work-card-context-value,
+.work-card-alt-names .alternative-name {
+  color: var(--color-text);
+}
+
+.work-card-context-value,
+.work-card-alt-names .alternative-name {
+  font-style: italic;
+}
+
+.work-card .work-card-context,
+.work-card .work-card-alt-names {
   color: var(--color-text-muted);
-  margin: 0;
 }
 
 .work-card-attributions {
