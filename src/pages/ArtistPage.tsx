@@ -268,7 +268,7 @@ function ArtistPageContent({
             </p>
           )}
         </div>
-        <Link to={`/overview`} className="button-link">
+        <Link to={`/`} className="button-link">
           View in artists overview
         </Link>
         <ArtistLegend multiplier={multiplier} />

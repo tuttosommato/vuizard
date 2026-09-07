@@ -6,6 +6,8 @@ import NotFoundPage from "@/pages/NotFoundPage";
 import ErrorPage from "@/pages/ErrorPage";
 import ArtistPage from "@/pages/ArtistPage";
 import OverviewPage from "@/pages/OverviewPage";
+import ArtistListPage from "@/pages/ArtistListPage";
+import WorkListPage from "@/pages/WorkListPage";
 
 export const router = createBrowserRouter([
   {
@@ -15,15 +17,23 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <OverviewPage />,
+      },
+      {
+        path: "search-work",
         element: <SearchPage />,
       },
       {
-        path: "overview",
-        element: <OverviewPage />,
+        path: "work/",
+        element: <WorkListPage />,
       },
       {
         path: "work/:workId",
         element: <WorkPage />,
+      },
+      {
+        path: "artist/",
+        element: <ArtistListPage />,
       },
       {
         path: "artist/:artistId",
