@@ -181,8 +181,8 @@ main.artist-layout .artist-vis {
   transform: translateX(-4px);
 }
 
-.work-card-container-expanded .work-card,
-.work-card-container-expanded .work-card-link-cnt {
+.work-card-container-selected .work-card,
+.work-card-container-selected .work-card-link-cnt {
   opacity: 1;
   transform: translateX(calc(-1 * (var(--space-lg) + var(--space-sm))));
 }

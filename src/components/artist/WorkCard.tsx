@@ -4,7 +4,6 @@ import { formatDating } from "@/utils/formatDating";
 import ArrowLink from "@/components/ArrowLink";
 import ArrowIcon from "@/components/ArrowIcon";
 import { Link } from "react-router-dom";
-import ExpandArrow from "@/components/ExpandArrow";
 import { useArtistSelection } from "@/stores/ArtistSelectionContext";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
 import uncertaintyBucket from "@/utils/uncertaintyBucket";
@@ -48,7 +47,7 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
     <div
       className={
         "work-card-container" +
-        (isSelected ? " work-card-container-expanded" : "") +
+        (isSelected ? " work-card-container-selected" : "") +
         (isFilteredOut ? " filtered-out" : "")
       }
     >
@@ -77,15 +76,13 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
             </div>
             <div className="work-card-attributions">
               <p>
-                {isSelected ? "Collapse" : "Expand"} {attributionsLength}{" "}
+                {attributionsLength}{" "}
                 attribution
                 {attributionsLength !== 1 ? "s" : ""}
               </p>
-              <ExpandArrow isExpanded={isSelected} />
             </div>
           </div>
         </div>
-        {isSelected && (
           <div className="work-card-attributions-expanded">
             <table className="work-card-attributions-table">
               <thead className="work-card-attributions-header">
@@ -145,7 +142,6 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
               </tbody>
             </table>
           </div>
-        )}
       </div>
 
       <div className="work-card-link-cnt">

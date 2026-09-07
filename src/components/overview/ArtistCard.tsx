@@ -17,7 +17,7 @@ export default function ArtistCard({ artist }: ArtistCardProps) {
     <div
       className={
         "work-card-container" +
-        (isSelected ? " work-card-container-expanded" : "")
+        (isSelected ? " work-card-container-selected" : "")
       }
     >
       <div
