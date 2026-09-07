@@ -26,6 +26,61 @@
   gap: var(--space-lg);
 }
 
+main.list-page {
+  padding: var(--space-layout) var(--space-layout) var(--space-layout)
+    calc(var(--nav-width) + var(--space-layout));
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: var(--space-lg);
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* List pages */
+.list-page-header {
+  position: sticky;
+  top: 35%;
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.list-page-content {
+  flex: 1;
+}
+
+input[type="search"].list-page-search {
+  width: 60%;
+  padding: var(--space-sm);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-sm);
+  border: var(--border);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+input[type="search"].list-page-search::placeholder {
+  color: var(--color-text-muted);
+}
+
+input[type="search"].list-page-search:focus {
+  box-shadow: 0 0 3px 0 var(--color-text);
+  outline: none;
+}
+
+.card-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.card-grid-2col .work-card {
+  width: 440px;
+}
+
 /* ---------- Legend ---------- */
 
 .legend {
@@ -273,7 +328,6 @@
 .temp-range-input::-moz-range-thumb:active {
   cursor: grabbing;
 }
-
 
 .range-input::-moz-range-thumb,
 .size-range-input::-moz-range-thumb,
