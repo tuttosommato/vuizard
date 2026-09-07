@@ -1,21 +1,46 @@
+import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import AttributionCircle from "@/components/work/attributions/AttributionCircle";
 
 export default function Header() {
+  const location = useLocation();
+  const isArtist = location.pathname.includes("artist");
+  const isWork = location.pathname.includes("work");
+
   return (
     <nav id="nav">
-      <Link to={`/`}>
-      <svg width="20" height="40" viewBox="0 0 20 40">
-        <g transform="translate(10, 15)">
-          <AttributionCircle type="artist" fill="var(--color-accepted)" r={10} />
-        </g>
-
-          <g transform="translate(10, 25)">
-          <AttributionCircle type="artist" fill="var(--color-discarded)" r={10} />
-        </g>
-      
-      </svg>
-       </Link>
+      <div className="nav-toolbar-cnt">
+        <div title="About" className="about-icon">
+          i
+        </div>
+        <div title="How to read" className="helper-icon">
+          ?
+        </div>
+      </div>
+      <div className="nav-levels-cnt">
+        <Link to="/">
+          <div
+            className={`nav-level nav-level-1${!isArtist && !isWork ? " level-active" : ""}`}
+          >
+            I
+          </div>
+        </Link>
+        <Link to="/artist">
+          <div
+            className={`nav-level nav-level-2${isArtist ? " level-active" : ""}`}
+          >
+            II
+          </div>
+        </Link>
+        <Link to="/work">
+          <div
+            className={`nav-level nav-level-3${isWork ? " level-active" : ""}`}
+          >
+            III
+          </div>
+        </Link>
+      </div>
+      {/*placeholder*/}
+      <div></div>
     </nav>
   );
 }

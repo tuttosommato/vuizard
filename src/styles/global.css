@@ -103,16 +103,72 @@ nav {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   background-color: var(--color-bg);
   z-index: 100;
   border-right: var(--border);
   padding: var(--space-layout) 0;
 }
 
+.nav-toolbar-cnt,
+.nav-levels-cnt {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.nav-toolbar-cnt {
+  gap: var(--space-sm);
+}
+
+.nav-levels-cnt {
+  gap: var(--space-lg);
+}
+
+.nav-toolbar-cnt div,
+.nav-levels-cnt div {
+  width: var(--text-xl);
+  height: var(--text-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: var(--border);
+  background-color: var(--color-bg);
+  cursor: pointer;
+  z-index: 2;
+}
+
+.nav-levels-cnt a {
+  z-index: 2;
+  text-decoration: none;
+  font-weight: 300;
+  font-size: var(--text-md);
+}
+
+.nav-levels-cnt div.level-active {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
+
+.nav-toolbar-cnt div:hover:not(.level-active),
+.nav-levels-cnt div:hover:not(.level-active) {
+  background-color: var(--color-bg-highlight);
+}
+
+.nav-levels-cnt::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1.5px;
+  height: 100%;
+  background-color: var(--color-text);
+  z-index: 1;
+}
+
 /* nav is a fixed left sidebar (not in normal flow), so every page's root
-   needs this reserved regardless of its own layout - set it once here
-   instead of repeating it per page. Pages that need extra clearance (see
-   artist.css/overview.css/work.css) still layer their own spacing on top. */
+   needs this reserved regardless of its own layout */
 main {
   padding-left: var(--nav-width);
 }
@@ -234,7 +290,8 @@ a:hover {
   border-color: var(--color-text);
 }
 
-.external-link, .button-link {
+.external-link,
+.button-link {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
@@ -242,13 +299,23 @@ a:hover {
   border: 1px solid var(--color-text-muted);
   border-radius: var(--radius-md);
   color: var(--color-text);
+  background-color: transparent;
   text-decoration: none;
   font-size: var(--text-xs);
   transition:
     background-color 0.2s ease,
     color 0.2s ease,
     border-color 0.2s ease;
-    width: fit-content;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.load-more-button {
+  margin-top: var(--space-lg);
+  width: 100%;
+  justify-content: center;
+  padding: var(--space-md);
+  font-size: var(--text-sm);
 }
 
 .external-link svg {
