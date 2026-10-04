@@ -268,6 +268,101 @@ main.work-layout {
   text-transform: uppercase;
 }
 
+/* Dims everything except .axis-info-trigger (including the fixed sidebar nav,
+   which evaluation doesn't have) */
+body:has(.ranking-explanation-tooltip) nav,
+body:has(.ranking-explanation-tooltip) .work-left,
+body:has(.ranking-explanation-tooltip) .vis-legend,
+body:has(.ranking-explanation-tooltip) .debate-vis-ordering-switch,
+body:has(.ranking-explanation-tooltip) .debate-vis > *:not(.vis-arcs-legend),
+body:has(.ranking-explanation-tooltip) .vis-arcs-legend > *:not(.axis-info-trigger) {
+  opacity: 0.1825;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.ranking-explanation-tooltip {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  max-height: 90vh;
+  width: clamp(580px, 50vw, 720px);
+  z-index: 9999;
+  background-color: transparent;
+  backdrop-filter: blur(10px);
+  color: var(--color-text);
+  border: var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  font-size: var(--text-xs);
+  overflow-y: scroll;
+}
+
+.ranking-explanation-tooltip h3 {
+  margin-bottom: var(--space-xs);
+}
+
+.ranking-explanation-tooltip p.ranking-explanation-p {
+  margin-bottom: var(--space-sm);
+  font-size: calc(var(--text-base) * 0.9);
+}
+
+.reason-type-groups {
+  display: flex;
+  flex-direction: column;
+  margin: var(--space-md) 0;
+}
+
+.objective-list-cnt p,
+.subjective-list-cnt p,
+.zeri-list-cnt p {
+  margin: 0;
+  font-size: calc(var(--text-sm) * 0.975);
+}
+
+.reason-type-cnt {
+  display: flex;
+  flex-direction: row;
+}
+
+.reason-type-item-label {
+  font-weight: 500;
+  font-size: var(--text-sm);
+  color: var(--color-text-highlight);
+  width: 200px;
+  margin: 0;
+}
+
+.reason-type-list-cnt {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.objective-list-cnt {
+  border-left: 1.25px solid var(--color-text);
+  padding: var(--space-2xs) 0 var(--space-sm) var(--space-sm);
+}
+
+.subjective-list-cnt {
+  border-left: 1.25px dashed var(--color-text-muted);
+  padding: var(--space-sm) 0 0 var(--space-sm);
+}
+
+.zeri-list-cnt {
+  background-color: rgba(156, 151, 143, 0.2);
+  border-left: 1.25px dashed var(--color-text-muted);
+  padding: var(--space-sm) 0 var(--space-sm) var(--space-sm);
+}
+
+.objective-list-cnt,
+.subjective-list-cnt,
+.zeri-list-cnt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
 .debate-vis {
   --dim-opacity: 0.2;
 }
@@ -338,6 +433,20 @@ main.work-layout {
 
 .vis-legend-description {
   color: var(--color-text-muted);
+}
+
+.axis-info-trigger circle,
+.axis-info-trigger text {
+  transition:
+    fill 0.15s ease,
+    stroke 0.15s ease;
+  cursor: pointer;
+}
+.axis-info-trigger:hover circle {
+  fill: var(--color-text);
+}
+.axis-info-trigger:hover text {
+  fill: var(--color-bg);
 }
 
 /* =============================================================
