@@ -12,8 +12,6 @@ import { useArtistFilter } from "@/stores/ArtistFilterContext";
 import { zoomIdentity } from "d3-zoom";
 import uncertaintyBucket from "@/utils/uncertaintyBucket";
 import {
-  TIER_RADII,
-  TIER_I,
   colorScale,
   VIS_VIEWBOX_WIDTH,
   VIS_VIEWBOX_HEIGHT,
@@ -21,8 +19,11 @@ import {
   VIS_CY,
   VIS_MIN_ZOOM,
   VIS_MAX_ZOOM,
+  VIS_HALF_PLANE_GAP,
+  VIS_NUCLEUS_DOT_PADDING,
   BASE_URL,
 } from "@/utils/constants.ts";
+import { getArtistDotSpecs } from "@/utils/artistDots";
 import {
   forceSimulation,
   forceRadial,
@@ -141,41 +142,28 @@ function ArtistVis({
   }, []);
 
   const dots = useMemo(() => {
-    const nodes = works.flatMap((work) => {
-      const attributions = work.attributions?.attributions ?? [];
-      const nAttributions = attributions.length;
-      return attributions
-        .filter((attr) =>
-          attr.authors.map((a) => a.local_id).includes(artistId),
-        )
-        .map((attr) => {
-          const isDocumented = attr.reasons.some(
-            (reason) => reason.rank === 11,
-          );
-          const relation = representativeAuthor(attr).r_qualifier;
-          const radius = TIER_RADII[relation] ?? TIER_I;
-          return {
-            work_id: work.id,
-            aut_id: attr.attribution_id,
-            operational_id: attr.attribution_id,
-            x: VIS_CX - radius,
-            y: VIS_CY,
-            tierRadius: radius,
-            fill: representativeAuthor(attr).u_qualifier
-              ? representativeAuthor(attr).u_qualifier === "?"
-                ? `url(#uncertain-${attr.type}-1)`
-                : `url(#uncertain-${attr.type}-2)`
-              : colorScale(attr.type),
-            size: nAttributions,
-            type: attr.type,
-            uncertaintyStatus: uncertaintyBucket(
-              representativeAuthor(attr).u_qualifier,
-            ),
-            radius: Math.sqrt(nAttributions) * multiplier,
-            isDocumented,
-          };
-        });
-    });
+    const nodes = getArtistDotSpecs(works, artistId).map(
+      ({ work, attr, nAttributions, isDocumented, tierRadius }) => ({
+        work_id: work.id,
+        aut_id: attr.attribution_id,
+        operational_id: attr.attribution_id,
+        x: VIS_CX - tierRadius,
+        y: VIS_CY,
+        tierRadius,
+        fill: representativeAuthor(attr).u_qualifier
+          ? representativeAuthor(attr).u_qualifier === "?"
+            ? `url(#uncertain-${attr.type}-1)`
+            : `url(#uncertain-${attr.type}-2)`
+          : colorScale(attr.type),
+        size: nAttributions,
+        type: attr.type,
+        uncertaintyStatus: uncertaintyBucket(
+          representativeAuthor(attr).u_qualifier,
+        ),
+        radius: Math.sqrt(nAttributions) * multiplier,
+        isDocumented,
+      }),
+    );
 
     function forceHalfPlane(
       filter: (d: (typeof nodes)[0]) => boolean,
@@ -208,15 +196,27 @@ function ArtistVis({
       .force("y", forceY(VIS_CY).strength(1))
       .force(
         "half-documented",
-        forceHalfPlane((d) => d.isDocumented, VIS_CY - 10, "above"),
+        forceHalfPlane(
+          (d) => d.isDocumented,
+          VIS_CY - VIS_HALF_PLANE_GAP,
+          "above",
+        ),
       )
       .force(
         "half-nondocumented",
-        forceHalfPlane((d) => !d.isDocumented, VIS_CY + 10, "below"),
+        forceHalfPlane(
+          (d) => !d.isDocumented,
+          VIS_CY + VIS_HALF_PLANE_GAP,
+          "below",
+        ),
       )
       .force(
         "collide",
-        forceCollide<(typeof nodes)[0]>((d) => d.radius + 2)
+        // tighter than the tier dots (+2): the nucleus is a small, hard-edged space,
+        // and the multiplier is fitted to this padding (see fitNucleusMultiplier)
+        forceCollide<(typeof nodes)[0]>(
+          (d) => d.radius + VIS_NUCLEUS_DOT_PADDING,
+        )
           .strength(1)
           .iterations(10),
       )
@@ -235,11 +235,19 @@ function ArtistVis({
       .force("center", forceY(VIS_CY).strength(-0.005))
       .force(
         "half-documented",
-        forceHalfPlane((d) => d.isDocumented, VIS_CY - 10, "above"),
+        forceHalfPlane(
+          (d) => d.isDocumented,
+          VIS_CY - VIS_HALF_PLANE_GAP,
+          "above",
+        ),
       )
       .force(
         "half-nondocumented",
-        forceHalfPlane((d) => !d.isDocumented, VIS_CY + 10, "below"),
+        forceHalfPlane(
+          (d) => !d.isDocumented,
+          VIS_CY + VIS_HALF_PLANE_GAP,
+          "below",
+        ),
       )
       .force(
         "collide",

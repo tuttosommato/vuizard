@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { getAttributions, getAuthor, getWork } from "@/data/api";
 import type { Artist } from "@/types/artists";
 import type { WorkItem } from "@/types/works";
@@ -14,6 +14,7 @@ import {
   useArtistSelection,
 } from "@/stores/ArtistSelectionContext";
 import { ArtistFilterProvider } from "@/stores/ArtistFilterContext";
+import { getArtistDotSpecs, fitNucleusMultiplier } from "@/utils/artistDots";
 
 type LoadState =
   | { status: "loading"; phase: "artist" }
@@ -172,14 +173,14 @@ function ArtistPageContent({
   const artistVisRef = useRef<ArtistVisHandle>(null);
   const { triggerNewSelection, selectedIds } = useArtistSelection();
 
-  const dotsLength = state.worksList.flatMap((work) => {
-    const attributions = work.attributions?.attributions ?? [];
-    return attributions.filter((attr) =>
-      attr.authors.map((a) => a.local_id).includes(artistId),
-    );
-  }).length;
+  const dotSpecs = useMemo(
+    () => getArtistDotSpecs(state.worksList, artistId),
+    [state.worksList, artistId],
+  );
+  const dotsLength = dotSpecs.length;
 
-  const multiplier =
+  // Ceiling from the overall dot count (keeps the tiers from crowding)...
+  const thresholdMultiplier =
     dotsLength >= 500
       ? 2
       : dotsLength >= 450
@@ -191,6 +192,13 @@ function ArtistPageContent({
             : dotsLength >= 200
               ? 3.25
               : 4;
+
+  // ...which the nucleus fit can only shrink further: the nucleus is a hard-edged
+  // space, so how many dots fit depends on their sizes, not just on how many there are
+  const multiplier = useMemo(
+    () => Math.min(thresholdMultiplier, fitNucleusMultiplier(dotSpecs)),
+    [thresholdMultiplier, dotSpecs],
+  );
 
   useEffect(() => {
     if (!triggerNewSelection) return;
