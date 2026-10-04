@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { getAttributions, getAuthor, getWork } from "@/data/api";
+import { getArtistWorkItems, getAuthor } from "@/data/api";
 import type { Artist } from "@/types/artists";
 import type { WorkItem } from "@/types/works";
 import NotFoundPage from "./NotFoundPage";
@@ -60,19 +60,9 @@ export default function ArtistPage() {
           workCount: workIds.length,
         });
 
-        return Promise.all([
-          Promise.all(workIds.map((id) => getWork(id))),
-          Promise.all(workIds.map((id) => getAttributions(id))),
-        ]).then(([works, attributions]) => {
+        return getArtistWorkItems(artistId, workIds).then((worksList) => {
           if (canceled) return;
-          if (works && attributions) {
-            const worksList = workIds.map((id, i) => ({
-              id,
-              work: works[i],
-              attributions: attributions[i],
-            }));
-            setState({ status: "loaded", artist, worksList, artistId });
-          }
+          setState({ status: "loaded", artist, worksList, artistId });
         });
       })
       .catch((e: unknown) => {
