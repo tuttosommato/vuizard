@@ -221,7 +221,7 @@ function ArtistPageContent({
     [isAnonymous, dotSpecs],
   );
 
-  // the single outer ring of an anonymous artist's vis (only when they have dots with a
+  // the single outer ring of an anonymous artist's vis (always drawn, for dots with a
   // relation qualifier, e.g. "falso"); everyone else keeps the four tiers
   const outerRingRadius = useMemo(
     () => fitOuterRingRadius(dotSpecs, nucleusRadius),

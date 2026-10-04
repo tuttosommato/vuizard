@@ -115,16 +115,14 @@ export function fitNucleusRadius(specs: ArtistDotSpec[]): number {
 }
 
 // Anonymous artists get one outer ring just outside their (possibly enlarged) nucleus,
-// holding every dot that has a relation qualifier. null when there is no such dot (nearly
-// always: 689 of 698 anonymous artists), and for everyone else, who keep the four tiers.
+// holding every dot that has a relation qualifier. Always drawn for anonymous artists, even
+// when empty (nearly always: 689 of 698), so the vis reads the same for all of them; null
+// for everyone else, who keep the four tiers.
 export function fitOuterRingRadius(
   specs: ArtistDotSpec[],
   nucleusRadius: number,
 ): number | null {
-  const hasQualifiedDots = specs.some((d) => d.tierRadius !== 0);
-  return specs[0]?.isAnonymousArtist && hasQualifiedDots
-    ? nucleusRadius + VIS_ANON_RING_GAP
-    : null;
+  return specs[0]?.isAnonymousArtist ? nucleusRadius + VIS_ANON_RING_GAP : null;
 }
 
 // Radius the dot is pulled to: its tier's for normal artists; for anonymous ones the
