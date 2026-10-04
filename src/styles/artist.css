@@ -365,7 +365,12 @@ main.artist-layout .artist-vis {
   width: 70%; /* shared .range-slider/.size-range-slider default is 100% */
 }
 
-.size-range-input::-webkit-slider-thumb,
+.size-range-input::-webkit-slider-thumb {
+  border-radius: 50%;
+  width: var(--thumb-size, 14px);
+  height: var(--thumb-size, 14px);
+}
+
 .size-range-input::-moz-range-thumb {
   border-radius: 50%;
   width: var(--thumb-size, 14px);

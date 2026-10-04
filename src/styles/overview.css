@@ -15,17 +15,15 @@
   transform: translate(-50%, -50%);
 }
 
-.temp-range-input::-webkit-slider-thumb,
-.temp-range-input::-moz-range-thumb {
+.temp-range-input::-webkit-slider-thumb {
   border-radius: 2px;
   width: 6px;
-}
-
-.temp-range-input::-webkit-slider-thumb {
   height: 14px;
 }
 
 .temp-range-input::-moz-range-thumb {
+  border-radius: 2px;
+  width: 6px;
   height: 18px;
 }
 

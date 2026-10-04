@@ -307,12 +307,14 @@ input[type="search"].list-page-search:focus {
   background: transparent;
 }
 
+/* Thumb rules: keep ONE BLOCK PER ENGINE. A comma-separated selector list is
+   dropped entirely if any selector in it is unknown to the browser, so mixing
+   ::-webkit-slider-thumb and ::-moz-range-thumb in one list makes Chrome
+   discard the whole rule (blue native thumb, no pointer-events: auto, so the
+   handles can't be grabbed). */
 .range-input::-webkit-slider-thumb,
-.range-input::-moz-range-thumb,
 .size-range-input::-webkit-slider-thumb,
-.size-range-input::-moz-range-thumb,
-.temp-range-input::-webkit-slider-thumb,
-.temp-range-input::-moz-range-thumb {
+.temp-range-input::-webkit-slider-thumb {
   pointer-events: auto;
   -webkit-appearance: none;
   appearance: none;
@@ -320,26 +322,37 @@ input[type="search"].list-page-search:focus {
   cursor: grab;
 }
 
+.range-input::-moz-range-thumb,
+.size-range-input::-moz-range-thumb,
+.temp-range-input::-moz-range-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--color-text);
+  cursor: grab;
+  border: none;
+}
+
 .range-input::-webkit-slider-thumb:active,
-.range-input::-moz-range-thumb:active,
 .size-range-input::-webkit-slider-thumb:active,
+.temp-range-input::-webkit-slider-thumb:active {
+  cursor: grabbing;
+}
+
+.range-input::-moz-range-thumb:active,
 .size-range-input::-moz-range-thumb:active,
-.temp-range-input::-webkit-slider-thumb:active,
 .temp-range-input::-moz-range-thumb:active {
   cursor: grabbing;
 }
 
-.range-input::-moz-range-thumb,
-.size-range-input::-moz-range-thumb,
-.temp-range-input::-moz-range-thumb {
-  border: none;
+.range-input::-webkit-slider-thumb:hover,
+.size-range-input::-webkit-slider-thumb:hover,
+.temp-range-input::-webkit-slider-thumb:hover {
+  box-shadow: 0px 0px 2px 2px rgba(255, 255, 255, 0.1);
 }
 
-.range-input::-webkit-slider-thumb:hover,
 .range-input::-moz-range-thumb:hover,
-.size-range-input::-webkit-slider-thumb:hover,
 .size-range-input::-moz-range-thumb:hover,
-.temp-range-input::-webkit-slider-thumb:hover,
 .temp-range-input::-moz-range-thumb:hover {
   box-shadow: 0px 0px 2px 2px rgba(255, 255, 255, 0.1);
 }
