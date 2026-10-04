@@ -137,3 +137,12 @@ just invisible until hoverBus adds .hovered to it alongside the matching dots. *
 .overview-works-cnt > .work-list-stats-title {
   padding-top: var(--space-md);
 }
+
+/* The vis pans by dragging its background: the dots, which are clickable, keep their pointer */
+svg.overview-vis {
+  cursor: grab;
+}
+
+svg.overview-vis:active {
+  cursor: grabbing;
+}

@@ -470,3 +470,12 @@ main.artist-layout .artist-vis {
   max-width: 300px;
   max-height: 300px;
 }
+
+/* The vis pans by dragging its background: the dots, which are clickable, keep their pointer */
+svg.artist-vis {
+  cursor: grab;
+}
+
+svg.artist-vis:active {
+  cursor: grabbing;
+}
