@@ -28,6 +28,7 @@ const tiers = [
 ];
 
 const legendOffset = 4;
+const nucleusTextR = VIS_NUCLEUS_RADIUS - legendOffset / 2;
 
 const arcLabelProps = {
   fill: "var(--color-text-muted)",
@@ -69,9 +70,12 @@ export default function TierArcs() {
           stroke="var(--color-text)"
           fill="var(--color-bg)" // necessary to cover the first line behind the nucleus
         />
-        <circle
+        {/* A <path>, not a <circle>: textPath can only follow a basic shape in
+            browsers that implement SVG 2 (Firefox), Chromium paints nothing.
+            Same geometry as the circle: starts at 3 o'clock, runs clockwise. */}
+        <path
           id="nucleous-text"
-          r={VIS_NUCLEUS_RADIUS - legendOffset / 2}
+          d={`M ${nucleusTextR} 0 A ${nucleusTextR} ${nucleusTextR} 0 1 1 ${-nucleusTextR} 0 A ${nucleusTextR} ${nucleusTextR} 0 1 1 ${nucleusTextR} 0`}
           stroke="none"
           fill="none"
         />
