@@ -133,9 +133,12 @@ function getArtistBundle(authorId: string): Promise<WorkItem[] | null> {
 // Everything the artist page needs for one artist's works. Artists with many works
 // come from a single bundle file; the rest, or any artist whose bundle is missing
 // or doesn't cover all their works, are fetched per work.
+// onProgress is called as each work finishes loading (per-work path only: a bundle
+// is a single request, so there is nothing to count).
 export async function getArtistWorkItems(
   authorId: string,
   workIds: string[],
+  onProgress?: (loaded: number, total: number) => void,
 ): Promise<WorkItem[]> {
   if (workIds.length > ARTIST_BUNDLE_MIN_WORKS) {
     const bundle = await getArtistBundle(authorId);
@@ -149,13 +152,17 @@ export async function getArtistWorkItems(
     }
   }
 
-  const [works, attributions] = await Promise.all([
-    Promise.all(workIds.map((id) => getWork(id))),
-    Promise.all(workIds.map((id) => getAttributions(id))),
-  ]);
-  return workIds.map((id, i) => ({
-    id,
-    work: works[i],
-    attributions: attributions[i],
-  }));
+  // one Promise.all over the works (not two over the files), so each work can report
+  // when both of its files are in; the same number of requests are in flight as before
+  let loaded = 0;
+  return Promise.all(
+    workIds.map(async (id) => {
+      const [work, attributions] = await Promise.all([
+        getWork(id),
+        getAttributions(id),
+      ]);
+      onProgress?.(++loaded, workIds.length);
+      return { id, work, attributions };
+    }),
+  );
 }

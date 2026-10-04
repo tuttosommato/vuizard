@@ -18,7 +18,13 @@ import { getArtistDotSpecs, fitNucleusMultiplier } from "@/utils/artistDots";
 
 type LoadState =
   | { status: "loading"; phase: "artist" }
-  | { status: "loading"; phase: "works"; artist: Artist; workCount: number }
+  | {
+      status: "loading";
+      phase: "works";
+      artist: Artist;
+      workCount: number;
+      loadedCount: number;
+    }
   | {
       status: "loaded";
       artist: Artist;
@@ -58,9 +64,19 @@ export default function ArtistPage() {
           phase: "works",
           artist,
           workCount: workIds.length,
+          loadedCount: 0,
         });
 
-        return getArtistWorkItems(artistId, workIds).then((worksList) => {
+        return getArtistWorkItems(artistId, workIds, (loadedCount) => {
+          if (canceled) return;
+          // only touch the loading state: a late tick must not overwrite
+          // "loaded" or "error"
+          setState((prev) =>
+            prev.status === "loading" && prev.phase === "works"
+              ? { ...prev, loadedCount }
+              : prev,
+          );
+        }).then((worksList) => {
           if (canceled) return;
           setState({ status: "loaded", artist, worksList, artistId });
         });
@@ -83,7 +99,14 @@ export default function ArtistPage() {
       <>
         <title>Loading…</title>
         <main className="work-layout">
-          <p>Loading artist works...</p>
+          {/* a bundled artist loads as one request, so it never counts up */}
+          <p>
+            {state.phase === "artist"
+              ? "Loading artist…"
+              : state.loadedCount === 0
+                ? `Loading ${state.workCount} works…`
+                : `Loading works: ${state.loadedCount} out of ${state.workCount}`}
+          </p>
         </main>
       </>
     );
