@@ -18,7 +18,7 @@ export const TIER_RADII: Record<string, number> = {
   "": 0,
   "bottega": TIER_II,
   "seguace": TIER_III, "scuola": TIER_III, "ambito": TIER_III, "cerchia": TIER_III,
-  "copia da": TIER_IV, "maniera": TIER_IV,
+  "copia da": TIER_IV, "maniera": TIER_IV, "falso": TIER_IV,
 };
 
 const VIS_MARGIN = 40;
