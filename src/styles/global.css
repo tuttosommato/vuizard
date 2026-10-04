@@ -110,23 +110,14 @@ nav {
   padding: var(--space-layout) 0;
 }
 
-.nav-toolbar-cnt,
-.nav-levels-cnt {
+.nav-toolbar-cnt {
   display: flex;
   flex-direction: column;
   position: relative;
-}
-
-.nav-toolbar-cnt {
   gap: var(--space-sm);
 }
 
-.nav-levels-cnt {
-  gap: var(--space-lg);
-}
-
-.nav-toolbar-cnt div,
-.nav-levels-cnt div {
+.nav-toolbar-cnt div {
   width: var(--text-xl);
   height: var(--text-xl);
   display: flex;
@@ -139,32 +130,87 @@ nav {
   z-index: 2;
 }
 
-.nav-levels-cnt a {
-  z-index: 2;
-  text-decoration: none;
-  font-weight: 300;
-  font-size: var(--text-md);
-}
-
-.nav-levels-cnt div.level-active {
-  background-color: var(--color-text);
-  color: var(--color-bg);
-}
-
-.nav-toolbar-cnt div:hover:not(.level-active),
-.nav-levels-cnt div:hover:not(.level-active) {
+.nav-toolbar-cnt div:hover {
   background-color: var(--color-bg-highlight);
 }
 
-.nav-levels-cnt::before {
-  content: "";
+/* Level selector: a vertical switch with the same look and sliding thumb as the table and
+   ordering switches (.button-switch, work.css), made of links: the route is the state.
+   Everything that moves does so with transform only, so it keeps animating on the
+   compositor while a heavy page mount/unmount blocks the main thread (see Header.tsx). */
+.level-switch {
+  --level-width: 1.75rem;
+  --level-height: 2.25rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2xs);
+  border-radius: calc(var(--level-width) / 2 + var(--space-2xs));
+  background-color: var(--color-text-muted);
+}
+
+.level-switch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--level-width);
+  height: var(--level-height);
+  border-radius: calc(var(--level-width) / 2);
+  color: var(--color-bg);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+/* the global a:hover would turn the label light on the light pill */
+.level-switch-btn:hover {
+  color: var(--color-bg);
+}
+
+.level-switch-btn:not([aria-current="page"]):hover {
+  background-color: color-mix(in srgb, var(--color-bg) 12%, transparent);
+}
+
+.level-switch-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* sliding thumb, above the links but transparent to clicks */
+.level-switch-thumb {
   position: absolute;
-  top: 0;
-  left: 50%;
-  width: 1.5px;
-  height: 100%;
-  background-color: var(--color-text);
-  z-index: 1;
+  top: var(--space-2xs);
+  left: var(--space-2xs);
+  width: var(--level-width);
+  height: var(--level-height);
+  overflow: hidden;
+  border-radius: calc(var(--level-width) / 2);
+  background-color: var(--color-bg);
+  pointer-events: none;
+  transform: translateY(calc(var(--active-index, 0) * var(--level-height)));
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+/* the light labels, slid the opposite way so they stay lined up with the links */
+.level-switch-thumb-labels {
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text);
+  transform: translateY(calc(var(--active-index, 0) * var(--level-height) * -1));
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.level-switch-thumb-labels > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--level-width);
+  height: var(--level-height);
+  font-size: var(--text-sm);
+  font-weight: 500;
 }
 
 /* nav is a fixed left sidebar (not in normal flow), so every page's root
