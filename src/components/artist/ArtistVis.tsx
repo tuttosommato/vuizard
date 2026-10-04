@@ -23,7 +23,7 @@ import {
   VIS_NUCLEUS_DOT_PADDING,
   BASE_URL,
 } from "@/utils/constants.ts";
-import { getArtistDotSpecs } from "@/utils/artistDots";
+import { getArtistDotSpecs, dotTierRadius } from "@/utils/artistDots";
 import {
   forceSimulation,
   forceRadial,
@@ -94,11 +94,17 @@ function ArtistVis({
   artistId,
   works,
   multiplier,
+  nucleusRadius,
+  nucleusOnly,
+  outerRingRadius,
   ref,
 }: {
   artistId: string;
   works: WorkItem[];
   multiplier: number;
+  nucleusRadius: number;
+  nucleusOnly: boolean;
+  outerRingRadius: number | null;
   ref?: React.Ref<ArtistVisHandle>;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -142,8 +148,10 @@ function ArtistVis({
   }, []);
 
   const dots = useMemo(() => {
-    const nodes = getArtistDotSpecs(works, artistId).map(
-      ({ work, attr, nAttributions, isDocumented, tierRadius }) => ({
+    const nodes = getArtistDotSpecs(works, artistId).map((spec) => {
+      const { work, attr, nAttributions, isDocumented } = spec;
+      const tierRadius = dotTierRadius(spec, outerRingRadius);
+      return {
         work_id: work.id,
         aut_id: attr.attribution_id,
         operational_id: attr.attribution_id,
@@ -162,8 +170,8 @@ function ArtistVis({
         ),
         radius: Math.sqrt(nAttributions) * multiplier,
         isDocumented,
-      }),
-    );
+      };
+    });
 
     function forceHalfPlane(
       filter: (d: (typeof nodes)[0]) => boolean,
@@ -258,7 +266,7 @@ function ArtistVis({
       .tick(400);
 
     return nodes;
-  }, [works, artistId, multiplier]);
+  }, [works, artistId, multiplier, outerRingRadius]);
 
   const { isWorkFilteredOut, isAttributionFilteredOut } = useArtistFilter();
 
@@ -345,8 +353,16 @@ function ArtistVis({
         <RadialHalftonePatternDefs />
 
         <g transform={transform}>
-          <TierArcs />
-          <ArtistVisLegend />
+          <TierArcs
+            nucleusRadius={nucleusRadius}
+            nucleusOnly={nucleusOnly}
+            outerRingRadius={outerRingRadius}
+          />
+          <ArtistVisLegend
+            nucleusRadius={nucleusRadius}
+            nucleusOnly={nucleusOnly}
+            outerRingRadius={outerRingRadius}
+          />
 
           {workEdges
             .filter(

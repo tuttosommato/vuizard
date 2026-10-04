@@ -27,6 +27,13 @@ export const VIS_VIEWBOX_HEIGHT = 1000 + VIS_MARGIN * 2;
 export const VIS_CX = 700;
 export const VIS_CY = 500 + VIS_MARGIN;
 export const VIS_NUCLEUS_RADIUS = 155;
+// How far the nucleus may grow on anonymous artists' pages (nucleus-only mode): the
+// nucleus is centred at VIS_CX, so this is the room left to the canvas's right margin.
+export const VIS_ANON_NUCLEUS_MAX_RADIUS = 340;
+// gap between an anonymous artist's nucleus and its single outer ring (wider than the
+// default nucleus's 45px to the first tier ring, so the ring reads as clearly separate).
+// The biggest nucleus (340) puts the ring at 410, still inside the canvas's 500 of room.
+export const VIS_ANON_RING_GAP = 70;
 // strip kept clear on each side of the dividing line (documented above, the rest below)
 export const VIS_HALF_PLANE_GAP = 10;
 // Nucleus dot sizing (see fitNucleusMultiplier): start from a standard multiplier

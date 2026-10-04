@@ -24,9 +24,24 @@ const legendLabelPropsLeft = {
   textAnchor: "end" as const,
 };
 
-export default function ArtistVisLegend() {
+export default function ArtistVisLegend({
+  nucleusRadius,
+  nucleusOnly,
+  outerRingRadius,
+}: {
+  nucleusRadius: number;
+  // anonymous artists: no tier relationship arrow, and the documentation/interpretation
+  // labels sit beside the nucleus (or its outer ring), not beside the fourth tier
+  nucleusOnly: boolean;
+  outerRingRadius: number | null;
+}) {
+  // the labels sit just left of whatever is the widest thing drawn
+  const leftEdge = nucleusOnly ? (outerRingRadius ?? nucleusRadius) : TIER_IV;
+
   return (
     <g transform={`translate(${VIS_CX}, ${VIS_CY})`}>
+      {!nucleusOnly && (
+        <>
       {/* Arrow line */}
       <line
         x1={lineX}
@@ -54,6 +69,8 @@ export default function ArtistVisLegend() {
       >
         Less direct relationship with the artist
       </text>
+        </>
+      )}
       {/* Bracketed line */}
 {/*       <path
         d={`M ${bracketX} ${TIER_II} L ${lineX} ${TIER_II} L ${lineX} ${TIER_IV} L ${bracketX} ${TIER_IV} M ${bracketX} ${TIER_III} L ${lineX} ${TIER_III}`}
@@ -72,26 +89,26 @@ export default function ArtistVisLegend() {
       {/* Space division */}
 
       <text
-        x={-TIER_IV - legendOffset * 4}
+        x={-leftEdge - legendOffset * 4}
         y={-legendOffset * 8}
         {...legendLabelPropsLeft}
         dominantBaseline="auto"
         style={{ fontStyle: "italic" }}
       >
         <tspan>Attributions based</tspan>
-        <tspan x={-TIER_IV - legendOffset * 4} dy={legendOffset * 4}>
+        <tspan x={-leftEdge - legendOffset * 4} dy={legendOffset * 4}>
           on documentation
         </tspan>
       </text>
       <text
-        x={-TIER_IV - legendOffset * 4}
+        x={-leftEdge - legendOffset * 4}
         y={legendOffset * 4}
         {...legendLabelPropsLeft}
         dominantBaseline="mathematical"
         style={{ fontStyle: "italic" }}
       >
         <tspan>Attributions based</tspan>
-        <tspan x={-TIER_IV - legendOffset * 4} dy={legendOffset * 4}>
+        <tspan x={-leftEdge - legendOffset * 4} dy={legendOffset * 4}>
           on interpretation
         </tspan>
       </text>

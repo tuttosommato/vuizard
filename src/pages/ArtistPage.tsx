@@ -14,7 +14,13 @@ import {
   useArtistSelection,
 } from "@/stores/ArtistSelectionContext";
 import { ArtistFilterProvider } from "@/stores/ArtistFilterContext";
-import { getArtistDotSpecs, fitNucleusMultiplier } from "@/utils/artistDots";
+import {
+  getArtistDotSpecs,
+  fitNucleusMultiplier,
+  fitNucleusRadius,
+  fitOuterRingRadius,
+} from "@/utils/artistDots";
+import { VIS_NUCLEUS_RADIUS } from "@/utils/constants.ts";
 
 type LoadState =
   | { status: "loading"; phase: "artist" }
@@ -206,11 +212,33 @@ function ArtistPageContent({
               ? 3.25
               : 4;
 
-  // ...which the nucleus fit can only shrink further: the nucleus is a hard-edged
-  // space, so how many dots fit depends on their sizes, not just on how many there are
+  // Anonymous artists have thousands of dots and almost none outside the nucleus, so
+  // their vis is nucleus-only and the nucleus grows until the dots fit at the standard
+  // size (as far as the canvas allows).
+  const isAnonymous = dotSpecs.length > 0 && dotSpecs[0].isAnonymousArtist;
+  const nucleusRadius = useMemo(
+    () => (isAnonymous ? fitNucleusRadius(dotSpecs) : VIS_NUCLEUS_RADIUS),
+    [isAnonymous, dotSpecs],
+  );
+
+  // the single outer ring of an anonymous artist's vis (only when they have dots with a
+  // relation qualifier, e.g. "falso"); everyone else keeps the four tiers
+  const outerRingRadius = useMemo(
+    () => fitOuterRingRadius(dotSpecs, nucleusRadius),
+    [dotSpecs, nucleusRadius],
+  );
+
   const multiplier = useMemo(
-    () => Math.min(thresholdMultiplier, fitNucleusMultiplier(dotSpecs)),
-    [thresholdMultiplier, dotSpecs],
+    () =>
+      isAnonymous
+        ? // no tier rings to protect, so the ladder doesn't apply: only shrink the dots
+          // if even the biggest nucleus the canvas allows can't hold them
+          fitNucleusMultiplier(dotSpecs, nucleusRadius)
+        : // ...which the nucleus fit can only shrink further: the nucleus is a
+          // hard-edged space, so how many dots fit depends on their sizes, not just
+          // on how many there are
+          Math.min(thresholdMultiplier, fitNucleusMultiplier(dotSpecs)),
+    [isAnonymous, nucleusRadius, thresholdMultiplier, dotSpecs],
   );
 
   useEffect(() => {
@@ -293,7 +321,11 @@ function ArtistPageContent({
         <Link to={`/`} className="button-link">
           View in artists overview
         </Link>
-        <ArtistLegend multiplier={multiplier} />
+        <ArtistLegend
+          multiplier={multiplier}
+          nucleusOnly={isAnonymous}
+          outerRing={outerRingRadius !== null}
+        />
       </div>
       <ArtistVis
         ref={artistVisRef}
@@ -301,6 +333,9 @@ function ArtistPageContent({
         artistId={artistId ?? ""}
         works={state.worksList}
         multiplier={multiplier}
+        nucleusRadius={nucleusRadius}
+        nucleusOnly={isAnonymous}
+        outerRingRadius={outerRingRadius}
       />
       <div className="works-list page-side-panel" ref={listRef}>
         {

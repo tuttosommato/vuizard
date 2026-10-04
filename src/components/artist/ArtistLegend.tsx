@@ -1,7 +1,17 @@
 import AttributionCircle from "@/components/work/attributions/AttributionCircle";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
 
-export default function ArtistLegend({ multiplier }: { multiplier: number }) {
+export default function ArtistLegend({
+  multiplier,
+  nucleusOnly = false,
+  outerRing = false,
+}: {
+  multiplier: number;
+  // anonymous artists: no tier rings, so position only tells documented from interpreted
+  nucleusOnly?: boolean;
+  // anonymous artists whose vis has an outer ring for dots with a relation qualifier
+  outerRing?: boolean;
+}) {
   const {
     sizeValues,
     hiddenSizes,
@@ -147,7 +157,12 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
           ))}
         </div>
       </div>
-<p className="legend-caption"><span className="keyword">Each circle represents a single attribution record</span>. Its <span className="keyword">position</span> reflects how closely the artist named in that record relates to this page's artist (from their own hand to looser connections). The <span className="keyword">size</span> reflects the total number of attribution records for the related work. When a work carries more than one attribution naming the artist, it appears as <span className="keyword">several circles</span> that <span className="keyword">get eventually connected</span> on hover or selection.</p>
+<p className="legend-caption"><span className="keyword">Each circle represents a single attribution record</span>. {nucleusOnly ? (
+    <>Its <span className="keyword">position</span> shows whether the attribution is based on documentation (above the dashed line) or on interpretation (below it).{outerRing && <> The <span className="keyword">outer ring</span> holds the attributions that carry a relation qualifier (e.g. falso, copia da).</>}</>
+  ) : (
+    <>Its <span className="keyword">position</span> reflects how closely the artist named in that record relates to this page's artist (from their own hand to looser connections).</>
+  )}{" "}
+  The <span className="keyword">size</span> reflects the total number of attribution records for the related work. When a work carries more than one attribution naming the artist, it appears as <span className="keyword">several circles</span> that <span className="keyword">get eventually connected</span> on hover or selection.</p>
     </div>
     </div>
     
