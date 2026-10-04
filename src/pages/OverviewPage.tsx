@@ -13,6 +13,7 @@ import {
   OverviewSelectionProvider,
   useOverviewSelection,
 } from "@/stores/OverviewSelectionContext";
+import SelectedWorksList from "@/components/overview/SelectedWorksList";
 import { getHighlightedIds } from "@/utils/coOccurrences";
 
 type LoadState =
@@ -143,6 +144,18 @@ function OverviewPageContent({
       });
   }, [sortedArtists, selectedIds, highlightedIds]);
 
+  // with one artist selected: how many others appear with them; with several, the list
+  // holds the selected ones followed by who appears with all of them, so both are counted
+  const nOthers = visibleArtists.length - selectedIds.size;
+  const artistsTitle =
+    selectedIds.size === 0
+      ? `${visibleArtists.length} artists`
+      : selectedIds.size === 1
+        ? `${nOthers} artist${nOthers !== 1 ? "s" : ""} appearing in works with ${
+            artists[[...selectedIds][0]]?.name
+          }`
+        : `${selectedIds.size} selected + ${nOthers} appearing in works with all the selected`;
+
   return (
     <>
       <title>Artists overview</title>
@@ -161,11 +174,28 @@ function OverviewPageContent({
         <div className="overview-vis-cnt">
           <PackingVis artists={artists} coOccurrences={coOccurrences} />
         </div>
-        <div className="overview-cards-cnt page-side-panel">
-          <h3 className="work-list-stats-title">Artists</h3>
-          {visibleArtists.map((artist) => (
-            <ArtistCard key={artist.id} artist={artist} />
-          ))}
+        <div className="overview-right">
+          <div
+            className={
+              "overview-cards-cnt page-side-panel" +
+              (selectedIds.size > 0 ? " overview-cards-cnt-faded" : "")
+            }
+          >
+            <h3 className="work-list-stats-title">{artistsTitle}</h3>
+            {visibleArtists.map((artist) => (
+              <ArtistCard key={artist.id} artist={artist} />
+            ))}
+          </div>
+          {/* with a selection the artist list gives its bottom half to the works */}
+          {selectedIds.size > 0 && (
+            <div className="overview-cards-cnt overview-works-cnt page-side-panel">
+              <SelectedWorksList
+                key={[...selectedIds].join(",")}
+                artists={artists}
+                selectedIds={selectedIds}
+              />
+            </div>
+          )}
         </div>
       </main>
     </>

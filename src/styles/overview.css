@@ -92,9 +92,48 @@ just invisible until hoverBus adds .hovered to it alongside the matching dots. *
   opacity: 1;
 }
 
+/* the right column: the artist cards, and below them (once something is selected) the
+   works of the selected artists, each scrolling in its own half */
+.overview-right {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
 .overview-cards-cnt {
+  flex: 1 1 0;
+  height: auto;
   padding-left: calc(var(--space-lg) + var(--space-sm));
   overflow-x: hidden;
   overflow-y: scroll;
   gap: var(--space-md);
+}
+
+/* the artist list ends in a fade while the works list sits below it */
+.overview-cards-cnt-faded {
+  mask-image: linear-gradient(
+    to bottom,
+    #000 calc(100% - var(--space-xl)),
+    transparent
+  );
+}
+
+/* each list's heading stays put while its cards scroll under it: the panel's top padding
+   moves into the heading so nothing shows above it */
+.overview-cards-cnt {
+  padding-top: 0;
+}
+
+.overview-cards-cnt > .work-list-stats-title {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: var(--space-layout) 0 var(--space-sm);
+  background-color: var(--color-bg);
+}
+
+.overview-works-cnt > .work-list-stats-title {
+  padding-top: var(--space-md);
 }

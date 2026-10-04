@@ -7,32 +7,34 @@ export function getCoAuthorsIds(
   return new Set(Object.keys(coOccurrences[id]?.co_authors ?? {}));
 }
 
-// Authors who co-occur with EVERY currently-selected author. Progressively narrow:
-// it starts with the first selected author's co-authors, then for each additional
-// selected author, keep only the ids that are ALSO in that author's own co-author set
+// Authors who appear together with EVERY currently-selected author: in at least one work
+// that all the selected authors share (the same works the overview's works list shows).
+// For a single selected author that is just their co-authors.
 export function getIntersection(
   selectedIds: Set<string>,
   coOccurrences: AuthorsCoBundle,
 ): Set<string> {
-  let intersection: Set<string> | null = null;
-
-  for (const id of selectedIds) {
-    const coAuthors = getCoAuthorsIds(id, coOccurrences);
-
-    if (intersection === null) {
-      // First selected author
-      intersection = coAuthors;
-    } else {
-      // Keep only ids present in BOTH the running intersection and this author's own co-authors
-      intersection = new Set(
-        [...intersection].filter((coAuthorId: string) =>
-          coAuthors.has(coAuthorId),
-        ),
-      );
-    }
-  }
+  const [first, ...others] = selectedIds;
   // No selection at all → nothing to intersect → empty set.
-  return intersection ?? new Set();
+  if (first === undefined) return new Set();
+
+  const coAuthors = coOccurrences[first]?.co_authors ?? {};
+  if (others.length === 0) return new Set(Object.keys(coAuthors));
+
+  // works all the selected authors appear in
+  const sharedWorks = new Set(coOccurrences[first]?.works ?? []);
+  for (const id of others) {
+    const own = new Set(coOccurrences[id]?.works ?? []);
+    for (const w of sharedWorks) if (!own.has(w)) sharedWorks.delete(w);
+  }
+
+  // whoever appears in one of those works, next to the first author (and so, being
+  // in a work all of them share, next to all of them)
+  return new Set(
+    Object.entries(coAuthors)
+      .filter(([, entry]) => entry.works.some((w) => sharedWorks.has(w)))
+      .map(([id]) => id),
+  );
 }
 
 // Everything that should read as "highlighted":
