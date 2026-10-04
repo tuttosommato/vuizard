@@ -30,6 +30,7 @@ export default function WorkCardBody({
           <img
             src={BASE_URL + availablePhotos?.[0]?.image_path}
             alt={availablePhotos?.[0]?.alt || "Untitled"}
+            loading="lazy" // an artist can have ~1,000 cards: only load the ones near the viewport
           />
         </div>
         <div className="work-card-info">
