@@ -247,16 +247,14 @@ input[type="search"].list-page-search:focus {
 }
 
 /* ---------- Double range slider ----------
-   Base track/fill/input mechanics are identical between the two
-   current sliders (ArtistLegend's size filter, PackingLegend's
-   century filter) — only the thumb SHAPE differs, so that stays
-   page-specific (each page's own stylesheet still defines its own
-   ::-webkit-slider-thumb / ::-moz-range-thumb rule). Tick marks and
-   label positioning also stay page-specific, since those genuinely
-   differ in behavior rather than just naming. */
+   Track/fill/input mechanics for the double range slider. Currently only
+   PackingLegend's century filter uses it (ArtistLegend's attribution-count
+   filter is a set of toggles now, since that value only takes a handful of
+   discrete steps). The thumb SHAPE stays page-specific (the page's own
+   stylesheet defines its own ::-webkit-slider-thumb / ::-moz-range-thumb
+   rule), as do tick marks and label positioning. */
 
 .range-slider,
-.size-range-slider,
 .temp-range-slider {
   position: relative;
   height: 24px;
@@ -266,7 +264,6 @@ input[type="search"].list-page-search:focus {
 }
 
 .range-track,
-.size-range-track,
 .temp-range-track {
   position: absolute;
   width: 100%;
@@ -276,7 +273,6 @@ input[type="search"].list-page-search:focus {
 }
 
 .range-fill,
-.size-range-fill,
 .temp-range-fill {
   position: absolute;
   height: 2px;
@@ -285,7 +281,6 @@ input[type="search"].list-page-search:focus {
 }
 
 .range-input,
-.size-range-input,
 .temp-range-input {
   position: absolute;
   width: 100%;
@@ -297,12 +292,10 @@ input[type="search"].list-page-search:focus {
 }
 
 .range-input::-webkit-slider-runnable-track,
-.size-range-input::-webkit-slider-runnable-track,
 .temp-range-input::-webkit-slider-runnable-track {
   background: transparent;
 }
 .range-input::-moz-range-track,
-.size-range-input::-moz-range-track,
 .temp-range-input::-moz-range-track {
   background: transparent;
 }
@@ -313,7 +306,6 @@ input[type="search"].list-page-search:focus {
    discard the whole rule (blue native thumb, no pointer-events: auto, so the
    handles can't be grabbed). */
 .range-input::-webkit-slider-thumb,
-.size-range-input::-webkit-slider-thumb,
 .temp-range-input::-webkit-slider-thumb {
   pointer-events: auto;
   -webkit-appearance: none;
@@ -323,7 +315,6 @@ input[type="search"].list-page-search:focus {
 }
 
 .range-input::-moz-range-thumb,
-.size-range-input::-moz-range-thumb,
 .temp-range-input::-moz-range-thumb {
   pointer-events: auto;
   -webkit-appearance: none;
@@ -334,25 +325,21 @@ input[type="search"].list-page-search:focus {
 }
 
 .range-input::-webkit-slider-thumb:active,
-.size-range-input::-webkit-slider-thumb:active,
 .temp-range-input::-webkit-slider-thumb:active {
   cursor: grabbing;
 }
 
 .range-input::-moz-range-thumb:active,
-.size-range-input::-moz-range-thumb:active,
 .temp-range-input::-moz-range-thumb:active {
   cursor: grabbing;
 }
 
 .range-input::-webkit-slider-thumb:hover,
-.size-range-input::-webkit-slider-thumb:hover,
 .temp-range-input::-webkit-slider-thumb:hover {
   box-shadow: 0px 0px 2px 2px rgba(255, 255, 255, 0.1);
 }
 
 .range-input::-moz-range-thumb:hover,
-.size-range-input::-moz-range-thumb:hover,
 .temp-range-input::-moz-range-thumb:hover {
   box-shadow: 0px 0px 2px 2px rgba(255, 255, 255, 0.1);
 }

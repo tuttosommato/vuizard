@@ -3,24 +3,21 @@ import { useArtistFilter } from "@/stores/ArtistFilterContext";
 
 export default function ArtistLegend({ multiplier }: { multiplier: number }) {
   const {
-    sizeRange,
-    setSizeRange,
-    sizeBounds,
+    sizeValues,
+    hiddenSizes,
+    handleSizeFilter,
     handleUncertaintyFilter,
     uncertaintyRange,
     acceptanceRange,
     handleAcceptanceFilter,
   } = useArtistFilter();
-  const [min, max] = sizeBounds;
 
-  const thumbSizePx = (value: number) => Math.sqrt(value) * 8;
-
-  const labelLeft = (value: number) => {
-    // computes the offset for the changing size input thumb to place the label correctly under the thumb
-    const percent = (value - min) / (max - min || 1);
-    const size = thumbSizePx(value);
-    return `calc(${size / 2}px + (100% - ${size}px) * ${percent})`;
-  };
+  // same sqrt encoding (and * 2 for a meaningful size) the vis circles use, so
+  // each toggle doubles as a size key
+  const diameterOf = (value: number) => Math.sqrt(value) * multiplier * 2;
+  // every toggle's circle sits in a slot as tall as the biggest one, so the
+  // number labels line up on one row
+  const slotPx = Math.max(0, ...sizeValues.map(diameterOf));
 
   return (
     <div className="artist-legend legend">
@@ -126,75 +123,28 @@ export default function ArtistLegend({ multiplier }: { multiplier: number }) {
 
       <div className="size-legend-items">
         <h3>Number of attributions</h3>
-        <div className="size-range-slider">
-          <div className="size-range-track" />
-          <div
-            className="size-range-fill"
-            style={{
-              left: `${((sizeRange[0] - min) / (max - min)) * 100}%`,
-              right: `${100 - ((sizeRange[1] - min) / (max - min)) * 100}%`,
-            }}
-          />
-          <input
-            type="range"
-            min={min}
-            max={max}
-            value={sizeRange[0]}
-            onChange={(e) =>
-              setSizeRange([
-                Math.min(Number(e.target.value), sizeRange[1]),
-                sizeRange[1],
-              ])
-            }
-            className="size-range-input"
-            style={
-              {
-                "--thumb-size": `${Math.sqrt(sizeRange[0]) * multiplier * 2}px`, // * 2 for meaningful size
-              } as React.CSSProperties
-            }
-          />
-          <input
-            type="range"
-            min={min}
-            max={max}
-            value={sizeRange[1]}
-            onChange={(e) =>
-              setSizeRange([
-                sizeRange[0],
-                Math.max(Number(e.target.value), sizeRange[0]),
-              ])
-            }
-            className="size-range-input"
-            style={
-              {
-                "--thumb-size": `${Math.sqrt(sizeRange[1]) * multiplier * 2}px`,
-              } as React.CSSProperties
-            }
-          />
-        </div>
-        <div className="size-range-labels">
-          <span
-            className="size-range-label"
-            style={
-              {
-                left: labelLeft(sizeRange[0]),
-                "--thumb-size": `${Math.sqrt(sizeRange[0]) * 8}px`,
-              } as React.CSSProperties
-            }
-          >
-            {sizeRange[0]}
-          </span>
-          <span
-            className="size-range-label"
-            style={
-              {
-                left: labelLeft(sizeRange[1]),
-                "--thumb-size": `${Math.sqrt(sizeRange[1]) * 8}px`,
-              } as React.CSSProperties
-            }
-          >
-            {sizeRange[1]}
-          </span>
+        <div
+          className="size-toggles"
+          style={{ "--size-toggle-slot": `${slotPx}px` } as React.CSSProperties}
+        >
+          {sizeValues.map((value) => (
+            <button
+              key={value}
+              type="button"
+              className="size-toggle"
+              aria-pressed={!hiddenSizes.has(value)}
+              aria-label={`Works with ${value} attribution${value !== 1 ? "s" : ""}`}
+              onClick={() => handleSizeFilter(value)}
+            >
+              <span className="size-toggle-circle-cnt">
+                <span
+                  className="size-toggle-circle"
+                  style={{ width: diameterOf(value), height: diameterOf(value) }}
+                />
+              </span>
+              <span className="size-toggle-label">{value}</span>
+            </button>
+          ))}
         </div>
       </div>
 <p className="legend-caption"><span className="keyword">Each circle represents a single attribution record</span>. Its <span className="keyword">position</span> reflects how closely the artist named in that record relates to this page's artist (from their own hand to looser connections). The <span className="keyword">size</span> reflects the total number of attribution records for the related work. When a work carries more than one attribution naming the artist, it appears as <span className="keyword">several circles</span> that <span className="keyword">get eventually connected</span> on hover or selection.</p>

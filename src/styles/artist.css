@@ -358,40 +358,69 @@ main.artist-layout .artist-vis {
    Legend structure (.legend-items-cnt, .legend-caption, .legend h2/h3,
    .legend-label, .legend-xs, .label-cnt, .svg-span-cnt, .legend-checkbox,
    item-group/item-row containers, icon sizing) now lives in shared.css —
-   it's identical to PackingLegend's overview-page equivalent. Only this
-   slider's width and thumb shape differ, so those stay here. */
+   it's identical to PackingLegend's overview-page equivalent. Only the
+   "number of attributions" size toggles are specific to this page. */
 
-.size-range-slider {
-  width: 70%; /* shared .range-slider/.size-range-slider default is 100% */
+/* One toggle per attribution count present for this artist, each circle sized
+   like the vis circles so the row doubles as a size key. A toggle is "pressed"
+   while its works are shown (mirrors the checked state of the other filters). */
+.size-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
 }
 
-.size-range-input::-webkit-slider-thumb {
+.size-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: var(--space-lg);
+  padding: var(--space-xs);
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.size-toggle-circle-cnt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--size-toggle-slot, 0px);
+}
+
+.size-toggle-circle {
+  display: block;
   border-radius: 50%;
-  width: var(--thumb-size, 14px);
-  height: var(--thumb-size, 14px);
+  background: var(--color-text);
 }
 
-.size-range-input::-moz-range-thumb {
-  border-radius: 50%;
-  width: var(--thumb-size, 14px);
-  height: var(--thumb-size, 14px);
-}
-
-.size-range-labels {
-  position: relative;
-  width: 70%;
-}
-
-.size-range-label {
-  position: absolute;
-  top: -2px;
-  text-anchor: middle;
+.size-toggle-label {
   padding: var(--space-2xs) var(--space-xs);
   border: var(--border);
   border-radius: var(--radius-xs);
-  transform: translateX(-50%);
   font-size: var(--text-xs);
-  color: var(--color-text);
+  line-height: 1;
+}
+
+.size-toggle[aria-pressed="false"] {
+  opacity: 0.35;
+}
+
+.size-toggle[aria-pressed="false"]:hover {
+  opacity: 0.6;
+}
+
+.size-toggle:hover .size-toggle-label {
+  background-color: var(--color-bg-highlight);
+}
+
+.size-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 /* Thumbnail */

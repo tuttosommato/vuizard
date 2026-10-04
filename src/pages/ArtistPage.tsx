@@ -134,15 +134,16 @@ export default function ArtistPage() {
   const attributionsCounts = state.worksList.map((w) => {
     return w.attributions?.attributions.length ?? 0;
   });
-  const sizeBounds = [
-    Math.min(...attributionsCounts),
-    Math.max(...attributionsCounts),
-  ] as [number, number];
+  // distinct per-work attribution counts (0 = no attributions bundle, not a
+  // meaningful size), each of which becomes a toggle in the legend
+  const sizeValues = [...new Set(attributionsCounts)]
+    .filter((n) => n > 0)
+    .sort((a, b) => a - b);
 
   return (
     <>
       <ArtistSelectionProvider>
-        <ArtistFilterProvider sizeBounds={sizeBounds}>
+        <ArtistFilterProvider sizeValues={sizeValues}>
           <ArtistPageContent state={state} artistId={artistId ?? ""} />
         </ArtistFilterProvider>
       </ArtistSelectionProvider>

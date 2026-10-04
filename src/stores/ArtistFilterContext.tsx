@@ -1,9 +1,10 @@
 import { createContext, useState, useContext, type ReactNode } from "react";
 
 type ArtistFilterContextValue = {
-  sizeRange: [number, number];
-  setSizeRange: (range: [number, number]) => void;
-  sizeBounds: [number, number];
+  // distinct per-work attribution counts present for this artist, one legend toggle each
+  sizeValues: number[];
+  hiddenSizes: Set<number>;
+  handleSizeFilter: (size: number) => void;
   isWorkFilteredOut: (size: number) => boolean;
   uncertaintyRange: Set<"certain" | "probably" | "uncertain" | null>;
   handleUncertaintyFilter: (
@@ -23,14 +24,24 @@ const ArtistFilterContext = createContext<ArtistFilterContextValue | null>(
 
 export function ArtistFilterProvider({
   children,
-  sizeBounds,
+  sizeValues,
 }: {
   children: ReactNode;
-  sizeBounds: [number, number];
+  sizeValues: number[];
 }) {
-  const [sizeRange, setSizeRange] = useState<[number, number]>(sizeBounds);
-  const isWorkFilteredOut = (size: number) =>
-    size < sizeRange[0] || size > sizeRange[1];
+  // Same exclusion-set model as the status/uncertainty filters below: a size
+  // is hidden while it's in the set, so an empty set means nothing is filtered.
+  const [hiddenSizes, setHiddenSizes] = useState<Set<number>>(new Set());
+  const isWorkFilteredOut = (size: number) => hiddenSizes.has(size);
+
+  const handleSizeFilter = (size: number) => {
+    setHiddenSizes((prev) => {
+      const next = new Set(prev);
+      if (next.has(size)) next.delete(size);
+      else next.add(size);
+      return next;
+    });
+  };
 
   const [uncertaintyRange, setUncertaintyRange] = useState<
     Set<"certain" | "probably" | "uncertain" | null>
@@ -70,9 +81,9 @@ export function ArtistFilterProvider({
   return (
     <ArtistFilterContext
       value={{
-        sizeRange,
-        setSizeRange,
-        sizeBounds,
+        sizeValues,
+        hiddenSizes,
+        handleSizeFilter,
         isWorkFilteredOut,
         uncertaintyRange,
         handleUncertaintyFilter,
