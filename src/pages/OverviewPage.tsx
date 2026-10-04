@@ -99,6 +99,8 @@ export default function OverviewPage() {
   );
 }
 
+const isAnonimo = (artist: Artist) => /^anonimo\b/i.test(artist.name);
+
 function OverviewPageContent({
   artists,
   coOccurrences,
@@ -109,7 +111,9 @@ function OverviewPageContent({
   const sortedArtists = useMemo(
     () =>
       Object.values(artists).sort(
-        (a, b) => getArtistTotal(b) - getArtistTotal(a),
+        (a, b) =>
+          Number(isAnonimo(a)) - Number(isAnonimo(b)) || // "Anonimo ..." last
+          getArtistTotal(b) - getArtistTotal(a),
       ),
     [artists],
   );
