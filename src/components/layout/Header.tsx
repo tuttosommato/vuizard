@@ -53,13 +53,8 @@ export default function Header() {
 
   return (
     <nav id="nav">
-      <div className="nav-toolbar-cnt">
-        <div title="About" className="about-icon">
-          i
-        </div>
-        <div title="How to read" className="helper-icon">
-          ?
-        </div>
+      <div title="About" className="button-link nav-about">
+        About
       </div>
       {/* Same idea as the table/ordering switches: one pill, a thumb that slides to the
           active option. Here the options are links, so the route is the state. */}

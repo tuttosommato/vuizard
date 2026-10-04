@@ -110,28 +110,16 @@ nav {
   padding: var(--space-layout) 0;
 }
 
-.nav-toolbar-cnt {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  gap: var(--space-sm);
-}
-
-.nav-toolbar-cnt div {
-  width: var(--text-xl);
-  height: var(--text-xl);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: var(--border);
-  background-color: var(--color-bg);
-  cursor: pointer;
-  z-index: 2;
-}
-
-.nav-toolbar-cnt div:hover {
-  background-color: var(--color-bg-highlight);
+/* "About": a .button-link (same border, radius and hover as e.g. "View in artists
+   overview"), written vertically from bottom to top like the level labels. The padding
+   is the button's with its two axes swapped, to keep the same look turned on its side. */
+.button-link.nav-about {
+  padding: var(--space-sm) var(--space-xs);
+  font-size: var(--text-sm); /* same as the level labels */
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  margin-top: 4px; /* a bit of space from the top of the nav to align with pages' h1 */
 }
 
 /* Level selector: a vertical switch with the same look and sliding thumb as the table and
@@ -148,7 +136,7 @@ nav {
   grid-template-columns: var(--level-width);
   grid-auto-rows: 1fr;
   padding: var(--space-2xs);
-  border-radius: calc(var(--level-width) / 2 + var(--space-2xs));
+  border-radius: calc(var(--radius-lg) + var(--space-2xs)); /* as .button-switch */
   background-color: var(--color-text-muted);
 }
 
@@ -158,7 +146,7 @@ nav {
   justify-content: center;
   padding-top: var(--level-padding);
   padding-bottom: var(--level-padding);
-  border-radius: calc(var(--level-width) / 2);
+  border-radius: var(--radius-lg);
   color: var(--color-bg);
   font-size: var(--text-sm);
   font-weight: 500;
@@ -193,7 +181,7 @@ nav {
   /* one row: the pill's height without its padding, over the three rows */
   height: calc((100% - 2 * var(--space-2xs)) / 3);
   overflow: hidden;
-  border-radius: calc(var(--level-width) / 2);
+  border-radius: var(--radius-lg);
   background-color: var(--color-bg);
   pointer-events: none;
   /* % is of the thumb's own height, i.e. one row */
