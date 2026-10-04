@@ -140,10 +140,13 @@ nav {
    compositor while a heavy page mount/unmount blocks the main thread (see Header.tsx). */
 .level-switch {
   --level-width: 1.75rem;
-  --level-height: 2.25rem;
+  --level-padding: var(--space-md); /* clear space at each end of the longest label */
   position: relative;
-  display: flex;
-  flex-direction: column;
+  /* equal rows, as tall as the longest label plus its padding, so the padding around
+     the labels follows the text (font size, wording) instead of a fixed height */
+  display: grid;
+  grid-template-columns: var(--level-width);
+  grid-auto-rows: 1fr;
   padding: var(--space-2xs);
   border-radius: calc(var(--level-width) / 2 + var(--space-2xs));
   background-color: var(--color-text-muted);
@@ -153,13 +156,17 @@ nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--level-width);
-  height: var(--level-height);
+  padding-top: var(--level-padding);
+  padding-bottom: var(--level-padding);
   border-radius: calc(var(--level-width) / 2);
   color: var(--color-bg);
   font-size: var(--text-sm);
   font-weight: 500;
   text-decoration: none;
+  white-space: nowrap;
+  /* labels read from bottom to top */
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
   transition: background-color 0.2s ease;
 }
 
@@ -183,12 +190,14 @@ nav {
   top: var(--space-2xs);
   left: var(--space-2xs);
   width: var(--level-width);
-  height: var(--level-height);
+  /* one row: the pill's height without its padding, over the three rows */
+  height: calc((100% - 2 * var(--space-2xs)) / 3);
   overflow: hidden;
   border-radius: calc(var(--level-width) / 2);
   background-color: var(--color-bg);
   pointer-events: none;
-  transform: translateY(calc(var(--active-index, 0) * var(--level-height)));
+  /* % is of the thumb's own height, i.e. one row */
+  transform: translateY(calc(var(--active-index, 0) * 100%));
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
 }
@@ -197,8 +206,10 @@ nav {
 .level-switch-thumb-labels {
   display: flex;
   flex-direction: column;
+  height: 300%; /* the three rows */
   color: var(--color-text);
-  transform: translateY(calc(var(--active-index, 0) * var(--level-height) * -1));
+  /* one row is a third of the strip */
+  transform: translateY(calc(var(--active-index, 0) * -100% / 3));
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
 }
@@ -207,10 +218,13 @@ nav {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1 1 0;
   width: var(--level-width);
-  height: var(--level-height);
   font-size: var(--text-sm);
   font-weight: 500;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
 }
 
 /* nav is a fixed left sidebar (not in normal flow), so every page's root

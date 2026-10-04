@@ -3,9 +3,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 // The three levels of the app, one route each: overview, artist, work
 const levels = [
-  { to: "/", label: "I", title: "Overview" },
-  { to: "/artist", label: "II", title: "Artists" },
-  { to: "/work", label: "III", title: "Works" },
+  { to: "/", label: "Overview", title: "Overview" },
+  { to: "/artist", label: "Artist view", title: "Artists" },
+  { to: "/work", label: "Artwork view", title: "Works" },
 ];
 
 // Mounting or unmounting a heavy page (the overview most of all) blocks the main thread
