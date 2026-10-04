@@ -13,13 +13,17 @@ import {
   ArtistSelectionProvider,
   useArtistSelection,
 } from "@/stores/ArtistSelectionContext";
-import { ArtistFilterProvider } from "@/stores/ArtistFilterContext";
+import {
+  ArtistFilterProvider,
+  useArtistFilter,
+} from "@/stores/ArtistFilterContext";
 import {
   getArtistDotSpecs,
   fitNucleusMultiplier,
   fitNucleusRadius,
   fitOuterRingRadius,
 } from "@/utils/artistDots";
+import { isWorkItemFilteredOut } from "@/utils/workCardFilter";
 import { VIS_NUCLEUS_RADIUS } from "@/utils/constants.ts";
 
 type LoadState =
@@ -191,6 +195,25 @@ function ArtistPageContent({
   const cardRefs = useRef(new Map<string, HTMLDivElement>());
   const artistVisRef = useRef<ArtistVisHandle>(null);
   const { triggerNewSelection, selectedIds } = useArtistSelection();
+  const { isWorkFilteredOut, isAttributionFilteredOut } = useArtistFilter();
+
+  // the works the filters leave out go after the others, each group in its own order
+  const orderedWorks = useMemo(() => {
+    const kept: WorkItem[] = [];
+    const filteredOut: WorkItem[] = [];
+    for (const w of state.worksList) {
+      (isWorkItemFilteredOut(
+        w,
+        artistId,
+        isWorkFilteredOut,
+        isAttributionFilteredOut,
+      )
+        ? filteredOut
+        : kept
+      ).push(w);
+    }
+    return [...kept, ...filteredOut];
+  }, [state.worksList, artistId, isWorkFilteredOut, isAttributionFilteredOut]);
 
   const dotSpecs = useMemo(
     () => getArtistDotSpecs(state.worksList, artistId),
@@ -357,15 +380,15 @@ function ArtistPageContent({
             </p>
           </div>
         }
-        {state.worksList.map((workItem) => (
+        {orderedWorks.map((workItem) => (
           <div
+            key={workItem.id}
             ref={(el) => {
               if (el) cardRefs.current.set(workItem.id, el);
               else cardRefs.current.delete(workItem.id);
             }}
           >
             <WorkCard
-              key={workItem.id}
               workItem={workItem}
               artistId={artistId ?? ""}
             />

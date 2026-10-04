@@ -3,8 +3,7 @@ import ArrowIcon from "@/components/ArrowIcon";
 import { Link } from "react-router-dom";
 import { useArtistSelection } from "@/stores/ArtistSelectionContext";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
-import uncertaintyBucket from "@/utils/uncertaintyBucket";
-import { representativeAuthor } from "@/components/work/attributions/utils";
+import { isWorkItemFilteredOut } from "@/utils/workCardFilter";
 import WorkCardBody from "@/components/WorkCardBody";
 
 interface WorkCardProps {
@@ -17,24 +16,12 @@ export default function WorkCard({ workItem, artistId }: WorkCardProps) {
   const workId = workItem.id;
   const isSelected = selectedIds.has(workId);
   const { isWorkFilteredOut, isAttributionFilteredOut } = useArtistFilter();
-  const attributionsLength = Object.keys(
-    workItem.attributions?.attributions || {},
-  ).length;
-
-  const relevantAttrs =
-    workItem.attributions?.attributions.filter((a) =>
-      a.authors.map((author) => author.local_id).includes(artistId),
-    ) ?? [];
-
-  const isFilteredOut =
-    isWorkFilteredOut(attributionsLength) ||
-    relevantAttrs.length === 0 ||
-    relevantAttrs.every((attr) =>
-      isAttributionFilteredOut(
-        uncertaintyBucket(representativeAuthor(attr).u_qualifier),
-        attr.type as "accepted" | "discarded",
-      ),
-    );
+  const isFilteredOut = isWorkItemFilteredOut(
+    workItem,
+    artistId,
+    isWorkFilteredOut,
+    isAttributionFilteredOut,
+  );
 
   return (
     <div
