@@ -37,12 +37,19 @@ import { createPortal } from "react-dom";
 import { useArtistSelection } from "@/stores/ArtistSelectionContext";
 import { representativeAuthor } from "@/components/work/attributions/utils";
 
+// the "zoom and pan" hint shows while the vis is (nearly) unzoomed
+const ZOOM_HINT_MAX_SCALE = 1.1;
+
 function ZoomControls({
   svgRef,
   zoomRef,
+  hint,
+  showHint,
 }: {
   svgRef: React.RefObject<SVGSVGElement | null>;
   zoomRef: React.RefObject<ZoomBehavior<SVGSVGElement, unknown> | null>;
+  hint: string; // shown while the vis is unzoomed
+  showHint: boolean;
 }) {
   const handleZoom = (direction: "+" | "-") => {
     if (!svgRef.current || !zoomRef.current) return;
@@ -55,10 +62,15 @@ function ZoomControls({
   };
 
   return (
-    <div className="zoom-controls">
-      <button onClick={() => handleZoom("+")}>+</button>
-      <button onClick={() => handleZoom("-")}>-</button>
-    </div>
+    <>
+      <div className="zoom-controls">
+        <button onClick={() => handleZoom("+")}>+</button>
+        <button onClick={() => handleZoom("-")}>-</button>
+      </div>
+      <p className={"zoom-hint" + (showHint ? "" : " zoom-hint-hidden")}>
+        {hint}
+      </p>
+    </>
   );
 }
 
@@ -110,6 +122,7 @@ function ArtistVis({
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [transform, setTransform] = useState("translate(0, 0) scale(1)");
+  const [isZoomedIn, setIsZoomedIn] = useState(false);
   const [hoveredWork, setHoveredWork] = useState<{
     work: WorkItem;
     coords: { x: number; y: number };
@@ -137,6 +150,7 @@ function ArtistVis({
       .on("zoom", (event) => {
         const t = event.transform;
         setTransform(`translate(${t.x}, ${t.y}) scale(${t.k})`);
+        setIsZoomedIn(t.k > ZOOM_HINT_MAX_SCALE);
       });
 
     zoomRef.current = z;
@@ -411,7 +425,12 @@ function ArtistVis({
           ))}
         </g>
       </svg>
-      <ZoomControls svgRef={svgRef} zoomRef={zoomRef} />
+      <ZoomControls
+        svgRef={svgRef}
+        zoomRef={zoomRef}
+        hint="Zoom and pan to explore the visualisation. Click a dot to select a work and see its card in the list."
+        showHint={!isZoomedIn}
+      />
     </div>
   );
 }

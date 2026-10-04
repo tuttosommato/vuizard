@@ -117,14 +117,21 @@ function nationOf(node: PackedNode): string {
     : "unknown";
 }
 
+// the "zoom and pan" hint shows while the vis is (nearly) unzoomed
+const ZOOM_HINT_MAX_SCALE = 1.1;
+
 // Same zoom-control buttons as ArtistVis (+/- via d3-zoom's scaleBy,
 // eased over the existing svgRef/zoomRef).
 function ZoomControls({
   svgRef,
   zoomRef,
+  hint,
+  showHint,
 }: {
   svgRef: React.RefObject<SVGSVGElement | null>;
   zoomRef: React.RefObject<ZoomBehavior<SVGSVGElement, unknown> | null>;
+  hint: string; // shown while the vis is unzoomed
+  showHint: boolean;
 }) {
   const handleZoom = (direction: "+" | "-") => {
     if (!svgRef.current || !zoomRef.current) return;
@@ -137,10 +144,15 @@ function ZoomControls({
   };
 
   return (
-    <div className="zoom-controls">
-      <button onClick={() => handleZoom("+")}>+</button>
-      <button onClick={() => handleZoom("-")}>-</button>
-    </div>
+    <>
+      <div className="zoom-controls">
+        <button onClick={() => handleZoom("+")}>+</button>
+        <button onClick={() => handleZoom("-")}>-</button>
+      </div>
+      <p className={"zoom-hint" + (showHint ? "" : " zoom-hint-hidden")}>
+        {hint}
+      </p>
+    </>
   );
 }
 
@@ -200,6 +212,7 @@ export default function PackingVis({
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [transform, setTransform] = useState("translate(0, 0) scale(1)");
+  const [isZoomedIn, setIsZoomedIn] = useState(false);
   const { selectedIds, toggle } = useOverviewSelection();
   // Selected authors + whoever co-occurs with all of them.
   const highlightedIds = useMemo(
@@ -244,6 +257,7 @@ export default function PackingVis({
       .on("zoom", (event) => {
         const t = event.transform;
         setTransform(`translate(${t.x}, ${t.y}) scale(${t.k})`);
+        setIsZoomedIn(t.k > ZOOM_HINT_MAX_SCALE);
       });
 
     zoomRef.current = z;
@@ -469,7 +483,12 @@ export default function PackingVis({
         </g>
       </svg>
 
-      <ZoomControls svgRef={svgRef} zoomRef={zoomRef} />
+      <ZoomControls
+        svgRef={svgRef}
+        zoomRef={zoomRef}
+        hint="Zoom and pan to explore the visualisation. Click an artist to select it and see how the visualisation and the lists change."
+        showHint={!isZoomedIn}
+      />
 
       <ArtistTooltip />
 

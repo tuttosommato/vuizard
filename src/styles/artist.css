@@ -62,6 +62,29 @@ main.artist-layout .artist-vis {
   border-color: var(--color-text);
 }
 
+/* beside the zoom controls (both visualisations), vertically centred on them; shown while
+   the vis is unzoomed, fades out once zoomed in */
+.zoom-hint {
+  position: absolute;
+  bottom: var(--space-md);
+  left: calc(var(--space-md) + var(--text-2xl) + 2px + var(--space-base));
+  height: calc(2 * var(--text-2xl) + 3px);
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  max-width: 19rem;
+  font-size: var(--text-sm); /* as the text in the left column */
+  line-height: 1.4;
+  color: var(--color-text-muted);
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.zoom-hint-hidden {
+  opacity: 0;
+}
+
 .works-list {
   display: flex;
   flex-direction: column;

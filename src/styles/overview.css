@@ -49,6 +49,15 @@
   min-height: 0;
 }
 
+/* Fill the whole column, to the bottom of the viewport: left to its viewBox's square the
+   svg stops short of it, and a zoomed-in vis is clipped there. The viewBox keeps the
+   drawing's proportions. */
+svg.overview-vis {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .author-dot {
   opacity: 1;
   cursor: pointer;
