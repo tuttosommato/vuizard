@@ -42,16 +42,30 @@ How the pieces fit together:
 
 ## Data
 
-The data is not in the repository (`data-source/` and `public/data/` are git-ignored). The app expects four JSON files in `data-source/`:
+The data is not in the repository (`data-source/` and `public/data/` are git-ignored). The app expects four JSON files in `data-source/`. Each is a single object keyed by id:
 
-| File              | Content                                                |
-| ----------------- | ------------------------------------------------------ |
-| `works.json`      | work records, keyed by work id                         |
-| `attributions.json` | attributions of each work (defines which works are in scope) |
-| `authors.json`    | artist records, keyed by author id                     |
-| `authors_co.json` | co-occurrence statistics between artists               |
+| File                | Entries | Size    | Each entry                                                                                                          |
+| ------------------- | ------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| `works.json`        | 78,865  | ~101 MB | a work: title, subject, dating, photos, object, medium, size, `n_attributions`, …                                    |
+| `attributions.json` | 78,865  | ~85 MB  | the attributions of one work (accepted or discarded, with authors, qualifiers and reasons), author similarities and relations |
+| `authors.json`      | 5,312   | ~11 MB  | an artist: names, life and activity data, cultural context, links (ULAN, Wikidata, Wikipedia), …                      |
+| `authors_co.json`   | 5,263   | ~14 MB  | an artist's works and the other artists they co-occur with, with counts and a similarity score                       |
 
-`npm run split-data` reads them and writes `public/data/v1/`: one file per work, attribution set and artist, a works index, two bulk files (all authors, all co-occurrences) and the per-artist bundles for artists with many works. `node scripts/split-data.mjs --bundles-only` rebuilds only those bundles.
+`attributions.json` defines which works are in scope; `works.json` enriches them.
+
+`npm run split-data` reads them and writes `public/data/v1/`, which is what the app fetches:
+
+| Output                    | Files  | Average size | Largest   | Content                                                                 |
+| ------------------------- | ------ | ------------ | --------- | ----------------------------------------------------------------------- |
+| `works/<id>.json`         | 78,865 | ~1 KB        | ~44 KB    | one work                                                                |
+| `attributions/<id>.json`  | 78,865 | ~0.6 KB      | ~7 KB     | the attributions of one work                                            |
+| `authors/<id>.json`       | 5,312  | ~1.2 KB      | ~10 KB    | one artist                                                              |
+| `artist-bundles/<id>.json`| 19     | ~1 MB        | ~2.1 MB   | an array of `{ id, work, attributions }`, for artists with over 400 works |
+| `authors-full.json`       | 1      | ~6.4 MB      |           | all artists, loaded once by the overview                                |
+| `authors-co-full.json`    | 1      | ~6.9 MB      |           | all co-occurrences, loaded once by the overview                         |
+| `works-index.json`        | 1      | ~5.4 MB      |           | `{ workId: title }`, used by the work search and list                   |
+
+About 163,000 files in total, around 170 MB of content. Splitting keeps every page to a few small requests; only the overview needs the large bulk files, and the bundles stop an artist with 1,000+ works from firing 2,000 requests at once. `node scripts/split-data.mjs --bundles-only` rebuilds only the bundles.
 
 ## Running it
 
