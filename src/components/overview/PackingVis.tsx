@@ -17,6 +17,7 @@ import {
 import { useOverviewFilter } from "@/stores/OverviewFilterContext";
 import {
   registerDotsContainer,
+  registerHoverFocus,
   highlightDot,
   registerArtistTooltipEl,
   showArtistTooltip,
@@ -480,6 +481,40 @@ export default function PackingVis({
     () => getHighlightedIds(selectedIds, coOccurrences),
     [selectedIds, coOccurrences],
   );
+
+  // Hovering an artist shows what selecting it would do (hoverBus.ts): with nothing selected,
+  // who appears with it; with something selected, who appears with the selection and the
+  // hovered artist, i.e. what the highlight would narrow down to if it were selected too.
+  const selectedIdsRef = useRef(selectedIds);
+  useEffect(() => {
+    selectedIdsRef.current = selectedIds;
+  }, [selectedIds]);
+  useEffect(() => {
+    registerHoverFocus({
+      related: (id) => {
+        const selected = selectedIdsRef.current;
+        if (selected.has(id)) return null; // already selected: nothing to preview
+        const withHovered = new Set([...selected, id]); // in selection order, as it would be
+        const related = new Map<string, string>();
+        for (const relatedId of getHighlightedIds(withHovered, coOccurrences)) {
+          if (withHovered.has(relatedId)) continue; // the selected ones keep their look
+          // coloured by its first connection to the (would-be) selection, as dots are
+          let ratio = 0;
+          for (const anyId of withHovered) {
+            const connection = coOccurrences[anyId]?.co_authors?.[relatedId];
+            if (connection) {
+              const { accepted, total } = connection.co_author_counts;
+              ratio = total ? accepted / total : 0;
+              break;
+            }
+          }
+          related.set(relatedId, getCoOccurrenceColor(ratio));
+        }
+        return related;
+      },
+    });
+    return () => registerHoverFocus(null);
+  }, [coOccurrences]);
 
   const groupCircleRefs = useRef<Map<string, SVGCircleElement>>(new Map());
   const [hoveredGroupKey, setHoveredGroupKey] = useState<string | null>(null);

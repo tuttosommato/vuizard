@@ -9,11 +9,71 @@
 
 let dotsContainer: SVGGElement | null = null;
 
+// artist id -> its dots, built on first use (see hoverFocus below)
+let dotsById: Map<string, Element[]> | null = null;
+
 export function registerDotsContainer(el: SVGGElement | null) {
   dotsContainer = el;
+  dotsById = null;
+  focusedDots = [];
+}
+
+// Hovering an artist also highlights who appears with them, the way selecting one does
+// (the others dim, the co-occurring ones take their acceptance colour); selecting just
+// makes that permanent. Same reason as the rest of this file for being imperative: it
+// touches up to a few hundred dots per hover, and React would re-render all 5000+.
+// PackingVis registers where the related artists and their colours come from: with
+// something selected, hovering another artist shows what selecting it too would do.
+type HoverFocusSource = {
+  // related artist id -> the fill it takes; null when there's nothing to show for this one
+  related: (id: string) => Map<string, string> | null;
+};
+let hoverFocusSource: HoverFocusSource | null = null;
+let focusedDots: Element[] = [];
+
+export function registerHoverFocus(source: HoverFocusSource | null) {
+  hoverFocusSource = source;
+}
+
+function getDotsById(): Map<string, Element[]> {
+  if (!dotsById) {
+    dotsById = new Map();
+    dotsContainer?.querySelectorAll("[data-artist-id]").forEach((el) => {
+      if (!el.classList.contains("author-dot")) return;
+      const id = el.getAttribute("data-artist-id") as string;
+      const dots = dotsById!.get(id);
+      if (dots) dots.push(el);
+      else dotsById!.set(id, [el]);
+    });
+  }
+  return dotsById;
+}
+
+function clearHoverFocus() {
+  for (const el of focusedDots) {
+    el.classList.remove("hover-related");
+    (el as SVGElement).style.removeProperty("fill");
+  }
+  focusedDots = [];
+  dotsContainer?.classList.remove("hover-focus");
+}
+
+function applyHoverFocus(id: string) {
+  const related = hoverFocusSource?.related(id);
+  if (!related) return;
+  const dotsMap = getDotsById();
+  related.forEach((fill, relatedId) => {
+    dotsMap.get(relatedId)?.forEach((el) => {
+      el.classList.add("hover-related");
+      (el as SVGElement).style.fill = fill;
+      focusedDots.push(el);
+    });
+  });
+  dotsContainer?.classList.add("hover-focus");
 }
 
 export function highlightDot(id: string | null) {
+  clearHoverFocus();
   dotsContainer
     ?.querySelectorAll(".hovered")
     .forEach((el) => el.classList.remove("hovered"));
@@ -22,6 +82,7 @@ export function highlightDot(id: string | null) {
     dotsContainer
       ?.querySelectorAll(`[data-artist-id="${id}"]`)
       .forEach((el) => el.classList.add("hovered"));
+    applyHoverFocus(id);
   }
 }
 
@@ -31,7 +92,10 @@ export function registerArtistTooltipEl(el: HTMLDivElement | null) {
   tooltipEl = el;
 }
 
-export function showArtistTooltip(name: string, coords: { x: number; y: number }) {
+export function showArtistTooltip(
+  name: string,
+  coords: { x: number; y: number },
+) {
   if (!tooltipEl) return;
   tooltipEl.textContent = name;
   tooltipEl.style.left = `${coords.x}px`;

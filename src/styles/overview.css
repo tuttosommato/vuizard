@@ -72,10 +72,21 @@ svg.overview-vis {
 
 /* Toggled directly via classList (hoverBus.ts / PackingVis.tsx), cheap at 5000+ dots since it's a plain descendant selector */
 .author-dots-group.dimming
-  .author-dot:not(.hovered):not(.selected):not(.dimmed-by-selection):not(
+  .author-dot:not(.hovered):not(.hover-related):not(.selected):not(
+    .dimmed-by-selection
+  ):not(.filtered-out) {
+  opacity: 0.55;
+}
+
+/* Hovering an artist (hoverBus.ts) does what selecting does: whoever appears with them stays
+   as it is (and takes its acceptance colour, set inline), everyone else dims. The dimmed
+   dots stay hoverable, so the pointer can move on to another artist. Also .dimming (always
+   set with it) and after the rule above, so that this one wins. */
+.author-dots-group.hover-focus.dimming
+  .author-dot:not(.hovered):not(.hover-related):not(.selected):not(
     .filtered-out
   ) {
-  opacity: 0.55;
+  opacity: 0.075;
 }
 
 .author-dot.selected {
