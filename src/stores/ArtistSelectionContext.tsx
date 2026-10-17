@@ -15,7 +15,7 @@ type ArtistSelectionContextValue = {
   setHoveredWorkId: (id: string | null) => void;
 };
 
-const PRESERVE_SELECTION = ".attr-circle, .artist-legend, .work-card";
+const PRESERVE_SELECTION = ".attr-circle, .artist-legend, .work-card, .about-overlay";
 
 const ArtistSelectionContext =
   createContext<ArtistSelectionContextValue | null>(null);

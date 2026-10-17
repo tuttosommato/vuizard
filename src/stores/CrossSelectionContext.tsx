@@ -12,7 +12,7 @@ type SelectionContextValue = {
 };
 
 const CrossSelectionContext = createContext<SelectionContextValue | null>(null);
-const PRESERVE_SELECTION = "tbody, .attribution-group, .table-switch";
+const PRESERVE_SELECTION = "tbody, .attribution-group, .table-switch, .about-overlay";
 
 export function CrossSelectionProvider({
   children,

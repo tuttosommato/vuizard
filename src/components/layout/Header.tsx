@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import useAboutOverlay from "@/hooks/useAboutOverlay";
 
 // The three levels of the app, one route each: overview, artist, work
 const levels = [
@@ -16,6 +17,7 @@ const NAV_HEAD_START_MS = 60;
 
 export default function Header() {
   const location = useLocation();
+  const { open: aboutOpen, openAbout, closeAbout } = useAboutOverlay();
   const navigate = useNavigate();
   const isArtist = location.pathname.includes("artist");
   const isWork = location.pathname.includes("work");
@@ -53,11 +55,17 @@ export default function Header() {
 
   return (
     <nav id="nav">
-      <div title="About" className="button-link nav-about">
-        About
-      </div>
-      {/* Same idea as the table/ordering switches: one pill, a thumb that slides to the
-          active option. Here the options are links, so the route is the state. */}
+      <button
+        type="button"
+        title="About"
+        className="button-link nav-about"
+        aria-expanded={aboutOpen}
+        onClick={aboutOpen ? closeAbout : openAbout}
+      >
+      About
+      </button>
+      
+      {/* Same idea as the table/ordering switches: one pill, a thumb that slides to the active option. Here the options are links, so the route is the state. */}
       <div
         className="level-switch"
         style={{ "--active-index": displayIndex } as React.CSSProperties}

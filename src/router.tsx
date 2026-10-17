@@ -1,4 +1,5 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
+import type { LoaderFunctionArgs } from "react-router-dom";
 import App from "@/App";
 import WorkPage from "@/pages/WorkPage";
 import SearchPage from "@/pages/SearchPage";
@@ -9,6 +10,23 @@ import OverviewPage from "@/pages/OverviewPage";
 import ArtistListPage from "@/pages/ArtistListPage";
 import WorkListPage from "@/pages/WorkListPage";
 
+const ABOUT_SEEN_KEY = "aboutSeen";
+
+function openAboutOnFirstVisit({ request }: LoaderFunctionArgs) {
+  try {
+    if (sessionStorage.getItem(ABOUT_SEEN_KEY)) return null;
+    sessionStorage.setItem(ABOUT_SEEN_KEY, "1");
+  } catch {
+    return null; // storage blocked (private mode…): skip the intro rather than fail
+  }
+
+  const url = new URL(request.url);
+  if (url.searchParams.has("about")) return null; // already open
+  url.searchParams.set("about", "");
+  return redirect(url.pathname + url.search);
+}
+
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -18,6 +36,7 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <OverviewPage />,
+        loader: openAboutOnFirstVisit,
       },
       {
         path: "search-work",

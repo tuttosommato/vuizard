@@ -16,7 +16,7 @@ type OverviewSelectionContextValue = {
   clear: () => void;
 };
 
-const PRESERVE_SELECTION = ".author-dot, .packing-legend, .work-card";
+const PRESERVE_SELECTION = ".author-dot, .packing-legend, .work-card, .about-overlay";
 
 const OverviewSelectionContext =
   createContext<OverviewSelectionContextValue | null>(null);
