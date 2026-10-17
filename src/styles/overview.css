@@ -47,6 +47,29 @@
   height: 100%;
   min-width: 0;
   min-height: 0;
+  /* a stacking context of its own, and a clip: the selected artists' labels, which are
+     placed against this box, stay under the About overlay and inside the vis */
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* The name tooltip of a selected artist, kept on (its position is set in PackingVis.tsx) */
+.selected-artist-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  visibility: hidden; /* until it has been placed */
+}
+
+/* Where they overlap, the one of the artist under the pointer comes to the front (hoverBus.ts
+   adds .raised). Doubled class to beat .reason-tooltip's z-index, which comes from elsewhere. */
+.reason-tooltip.selected-artist-label {
+  z-index: 1;
+}
+
+.reason-tooltip.selected-artist-label.raised {
+  z-index: 2;
 }
 
 /* Fill the whole column, to the bottom of the viewport: left to its viewBox's square the
@@ -102,13 +125,15 @@ svg.overview-vis {
 }
 
 /* Connects an artist's multiple leaf circles (multiple cultural-context declarations) to their shared centroid,
-just invisible until hoverBus adds .hovered to it alongside the matching dots. */
+invisible until hoverBus adds .hovered to it alongside the matching dots, and kept visible
+while that artist is selected. */
 .artist-edge {
   opacity: 0;
   pointer-events: none;
 }
 
-.artist-edge.hovered {
+.artist-edge.hovered,
+.artist-edge.selected {
   opacity: 1;
 }
 
@@ -234,4 +259,15 @@ svg.overview-vis:active {
   .overview-annotations * {
     animation: none;
   }
+}
+
+/* Tooltips with two lines (a name, and a muted line under it): the school's name and its
+   numbers, an artist's name and life dates. */
+.reason-tooltip .tooltip-title {
+  font-weight: 500;
+  opacity: 1;
+}
+
+.reason-tooltip .tooltip-sub {
+  color: var(--color-text-muted);
 }

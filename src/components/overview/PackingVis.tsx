@@ -1,6 +1,8 @@
 import type { Artist } from "@/types/artists";
+import { schoolName } from "@/utils/schoolNames";
+import { formatLife } from "@/utils/formatLife";
 import type { AuthorsCoBundle } from "@/types/coOccurrences";
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import { hierarchy, pack, scaleOrdinal, schemeTableau10 } from "d3";
 import type { HierarchyCircularNode } from "d3";
@@ -41,9 +43,11 @@ type TreeNode =
 type PackedNode = HierarchyCircularNode<TreeNode>;
 
 type RenderCircle = { key: string; x: number; y: number; r: number };
+type GroupStats = { artists: number; attributions: number };
 type LeafRenderCircle = RenderCircle & {
   id: string;
   name: string;
+  life: string; // life dates, for the tooltip
   groupKey: string | null;
   centuryBucket: number | null;
 };
@@ -159,29 +163,50 @@ function ZoomControls({
 
 // Same tooltip styling used elsewhere in the app (see .reason-tooltip in
 // work.css, used by DebateVis's AttributionsGroup) — a fixed-position
-// portal placed from the hovered element's own bounding rect, so it
-// tracks correctly even inside the vis's zoom/pan transform.
+// portal placed from the hovered bubble's own bounding rect (by PackingVis, through
+// `tooltipRef`, every time the zoom or pan moves the bubble), so it stays put on its bubble.
 function AreaTooltip({
   label,
-  coords,
+  stats,
+  tooltipRef,
 }: {
   label: string;
-  coords: { x: number; y: number } | null;
+  stats: GroupStats | undefined;
+  tooltipRef: React.RefObject<HTMLDivElement | null>;
 }) {
-  if (!coords) return null;
   return createPortal(
     <div
+      ref={tooltipRef}
       className="reason-tooltip"
       style={{
         position: "fixed",
-        left: coords.x,
-        top: coords.y,
         transform: `translate(-50%, calc(-100% - ${TOOLTIP_GAP}px))`,
       }}
     >
-      <p>{label}</p>
+      <p className="tooltip-title">{label}</p>
+      {stats && (
+        <p className="tooltip-sub">
+          {stats.artists.toLocaleString("en")}{" "}
+          {stats.artists === 1 ? "artist" : "artists"} -{" "}
+          {stats.attributions.toLocaleString("en")}{" "}
+          {stats.attributions === 1 ? "attribution" : "attributions"}
+        </p>
+      )}
     </div>,
     document.body,
+  );
+}
+
+// the tooltip that follows the pointer over a dot, placed against the dot's right edge
+function showHoverTooltip(name: string, life: string, dot: Element) {
+  const rect = dot.getBoundingClientRect();
+  showArtistTooltip(
+    name,
+    {
+      x: rect.right + TOOLTIP_GAP,
+      y: rect.bottom - rect.height / 2,
+    },
+    life,
   );
 }
 
@@ -196,7 +221,13 @@ function ArtistTooltip() {
     <div
       ref={ref}
       className="reason-tooltip"
-      style={{ position: "fixed", opacity: 0, pointerEvents: "none" }}
+      style={{
+        position: "fixed",
+        opacity: 0,
+        pointerEvents: "none",
+        // centred on the dot's height, where the selected artists' tooltips sit
+        transform: "translateY(-50%)",
+      }}
     />,
     document.body,
   );
@@ -463,6 +494,67 @@ function Annotations({
   );
 }
 
+// The name tooltip of every selected artist stays on (one per dot, if the artist has dots in
+// several schools). Like the hover tooltip it follows its dot, but it is placed against the
+// vis's container, not the page, so it stays under the About overlay and the sidebar, and
+// is hidden when the dot is panned out of view. Positions are set straight on the elements
+// (no state) whenever the zoom, the selection or the container's size changes.
+const SELECTED_LABEL_GAP = 4; // px between a dot and its label
+
+function SelectedArtistLabels({
+  dots,
+  transform,
+  containerRef,
+}: {
+  dots: { key: string; id: string; name: string; life: string }[];
+  transform: string; // only so that the labels follow the zoom
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const labelRefs = useRef(new Map<string, HTMLDivElement>());
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const place = () => {
+      const box = container.getBoundingClientRect();
+      for (const { key } of dots) {
+        const label = labelRefs.current.get(key);
+        const dot = container.querySelector(
+          `[data-dot-key="${key.replace(/["\\]/g, "\\$&")}"]`,
+        );
+        if (!label || !dot) continue;
+        const rect = dot.getBoundingClientRect();
+        const x = rect.right + SELECTED_LABEL_GAP - box.left;
+        const y = rect.top + rect.height / 2 - box.top;
+        const inView = x > 0 && x < box.width && y > 0 && y < box.height;
+        label.style.transform = `translate(${x}px, ${y}px) translateY(-50%)`;
+        label.style.visibility = inView ? "visible" : "hidden";
+      }
+    };
+
+    place();
+    const observer = new ResizeObserver(place);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [dots, transform, containerRef]);
+
+  return dots.map(({ key, id, name, life }) => (
+    <div
+      key={key}
+      data-artist-id={id}
+      ref={(el) => {
+        if (el) labelRefs.current.set(key, el);
+        else labelRefs.current.delete(key);
+      }}
+      className="reason-tooltip selected-artist-label"
+    >
+      <p className="tooltip-title">{name}</p>
+      <p className="tooltip-sub">{life}</p>
+    </div>
+  ));
+}
+
 export default function PackingVis({
   artists,
   coOccurrences,
@@ -472,6 +564,7 @@ export default function PackingVis({
 }) {
   const { isArtistFilteredOut } = useOverviewFilter();
   const svgRef = useRef<SVGSVGElement>(null);
+  const visContainerRef = useRef<HTMLDivElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [transform, setTransform] = useState("translate(0, 0) scale(1)");
   const [isZoomedIn, setIsZoomedIn] = useState(false);
@@ -518,27 +611,22 @@ export default function PackingVis({
 
   const groupCircleRefs = useRef<Map<string, SVGCircleElement>>(new Map());
   const [hoveredGroupKey, setHoveredGroupKey] = useState<string | null>(null);
-  const [hoveredGroupCoords, setHoveredGroupCoords] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
+  const areaTooltipRef = useRef<HTMLDivElement>(null);
 
-  // When hoveredGroupKey changes, update hoveredGroupCoords to the center of the
-  // corresponding group circle's bounding rect, or null if not found.
-  useEffect(() => {
-    if (!hoveredGroupKey) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setHoveredGroupCoords(null);
-      return;
-    }
-    const el = groupCircleRefs.current.get(hoveredGroupKey);
-    if (!el) {
-      setHoveredGroupCoords(null);
-      return;
-    }
-    const rect = el.getBoundingClientRect();
-    setHoveredGroupCoords({ x: rect.left + rect.width / 2, y: rect.top });
-  }, [hoveredGroupKey]);
+  // Put the school tooltip at the top centre of the hovered bubble, and keep it there as the
+  // zoom or pan moves the bubble (`transform`): it is set straight on the element, no state,
+  // so that following a zoom doesn't cost another render of the 5,000+ dots. Before the
+  // first paint, so it never shows up at the wrong place.
+  useLayoutEffect(() => {
+    const tooltip = areaTooltipRef.current;
+    const bubble = hoveredGroupKey
+      ? groupCircleRefs.current.get(hoveredGroupKey)
+      : null;
+    if (!tooltip || !bubble) return;
+    const rect = bubble.getBoundingClientRect();
+    tooltip.style.left = `${rect.left + rect.width / 2}px`;
+    tooltip.style.top = `${rect.top}px`;
+  }, [hoveredGroupKey, transform]);
 
   // Set up D3 zoom behavior on the SVG element and update the transform state
   useEffect(() => {
@@ -605,38 +693,50 @@ export default function PackingVis({
 
   // Compute the circles to render for groups and leaves,
   // along with maps for nation and label lookups
-  const { groupCircles, leafCircles, nationByKey, labelByKey } = useMemo(() => {
-    const groupCircles: RenderCircle[] = [];
-    const leafCircles: LeafRenderCircle[] = [];
-    const nationByKey = new Map<string, string>();
-    const labelByKey = new Map<string, string>();
-    for (const node of packedRoot.descendants()) {
-      if (node.depth === 0) continue;
-      const key = pathKey(node);
-      if (node.data.type === "group") {
-        groupCircles.push({ key, x: node.x, y: node.y, r: node.r });
-        nationByKey.set(key, nationOf(node));
-        labelByKey.set(key, node.data.name);
-      } else {
-        // hovering an author dot shows the tooltip for
-        // whichever bubble directly contains it
-        const parentKey = node.parent ? pathKey(node.parent) : null;
-        const centuryBucket =
-          artists[node.data.id].cultural_context_info.century_bucket ?? null;
-        leafCircles.push({
-          key,
-          id: node.data.id,
-          name: node.data.name,
-          x: node.x,
-          y: node.y,
-          r: node.r,
-          groupKey: parentKey,
-          centuryBucket,
-        });
+  const { groupCircles, leafCircles, nationByKey, labelByKey, statsByKey } =
+    useMemo(() => {
+      const groupCircles: RenderCircle[] = [];
+      const leafCircles: LeafRenderCircle[] = [];
+      const nationByKey = new Map<string, string>();
+      const labelByKey = new Map<string, string>();
+      const statsByKey = new Map<string, GroupStats>();
+      for (const node of packedRoot.descendants()) {
+        if (node.depth === 0) continue;
+        const key = pathKey(node);
+        if (node.data.type === "group") {
+          groupCircles.push({ key, x: node.x, y: node.y, r: node.r });
+          nationByKey.set(key, nationOf(node));
+          labelByKey.set(key, schoolName(node.data.name));
+          // the artists in it (one with dots in two schools counts once in each, and once in
+          // the bubbles that hold both) and their attributions
+          const ids = new Set<string>();
+          for (const leaf of node.leaves()) {
+            if (leaf.data.type === "leaf") ids.add(leaf.data.id);
+          }
+          let attributions = 0;
+          for (const id of ids) attributions += getTotal(artists[id]);
+          statsByKey.set(key, { artists: ids.size, attributions });
+        } else {
+          // hovering an author dot shows the tooltip for
+          // whichever bubble directly contains it
+          const parentKey = node.parent ? pathKey(node.parent) : null;
+          const centuryBucket =
+            artists[node.data.id].cultural_context_info.century_bucket ?? null;
+          leafCircles.push({
+            key,
+            id: node.data.id,
+            name: node.data.name,
+            life: formatLife(artists[node.data.id].life),
+            x: node.x,
+            y: node.y,
+            r: node.r,
+            groupKey: parentKey,
+            centuryBucket,
+          });
+        }
       }
-    }
-    return { groupCircles, leafCircles, nationByKey, labelByKey };
-  }, [packedRoot, artists]);
+      return { groupCircles, leafCircles, nationByKey, labelByKey, statsByKey };
+    }, [packedRoot, artists]);
 
   // One artist can own more than one leaf circle (multiple cultural-
   // context declarations) — same shape as ArtistVis's workEdges: group
@@ -667,8 +767,17 @@ export default function PackingVis({
       });
   }, [leafCircles]);
 
+  // the dots of the selected artists (more than one when an artist is in several schools)
+  const selectedDots = useMemo(
+    () =>
+      leafCircles
+        .filter((c) => selectedIds.has(c.id))
+        .map((c) => ({ key: c.key, id: c.id, name: c.name, life: c.life })),
+    [leafCircles, selectedIds],
+  );
+
   return (
-    <div className="overview-vis-cnt">
+    <div className="overview-vis-cnt" ref={visContainerRef}>
       <svg
         className="overview-vis"
         ref={svgRef}
@@ -706,7 +815,9 @@ export default function PackingVis({
               <line
                 key={edge.key}
                 data-artist-id={edge.id}
-                className="artist-edge"
+                className={
+                  "artist-edge" + (selectedIds.has(edge.id) ? " selected" : "")
+                }
                 x1={edge.x1}
                 y1={edge.y1}
                 x2={edge.x2}
@@ -745,6 +856,7 @@ export default function PackingVis({
                 <circle
                   key={c.key}
                   data-artist-id={c.id}
+                  data-dot-key={c.key}
                   className={
                     "author-dot" +
                     (isSelected ? " selected" : "") +
@@ -757,15 +869,20 @@ export default function PackingVis({
                   cy={c.y}
                   r={c.r}
                   fill={fill}
-                  onClick={() => toggle(c.id)}
+                  onClick={(e) => {
+                    toggle(c.id);
+                    // a selected artist has its own tooltip that stays on (see
+                    // SelectedArtistLabels), so the hover one steps aside, and comes
+                    // back when the artist is deselected under the pointer
+                    if (isSelected)
+                      showHoverTooltip(c.name, c.life, e.currentTarget);
+                    else hideArtistTooltip();
+                  }}
                   onMouseEnter={(e) => {
                     highlightDot(c.id);
                     if (c.groupKey) setHoveredGroupKey(c.groupKey);
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    showArtistTooltip(c.name, {
-                      x: rect.right + TOOLTIP_GAP,
-                      y: rect.bottom - rect.height / 2,
-                    });
+                    if (!isSelected)
+                      showHoverTooltip(c.name, c.life, e.currentTarget);
                   }}
                   onMouseLeave={() => {
                     highlightDot(null);
@@ -790,10 +907,17 @@ export default function PackingVis({
 
       <ArtistTooltip />
 
+      <SelectedArtistLabels
+        dots={selectedDots}
+        transform={transform}
+        containerRef={visContainerRef}
+      />
+
       {hoveredGroupKey && (
         <AreaTooltip
           label={labelByKey.get(hoveredGroupKey) ?? ""}
-          coords={hoveredGroupCoords}
+          stats={statsByKey.get(hoveredGroupKey)}
+          tooltipRef={areaTooltipRef}
         />
       )}
     </div>

@@ -1,0 +1,101 @@
+// English lables for school names
+const ADJECTIVES: Record<string, string> = {
+  // nations (the first level)
+  italiana: "Italian",
+  francese: "French",
+  fiamminga: "Flemish",
+  olandese: "Dutch",
+  tedesca: "German",
+  spagnola: "Spanish",
+  inglese: "English",
+  bizantina: "Byzantine",
+  austriaca: "Austrian",
+  dalmata: "Dalmatian",
+  svizzera: "Swiss",
+  adriatica: "Adriatic",
+  irlandese: "Irish",
+  iberica: "Iberian",
+  orientale: "Oriental",
+  boema: "Bohemian",
+  portoghese: "Portuguese",
+  serba: "Serbian",
+  // Italian regions and areas (the second level)
+  toscana: "Tuscan",
+  veneta: "Veneto",
+  laziale: "Lazio",
+  emiliana: "Emilian",
+  lombarda: "Lombard",
+  umbra: "Umbrian",
+  campana: "Campanian",
+  marchigiana: "Marche",
+  ligure: "Ligurian",
+  romagnola: "Romagnol",
+  piemontese: "Piedmontese",
+  siciliana: "Sicilian",
+  abruzzese: "Abruzzese",
+  italia_meridionale: "Southern Italian",
+  italia_centro_meridionale: "Central-southern Italian",
+  italia_centrale: "Central Italian",
+  emiliano_romagnola: "Emilian-Romagnol",
+  sarda: "Sardinian",
+  pugliese: "Apulian",
+  calabrese: "Calabrian",
+  friulana: "Friulian",
+  provenzale: "Provençal",
+  trentina: "Trentino",
+  ticinese: "Ticino",
+  catalana: "Catalan",
+  tessalonicese: "Thessalonian",
+  pugliese_napoletana: "Apulian-Neapolitan",
+  costantinopolitana: "Constantinopolitan",
+  ligure_piemontese: "Ligurian-Piedmontese",
+  bavarese: "Bavarian",
+  // cities (the third level)
+  romana: "Roman",
+  fiorentina: "Florentine",
+  napoletana: "Neapolitan",
+  bolognese: "Bolognese",
+  senese: "Sienese",
+  veneziana: "Venetian",
+  genovese: "Genoese",
+  ferrarese: "Ferrarese",
+  pisana: "Pisan",
+  veronese: "Veronese",
+  padovana: "Paduan",
+  lucchese: "Lucchese",
+  cremonese: "Cremonese",
+  viterbese: "Viterbese",
+  aretina: "Aretine",
+  riminese: "Riminese",
+  perugina: "Perugian",
+  pistoiese: "Pistoiese",
+  messinese: "Messinese",
+  bresciana: "Brescian",
+  mantovana: "Mantuan",
+  modenese: "Modenese",
+  bergamasca: "Bergamasque",
+  eugubina: "Eugubine",
+  milanese: "Milanese",
+  parmense: "Parmese",
+  palermitana: "Palermitan",
+  fabrianese: "Fabrianese",
+  vicentina: "Vicentine",
+  ravennate: "Ravennate",
+  faentina: "Faentine",
+  tuderte: "Tudertine",
+};
+
+// the two that aren't a school of somewhere
+const WHOLE_LABELS: Record<string, string> = {
+  unknown: "Unknown",
+  arte_romana: "Roman art",
+};
+
+export function schoolName(name: string): string {
+  if (name in WHOLE_LABELS) return WHOLE_LABELS[name];
+  // a name that isn't listed (new data) still reads as something: "foo_bar" -> "Foo bar school"
+  const adjective =
+    ADJECTIVES[name] ??
+    name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, " ");
+  return `${adjective} school`;
+}

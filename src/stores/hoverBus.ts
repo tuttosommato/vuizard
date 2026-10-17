@@ -72,8 +72,22 @@ function applyHoverFocus(id: string) {
   dotsContainer?.classList.add("hover-focus");
 }
 
+// Overlapping tooltips of selected artists (they stay on, see PackingVis): hovering an artist
+// brings its tooltip(s) in front of the others.
+function raiseSelectedLabels(id: string | null) {
+  document
+    .querySelectorAll(".selected-artist-label.raised")
+    .forEach((el) => el.classList.remove("raised"));
+  if (id !== null) {
+    document
+      .querySelectorAll(`.selected-artist-label[data-artist-id="${id}"]`)
+      .forEach((el) => el.classList.add("raised"));
+  }
+}
+
 export function highlightDot(id: string | null) {
   clearHoverFocus();
+  raiseSelectedLabels(id);
   dotsContainer
     ?.querySelectorAll(".hovered")
     .forEach((el) => el.classList.remove("hovered"));
@@ -95,9 +109,21 @@ export function registerArtistTooltipEl(el: HTMLDivElement | null) {
 export function showArtistTooltip(
   name: string,
   coords: { x: number; y: number },
+  detail?: string,
 ) {
   if (!tooltipEl) return;
-  tooltipEl.textContent = name;
+  // the name, and under it a muted line (the life dates)
+  const title = document.createElement("p");
+  title.className = "tooltip-title";
+  title.textContent = name;
+  const lines: HTMLElement[] = [title];
+  if (detail) {
+    const sub = document.createElement("p");
+    sub.className = "tooltip-sub";
+    sub.textContent = detail;
+    lines.push(sub);
+  }
+  tooltipEl.replaceChildren(...lines);
   tooltipEl.style.left = `${coords.x}px`;
   tooltipEl.style.top = `${coords.y}px`;
   tooltipEl.style.opacity = "1";
