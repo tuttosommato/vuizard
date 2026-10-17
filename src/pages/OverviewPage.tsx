@@ -6,7 +6,10 @@ import PackingVis from "@/components/overview/PackingVis";
 import PackingLegend from "@/components/overview/PackingLegend";
 import "@/styles/shared.css";
 import "@/styles/overview.css";
-import { OverviewFilterProvider } from "@/stores/OverviewFilterContext";
+import {
+  OverviewFilterProvider,
+  useOverviewFilter,
+} from "@/stores/OverviewFilterContext";
 import ArtistCard from "@/components/overview/ArtistCard";
 import { getArtistTotal } from "@/utils/getArtistTotal";
 import {
@@ -88,7 +91,10 @@ export default function OverviewPage() {
 
   return (
     <>
-      <OverviewFilterProvider tempBounds={tempBounds}>
+      <OverviewFilterProvider
+        tempBounds={tempBounds}
+        artists={loadState.artists}
+      >
         <OverviewSelectionProvider>
           <OverviewPageContent
             artists={loadState.artists}
@@ -120,6 +126,7 @@ function OverviewPageContent({
   );
 
   const { selectedIds } = useOverviewSelection();
+  const { isArtistFilteredOut, matchingIds } = useOverviewFilter();
 
   const highlightedIds = useMemo(
     () => getHighlightedIds(selectedIds, coOccurrences),
@@ -127,13 +134,24 @@ function OverviewPageContent({
   );
 
   const visibleArtists = useMemo(() => {
-    if (selectedIds.size === 0) return sortedArtists;
+    // The century filter and the search apply to the list as they do to the circles. The
+    // selected artists stay whatever the filters say, so they can still be deselected here.
+    const passesFilters = (artist: Artist) =>
+      selectedIds.has(artist.id) ||
+      (!isArtistFilteredOut(
+        artist.cultural_context_info.century_bucket ?? null,
+      ) &&
+        (matchingIds === null || matchingIds.has(artist.id)));
+
+    if (selectedIds.size === 0) return sortedArtists.filter(passesFilters);
 
     const selectionOrder = [...selectedIds]; // insertion order = selection order
     const rankOf = (id: string) => selectionOrder.indexOf(id); // -1 if not selected
 
     return sortedArtists
-      .filter((artist) => highlightedIds.has(artist.id))
+      .filter(
+        (artist) => highlightedIds.has(artist.id) && passesFilters(artist),
+      )
       .sort((a, b) => {
         const rankA = rankOf(a.id);
         const rankB = rankOf(b.id);
@@ -142,14 +160,20 @@ function OverviewPageContent({
         if (rankB !== -1) return 1; // b selected, a isn't: b goes first
         return 0; // neither selected: leave as-is
       });
-  }, [sortedArtists, selectedIds, highlightedIds]);
+  }, [
+    sortedArtists,
+    selectedIds,
+    highlightedIds,
+    isArtistFilteredOut,
+    matchingIds,
+  ]);
 
   // with one artist selected: how many others appear with them; with several, the list
   // holds the selected ones followed by who appears with all of them, so both are counted
   const nOthers = visibleArtists.length - selectedIds.size;
   const artistsTitle =
     selectedIds.size === 0
-      ? `${visibleArtists.length} artists`
+      ? `${visibleArtists.length} artist${visibleArtists.length !== 1 ? "s" : ""}`
       : selectedIds.size === 1
         ? `${nOthers} artist${nOthers !== 1 ? "s" : ""} appearing in works with ${
             artists[[...selectedIds][0]]?.name

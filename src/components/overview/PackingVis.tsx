@@ -562,7 +562,7 @@ export default function PackingVis({
   artists: Record<string, Artist>;
   coOccurrences: AuthorsCoBundle;
 }) {
-  const { isArtistFilteredOut } = useOverviewFilter();
+  const { isArtistFilteredOut, matchingIds } = useOverviewFilter();
   const svgRef = useRef<SVGSVGElement>(null);
   const visContainerRef = useRef<HTMLDivElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
@@ -861,7 +861,8 @@ export default function PackingVis({
                     "author-dot" +
                     (isSelected ? " selected" : "") +
                     (isDimmedBySelection ? " dimmed-by-selection" : "") +
-                    (isArtistFilteredOut(c.centuryBucket)
+                    (isArtistFilteredOut(c.centuryBucket) ||
+                    (matchingIds !== null && !matchingIds.has(c.id))
                       ? " filtered-out"
                       : "")
                   }

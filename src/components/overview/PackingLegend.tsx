@@ -1,5 +1,5 @@
 import { useOverviewFilter } from "@/stores/OverviewFilterContext";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function PackingLegend() {
   const {
@@ -9,7 +9,18 @@ export default function PackingLegend() {
     present,
     noDatesFilter,
     handleNoDatesFilter,
+    query,
+    setQuery,
+    matchingIds,
   } = useOverviewFilter();
+
+  // the box answers at once; the filter follows a moment after the typing stops, since it
+  // re-draws thousands of circles
+  const [text, setText] = useState(query);
+  useEffect(() => {
+    const timer = setTimeout(() => setQuery(text), 150);
+    return () => clearTimeout(timer);
+  }, [text, setQuery]);
   const [min] = tempBounds;
   const formatUpperLabel = (value: number) =>
     value === present ? "Present" : String(value - 1);
@@ -22,10 +33,27 @@ export default function PackingLegend() {
 
   return (
     <div className="packing-legend legend">
-      <h2>Legend and filters</h2>
+      <h2>Filters</h2>
       <div className="legend-items-cnt">
+        <div className="search-legend-items">
+          <h3>By name</h3>
+          <input
+            type="search"
+            className="legend-search"
+            placeholder="Search artists…"
+            aria-label="Search artists by name"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          {matchingIds && (
+            <span className="legend-label">
+              {matchingIds.size} {matchingIds.size === 1 ? "artist" : "artists"}{" "}
+              match
+            </span>
+          )}
+        </div>
         <div className="temp-legend-items">
-          <h3>Century</h3>
+          <h3>By century</h3>
           <label className="no-dates-item label-cnt">
             <input
               type="checkbox"
