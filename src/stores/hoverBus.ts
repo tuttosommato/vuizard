@@ -85,7 +85,7 @@ function raiseSelectedLabels(id: string | null) {
   }
 }
 
-export function highlightDot(id: string | null) {
+function applyHighlight(id: string | null) {
   clearHoverFocus();
   raiseSelectedLabels(id);
   dotsContainer
@@ -98,6 +98,26 @@ export function highlightDot(id: string | null) {
       .forEach((el) => el.classList.add("hovered"));
     applyHoverFocus(id);
   }
+}
+
+// What the pointer does over a dot, or over an artist's card in the list.
+export function highlightDot(id: string | null) {
+  // someone is really hovering: whatever is showing a demo of the highlight stops first
+  if (id !== null) userHoverListener?.();
+  applyHighlight(id);
+}
+
+// The same highlight, shown by the idle demo (see useIdleHoverDemo) without anyone hovering.
+export const demoHighlightDot = applyHighlight;
+
+let userHoverListener: (() => void) | null = null;
+
+// Called whenever an artist is really hovered; returns the way to stop listening.
+export function onUserHover(listener: () => void) {
+  userHoverListener = listener;
+  return () => {
+    if (userHoverListener === listener) userHoverListener = null;
+  };
 }
 
 let tooltipEl: HTMLDivElement | null = null;

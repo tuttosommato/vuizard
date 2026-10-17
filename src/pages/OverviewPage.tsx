@@ -18,6 +18,8 @@ import {
 } from "@/stores/OverviewSelectionContext";
 import SelectedWorksList from "@/components/overview/SelectedWorksList";
 import { getHighlightedIds } from "@/utils/coOccurrences";
+import useAboutOverlay from "@/hooks/useAboutOverlay";
+import useIdleHoverDemo from "@/hooks/useIdleHoverDemo";
 
 type LoadState =
   | { status: "loading" }
@@ -126,7 +128,26 @@ function OverviewPageContent({
   );
 
   const { selectedIds } = useOverviewSelection();
-  const { isArtistFilteredOut, matchingIds } = useOverviewFilter();
+  const {
+    isArtistFilteredOut,
+    matchingIds,
+    query,
+    tempRange,
+    tempBounds,
+    present,
+    noDatesFilter,
+  } = useOverviewFilter();
+
+  // a hint that hovering the circles does something; not while the About overlay covers the
+  // page, nor while a filter is on (a search typed, a narrowed century range, or the artists
+  // of unknown dating switched off)
+  const { open: aboutOpen } = useAboutOverlay();
+  const filtersActive =
+    query.trim() !== "" ||
+    !noDatesFilter ||
+    tempRange[0] !== tempBounds[0] ||
+    tempRange[1] !== present;
+  useIdleHoverDemo({ artists, paused: aboutOpen || filtersActive });
 
   const highlightedIds = useMemo(
     () => getHighlightedIds(selectedIds, coOccurrences),
