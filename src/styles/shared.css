@@ -108,7 +108,7 @@ input[type="search"].list-page-search:focus {
   font-size: var(--text-sm);
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
 .legend-caption {
@@ -156,7 +156,7 @@ input[type="search"].list-page-search:focus {
 .temp-legend-items {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-base);
 }
 
 .accepted-legend-item,

@@ -1,5 +1,14 @@
 import { useOverviewFilter } from "@/stores/OverviewFilterContext";
 import { useEffect, useMemo, useState } from "react";
+import { getCoOccurrenceColor } from "@/utils/coOccurrenceColor";
+
+// The two variables the circles show, drawn as rows of examples: an artist's number of
+// attributions as the size (diameters in px, only meant to grow), and, for the artists who
+// appear with a selected one, the acceptance rate of what they share as the colour, from
+// all discarded to all accepted, in one size.
+const SIZE_EXAMPLES = [3, 5, 8, 11, 15, 19, 24];
+const COLOUR_EXAMPLES = [0, 1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6, 1];
+const COLOUR_EXAMPLE_SIZE = 14;
 
 export default function PackingLegend() {
   const {
@@ -33,7 +42,7 @@ export default function PackingLegend() {
 
   return (
     <div className="packing-legend legend">
-      <h2>Filters</h2>
+      <h2 className="legend-section-gap">Filters</h2>
       <div className="legend-items-cnt">
         <div className="search-legend-items">
           <h3>By name</h3>
@@ -62,7 +71,9 @@ export default function PackingLegend() {
               onChange={() => handleNoDatesFilter(!noDatesFilter)}
             />
             <div className="svg-span-cnt">
-              <span className="legend-label">Artists with no dates</span>
+              <span className="legend-label">
+                Include artists with unknown dating
+              </span>
             </div>
           </label>
           <div className="temp-range-slider">
@@ -119,19 +130,76 @@ export default function PackingLegend() {
             </span>
           </div>
         </div>
-
-        <p className="legend-caption">
-          <span className="keyword">
-            Each artist may belong to one or more cultural contexts that define
-            their artistic practice
-          </span>
-          . Selecting one artist will show co-occurring artists in their
-          cultural contexts, uncovering relations and showing their
-          co-occurrence quantity and accetance rate when both are disputed.
-          Selecting more than one connected artist will also show the works of
-          art where they were attributed.{" "}
-        </p>
       </div>
+
+      <h2 className="legend-section-gap">Legend</h2>
+      <div className="legend-items-cnt">
+        <div className="circle-legend-item">
+          <span className="legend-label">Attributions to the artist</span>
+          <div className="circle-legend-block">
+            <div className="circle-legend-circles" aria-hidden="true">
+              {SIZE_EXAMPLES.map((size) => (
+                <span
+                  key={size}
+                  className="circle-legend-circle"
+                  style={{
+                    width: size,
+                    height: size,
+                    backgroundColor: "var(--color-text)",
+                  }}
+                />
+              ))}
+            </div>
+            <div className="circle-legend-ends">
+              <span>fewer</span>
+              <span>more</span>
+            </div>
+          </div>
+        </div>
+        <div className="circle-legend-item">
+          <span className="legend-label">Acceptance rate in co-occurrence</span>
+          <div className="circle-legend-block">
+            <div className="circle-legend-circles" aria-hidden="true">
+              {COLOUR_EXAMPLES.map((ratio) => (
+                <span
+                  key={ratio}
+                  className="circle-legend-circle"
+                  style={{
+                    width: COLOUR_EXAMPLE_SIZE,
+                    height: COLOUR_EXAMPLE_SIZE,
+                    backgroundColor: getCoOccurrenceColor(ratio),
+                  }}
+                />
+              ))}
+            </div>
+            <div className="circle-legend-ends">
+              <span>discarded</span>
+              <span>accepted</span>
+            </div>
+          </div>
+          <p className="circle-legend-note">
+            When a coloured artist co-occurs with the selected one, its colour
+            tends towards <span className="legend-accepted">green</span> when it
+            was accepted in spite of the selected artist, and towards{" "}
+            <span className="legend-discarded">red</span> when it was discarded,
+            either in favour of the selected artist or together with it. A
+            colour in between means it was about as often accepted as discarded.
+          </p>
+        </div>
+      </div>
+
+      <p className="legend-caption">
+        Each artist may belong to one or more{" "}
+        <span className="keyword">cultural contexts</span> that define their
+        artistic practice. <span className="keyword">Selecting one artist</span>{" "}
+        will show <span className="keyword">co-occurring artists</span> in their
+        cultural contexts, uncovering relations and showing their co-occurrence
+        quantity and <span className="keyword">acceptance rate</span> when both
+        are disputed. Selecting{" "}
+        <span className="keyword">more than one connected artist</span> will
+        also show the <span className="keyword">works of art</span> where they
+        were attributed.{" "}
+      </p>
     </div>
   );
 }

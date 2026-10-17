@@ -30,7 +30,12 @@
 .temp-range-labels {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  width: 90%;
+}
+
+/* the century slider and its labels, like the search box, take 90% of the legend's width */
+.packing-legend .temp-range-slider {
+  width: 90%;
 }
 
 .temp-range-label {
@@ -276,11 +281,11 @@ svg.overview-vis:active {
 .search-legend-items {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-base);
 }
 
 input[type="search"].legend-search {
-  width: 100%;
+  width: 90%;
   padding: var(--space-sm);
   font-family: inherit;
   font-size: var(--text-sm);
@@ -297,4 +302,64 @@ input[type="search"].legend-search::placeholder {
 input[type="search"].legend-search:focus {
   box-shadow: 0 0 3px 0 var(--color-text);
   outline: none;
+}
+
+/* The legend's two rows of example circles: size for the number of attributions, colour for the
+   acceptance rate of a co-occurrence */
+.legend h2.legend-section-gap {
+  margin-top: var(--space-md);
+}
+
+.circle-legend-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* a row of circles with its two end labels under it: as wide as the wider of the two, so it
+   never outgrows a narrow legend */
+.circle-legend-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.circle-legend-circles {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.circle-legend-circle {
+  display: block;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.circle-legend-ends {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: var(--space-md);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* the explanation under the colour row; the two colour words are in the colours they name */
+.circle-legend-note {
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+
+.circle-legend-note .legend-accepted {
+  color: var(--color-accepted);
+}
+
+.circle-legend-note .legend-discarded {
+  color: var(--color-discarded);
 }
