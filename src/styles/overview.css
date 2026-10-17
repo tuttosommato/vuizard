@@ -155,3 +155,28 @@ svg.overview-vis {
 svg.overview-vis:active {
   cursor: grabbing;
 }
+
+/* Labels with arrows on the main bubbles. They sit in the zoom group, so they follow a pan,
+   and fade out once the vis is zoomed in (PackingVis: isZoomedIn). */
+.overview-annotations {
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.overview-annotations.hidden {
+  opacity: 0;
+}
+
+/* only the arrows, not the arrowhead path inside <defs> */
+.overview-annotations > g > path {
+  stroke: var(--color-text-muted);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.overview-annotations text {
+  fill: var(--color-text-muted);
+  font-weight: 400;
+  /* a halo in the background colour keeps the label readable over any bubble */
+  paint-order: stroke;
+}

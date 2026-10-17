@@ -201,6 +201,255 @@ function ArtistTooltip() {
   );
 }
 
+// Labels with a curved arrow to the main bubbles, to say what the picture is about. Each label
+// sits at `offset` from its bubble's centre (viewBox units, so it follows the bubble when the
+// data moves it), and its arrow runs from there to the rim at `tipAngle` (degrees, y pointing
+// down; by default the direction of the label), bowed sideways by `bend` (a fraction of its
+// length: positive turns it one way, negative the other). The offsets are chosen so that no
+// two arrows cross and no arrow runs through a label. Keys are the bubbles' paths in the
+// pack (see pathKey); a bubble that isn't there is skipped.
+//
+// `from` is where on the string the arrow starts, i.e. which side of the text hangs off the
+// start point (`offset`):
+//   "left" / "right"                        the middle of the text's left / right end
+//   "top" / "top-start" / "top-end"         the top edge: centre, start or end of the text
+//   "bottom" / "bottom-start" / "bottom-end"  the bottom edge: likewise
+// Left out, it is worked out from the direction of the label (the label sits away from its
+// bubble).
+type LabelFrom =
+  | "left"
+  | "right"
+  | "top"
+  | "top-start"
+  | "top-end"
+  | "bottom"
+  | "bottom-start"
+  | "bottom-end";
+type Annotation = {
+  key: string;
+  label: string;
+  offset: [number, number];
+  from?: LabelFrom;
+  tipAngle?: number;
+  bend: number;
+};
+const ANNOTATIONS: Annotation[] = [
+  {
+    key: "root>italiana",
+    label: "Italian school",
+    offset: [-10, -510],
+    from: "right",
+    tipAngle: -85,
+    bend: -0.8,
+  },
+  {
+    key: "root>unknown",
+    label: "Unknown",
+    offset: [80, -120],
+    from: "bottom",
+    tipAngle: -50,
+    bend: -0.2,
+  },
+  {
+    key: "root>francese",
+    label: "French school",
+    offset: [60, -100],
+    from: "left",
+    tipAngle: -80,
+    bend: 0.4,
+  },
+  {
+    key: "root>olandese",
+    label: "Dutch school",
+    offset: [60, -67],
+    from: "left",
+    tipAngle: -60,
+    bend: 0.2,
+  },
+  {
+    key: "root>fiamminga",
+    label: "Flemish school",
+    offset: [80, 50],
+    from: "top",
+    tipAngle: 7,
+    bend: 0.6,
+  },
+  {
+    key: "root>tedesca",
+    label: "German school",
+    offset: [60, 60],
+    from: "left",
+    tipAngle: 70,
+    bend: -0.5,
+  },
+  {
+    key: "root>spagnola",
+    label: "Spanish school",
+    offset: [0, -100],
+    from: "bottom",
+    tipAngle: -60,
+    bend: -0.4,
+  },
+  {
+    key: "root>inglese",
+    label: "English school",
+    offset: [30, 60],
+    from: "top",
+    tipAngle: 40,
+    bend: 0.4,
+  },
+];
+const ANNOTATION_FONT_SIZE = 18; // viewBox units
+const ANNOTATION_TIP_GAP = 10; // an arrow stops this far from the rim
+const ANNOTATION_LABEL_GAP = 6; // between an arrow's start and its text
+
+// How the text is set so that the arrow starts at `from` of it
+function labelLayout(
+  from: LabelFrom,
+  tail: { x: number; y: number },
+): {
+  x: number;
+  y: number;
+  anchor: "start" | "middle" | "end";
+  baseline: "auto" | "middle" | "hanging";
+} {
+  const gap = ANNOTATION_LABEL_GAP;
+  switch (from) {
+    case "left":
+      return {
+        x: tail.x + gap,
+        y: tail.y,
+        anchor: "start",
+        baseline: "middle",
+      };
+    case "right":
+      return { x: tail.x - gap, y: tail.y, anchor: "end", baseline: "middle" };
+    case "top":
+      return {
+        x: tail.x,
+        y: tail.y + gap,
+        anchor: "middle",
+        baseline: "hanging",
+      };
+    case "top-start":
+      return {
+        x: tail.x,
+        y: tail.y + gap,
+        anchor: "start",
+        baseline: "hanging",
+      };
+    case "top-end":
+      return { x: tail.x, y: tail.y + gap, anchor: "end", baseline: "hanging" };
+    case "bottom":
+      return { x: tail.x, y: tail.y - gap, anchor: "middle", baseline: "auto" };
+    case "bottom-start":
+      return { x: tail.x, y: tail.y - gap, anchor: "start", baseline: "auto" };
+    case "bottom-end":
+      return { x: tail.x, y: tail.y - gap, anchor: "end", baseline: "auto" };
+  }
+}
+
+const toRad = (deg: number) => (deg * Math.PI) / 180;
+
+function Annotations({
+  circles,
+  hidden,
+}: {
+  circles: RenderCircle[];
+  hidden: boolean;
+}) {
+  const byKey = new Map(circles.map((c) => [c.key, c]));
+  return (
+    <g
+      className={"overview-annotations" + (hidden ? " hidden" : "")}
+      aria-hidden="true"
+    >
+      <defs>
+        <marker
+          id="overview-annotation-arrow"
+          viewBox="0 0 20 20"
+          refX={10}
+          refY={10}
+          markerWidth={14}
+          markerHeight={14}
+          orient="auto-start-reverse"
+          markerUnits="userSpaceOnUse"
+        >
+          <path
+            d="M 0,0 L 10,10 L 0,20"
+            fill="none"
+            stroke="context-stroke"
+            strokeWidth={2.5}
+          />
+        </marker>
+      </defs>
+      {ANNOTATIONS.map(({ key, label, offset, from, tipAngle, bend }) => {
+        const c = byKey.get(key);
+        if (!c) return null;
+        const tail = { x: c.x + offset[0], y: c.y + offset[1] };
+        // which way the label lies from the bubble: decides how the text is anchored
+        const away = Math.atan2(offset[1], offset[0]);
+        const dx = Math.cos(away);
+        const dy = Math.sin(away);
+        const landing = tipAngle === undefined ? away : toRad(tipAngle);
+        const tip = {
+          x: c.x + (c.r + ANNOTATION_TIP_GAP) * Math.cos(landing),
+          y: c.y + (c.r + ANNOTATION_TIP_GAP) * Math.sin(landing),
+        };
+        // a quadratic curve: its control point is the arrow's midpoint pushed sideways
+        const length = Math.hypot(tip.x - tail.x, tip.y - tail.y);
+        const control = {
+          x: (tail.x + tip.x) / 2 - ((tip.y - tail.y) / length) * bend * length,
+          y: (tail.y + tip.y) / 2 + ((tip.x - tail.x) / length) * bend * length,
+        };
+        // where the text goes: as asked by `from`, or else away from the bubble
+        const layout = from
+          ? labelLayout(from, tail)
+          : {
+              x:
+                tail.x +
+                (dx > 0.35
+                  ? ANNOTATION_LABEL_GAP
+                  : dx < -0.35
+                    ? -ANNOTATION_LABEL_GAP
+                    : 0),
+              y:
+                dy < -0.35
+                  ? tail.y - ANNOTATION_LABEL_GAP
+                  : dy > 0.35
+                    ? tail.y + ANNOTATION_LABEL_GAP
+                    : tail.y,
+              anchor: (dx > 0.35 ? "start" : dx < -0.35 ? "end" : "middle") as
+                "start" | "middle" | "end",
+              baseline: (dy < -0.35
+                ? "auto"
+                : dy > 0.35
+                  ? "hanging"
+                  : "middle") as "auto" | "middle" | "hanging",
+            };
+        return (
+          <g key={key}>
+            <path
+              d={`M ${tail.x} ${tail.y} Q ${control.x} ${control.y} ${tip.x} ${tip.y}`}
+              fill="none"
+              markerEnd="url(#overview-annotation-arrow)"
+            />
+            <text
+              x={layout.x}
+              y={layout.y}
+              textAnchor={layout.anchor}
+              dominantBaseline={layout.baseline}
+              fontSize={ANNOTATION_FONT_SIZE}
+            >
+              {label}
+            </text>
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
 export default function PackingVis({
   artists,
   coOccurrences,
@@ -480,6 +729,8 @@ export default function PackingVis({
               );
             })}
           </g>
+
+          <Annotations circles={groupCircles} hidden={isZoomedIn} />
         </g>
       </svg>
 
