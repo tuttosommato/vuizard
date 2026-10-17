@@ -39,6 +39,8 @@
 }
 
 .temp-range-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
   position: static;
   top: auto;
   transform: none;
