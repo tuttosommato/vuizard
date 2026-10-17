@@ -269,10 +269,10 @@ const ANNOTATIONS: Annotation[] = [
   {
     key: "root>italiana",
     label: "Italian school",
-    offset: [-10, -510],
+    offset: [-10, -490],
     from: "right",
     tipAngle: -85,
-    bend: -0.8,
+    bend: -0.7,
   },
   {
     key: "root>unknown",
@@ -331,7 +331,7 @@ const ANNOTATIONS: Annotation[] = [
     bend: 0.4,
   },
 ];
-const ANNOTATION_FONT_SIZE = 18; // viewBox units
+const ANNOTATION_FONT_SIZE = 16; // viewBox units
 const ANNOTATION_TIP_GAP = 10; // an arrow stops this far from the rim
 const ANNOTATION_LABEL_GAP = 6; // between an arrow's start and its text
 const ANNOTATION_HEAD_LENGTH = 10; // the two strokes of an arrowhead

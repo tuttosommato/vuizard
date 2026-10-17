@@ -207,7 +207,7 @@ svg.overview-vis:active {
    draw the arrows in (the labels are only shown near scale 1 anyway). */
 .overview-annotations > g > path {
   stroke: var(--color-text-muted);
-  stroke-width: 1.8;
+  stroke-width: 1.4;
   stroke-linecap: round;
   stroke-linejoin: round;
 }

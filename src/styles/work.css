@@ -253,7 +253,7 @@ main.work-layout {
 .reason-tooltip {
   pointer-events: none;
   z-index: 9999;
-  background-color: transparent;
+  background-color: color-mix(in srgb, var(--color-bg) 55%, transparent);
   backdrop-filter: blur(10px);
   color: var(--color-text);
   border: var(--border);
