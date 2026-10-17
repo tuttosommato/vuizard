@@ -302,6 +302,8 @@ const ANNOTATIONS: Annotation[] = [
 const ANNOTATION_FONT_SIZE = 18; // viewBox units
 const ANNOTATION_TIP_GAP = 10; // an arrow stops this far from the rim
 const ANNOTATION_LABEL_GAP = 6; // between an arrow's start and its text
+const ANNOTATION_HEAD_LENGTH = 10; // the two strokes of an arrowhead
+const ANNOTATION_HEAD_ANGLE = 0.7; // radians either side of the arrow's direction
 
 // How the text is set so that the arrow starts at `from` of it
 function labelLayout(
@@ -364,88 +366,98 @@ function Annotations({
       className={"overview-annotations" + (hidden ? " hidden" : "")}
       aria-hidden="true"
     >
-      <defs>
-        <marker
-          id="overview-annotation-arrow"
-          viewBox="0 0 20 20"
-          refX={10}
-          refY={10}
-          markerWidth={14}
-          markerHeight={14}
-          orient="auto-start-reverse"
-          markerUnits="userSpaceOnUse"
-        >
-          <path
-            d="M 0,0 L 10,10 L 0,20"
-            fill="none"
-            stroke="context-stroke"
-            strokeWidth={2.5}
-          />
-        </marker>
-      </defs>
-      {ANNOTATIONS.map(({ key, label, offset, from, tipAngle, bend }) => {
-        const c = byKey.get(key);
-        if (!c) return null;
-        const tail = { x: c.x + offset[0], y: c.y + offset[1] };
-        // which way the label lies from the bubble: decides how the text is anchored
-        const away = Math.atan2(offset[1], offset[0]);
-        const dx = Math.cos(away);
-        const dy = Math.sin(away);
-        const landing = tipAngle === undefined ? away : toRad(tipAngle);
-        const tip = {
-          x: c.x + (c.r + ANNOTATION_TIP_GAP) * Math.cos(landing),
-          y: c.y + (c.r + ANNOTATION_TIP_GAP) * Math.sin(landing),
-        };
-        // a quadratic curve: its control point is the arrow's midpoint pushed sideways
-        const length = Math.hypot(tip.x - tail.x, tip.y - tail.y);
-        const control = {
-          x: (tail.x + tip.x) / 2 - ((tip.y - tail.y) / length) * bend * length,
-          y: (tail.y + tip.y) / 2 + ((tip.x - tail.x) / length) * bend * length,
-        };
-        // where the text goes: as asked by `from`, or else away from the bubble
-        const layout = from
-          ? labelLayout(from, tail)
-          : {
-              x:
-                tail.x +
-                (dx > 0.35
-                  ? ANNOTATION_LABEL_GAP
+      {ANNOTATIONS.map(
+        ({ key, label, offset, from, tipAngle, bend }, index) => {
+          const c = byKey.get(key);
+          if (!c) return null;
+          const tail = { x: c.x + offset[0], y: c.y + offset[1] };
+          // which way the label lies from the bubble: decides how the text is anchored
+          const away = Math.atan2(offset[1], offset[0]);
+          const dx = Math.cos(away);
+          const dy = Math.sin(away);
+          const landing = tipAngle === undefined ? away : toRad(tipAngle);
+          const tip = {
+            x: c.x + (c.r + ANNOTATION_TIP_GAP) * Math.cos(landing),
+            y: c.y + (c.r + ANNOTATION_TIP_GAP) * Math.sin(landing),
+          };
+          // a quadratic curve: its control point is the arrow's midpoint pushed sideways
+          const length = Math.hypot(tip.x - tail.x, tip.y - tail.y);
+          const control = {
+            x:
+              (tail.x + tip.x) / 2 -
+              ((tip.y - tail.y) / length) * bend * length,
+            y:
+              (tail.y + tip.y) / 2 +
+              ((tip.x - tail.x) / length) * bend * length,
+          };
+          // where the text goes: as asked by `from`, or else away from the bubble
+          const layout = from
+            ? labelLayout(from, tail)
+            : {
+                x:
+                  tail.x +
+                  (dx > 0.35
+                    ? ANNOTATION_LABEL_GAP
+                    : dx < -0.35
+                      ? -ANNOTATION_LABEL_GAP
+                      : 0),
+                y:
+                  dy < -0.35
+                    ? tail.y - ANNOTATION_LABEL_GAP
+                    : dy > 0.35
+                      ? tail.y + ANNOTATION_LABEL_GAP
+                      : tail.y,
+                anchor: (dx > 0.35
+                  ? "start"
                   : dx < -0.35
-                    ? -ANNOTATION_LABEL_GAP
-                    : 0),
-              y:
-                dy < -0.35
-                  ? tail.y - ANNOTATION_LABEL_GAP
+                    ? "end"
+                    : "middle") as "start" | "middle" | "end",
+                baseline: (dy < -0.35
+                  ? "auto"
                   : dy > 0.35
-                    ? tail.y + ANNOTATION_LABEL_GAP
-                    : tail.y,
-              anchor: (dx > 0.35 ? "start" : dx < -0.35 ? "end" : "middle") as
-                "start" | "middle" | "end",
-              baseline: (dy < -0.35
-                ? "auto"
-                : dy > 0.35
-                  ? "hanging"
-                  : "middle") as "auto" | "middle" | "hanging",
-            };
-        return (
-          <g key={key}>
-            <path
-              d={`M ${tail.x} ${tail.y} Q ${control.x} ${control.y} ${tip.x} ${tip.y}`}
-              fill="none"
-              markerEnd="url(#overview-annotation-arrow)"
-            />
-            <text
-              x={layout.x}
-              y={layout.y}
-              textAnchor={layout.anchor}
-              dominantBaseline={layout.baseline}
-              fontSize={ANNOTATION_FONT_SIZE}
-            >
-              {label}
-            </text>
-          </g>
-        );
-      })}
+                    ? "hanging"
+                    : "middle") as "auto" | "middle" | "hanging",
+              };
+          // the arrowhead: two short strokes back from the tip, along the curve's end
+          // direction. Drawn apart from the line (not as a marker, which would show before
+          // the line gets there) so it can appear at the end of the drawing.
+          const endLength = Math.hypot(tip.x - control.x, tip.y - control.y);
+          const back = {
+            x: (control.x - tip.x) / endLength,
+            y: (control.y - tip.y) / endLength,
+          };
+          const headPoint = (angle: number) => {
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            return `${tip.x + ANNOTATION_HEAD_LENGTH * (back.x * cos - back.y * sin)} ${tip.y + ANNOTATION_HEAD_LENGTH * (back.x * sin + back.y * cos)}`;
+          };
+          return (
+            // --i staggers the labels' drawing in (see overview.css)
+            <g key={key} style={{ "--i": index } as React.CSSProperties}>
+              <path
+                className="annotation-arrow"
+                d={`M ${tail.x} ${tail.y} Q ${control.x} ${control.y} ${tip.x} ${tip.y}`}
+                fill="none"
+                pathLength={1}
+              />
+              <path
+                className="annotation-head"
+                d={`M ${headPoint(ANNOTATION_HEAD_ANGLE)} L ${tip.x} ${tip.y} L ${headPoint(-ANNOTATION_HEAD_ANGLE)}`}
+                fill="none"
+              />
+              <text
+                x={layout.x}
+                y={layout.y}
+                textAnchor={layout.anchor}
+                dominantBaseline={layout.baseline}
+                fontSize={ANNOTATION_FONT_SIZE}
+              >
+                {label}
+              </text>
+            </g>
+          );
+        },
+      )}
     </g>
   );
 }

@@ -167,11 +167,37 @@ svg.overview-vis:active {
   opacity: 0;
 }
 
-/* only the arrows, not the arrowhead path inside <defs> */
+/* The arrows and their heads. No non-scaling-stroke: it doesn't mix with the dash used to
+   draw the arrows in (the labels are only shown near scale 1 anyway). */
 .overview-annotations > g > path {
   stroke: var(--color-text-muted);
-  stroke-width: 1.25;
-  vector-effect: non-scaling-stroke;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Drawing in, label by label (--i): the text fades in, then the arrow is drawn from the text
+   to the bubble (the path's length is 1, so the dash is a fraction of it), and its head
+   shows at the end. Animations are switched off while hidden, so they play again when the
+   labels come back after a zoom. */
+.overview-annotations > g > text {
+  animation: annotation-fade 0.5s ease both;
+  animation-delay: calc(var(--i) * 140ms + 200ms);
+}
+
+.overview-annotations .annotation-arrow {
+  stroke-dasharray: 1;
+  animation: annotation-draw 0.9s cubic-bezier(0.5, 0, 0.2, 1) both;
+  animation-delay: calc(var(--i) * 140ms + 500ms);
+}
+
+.overview-annotations .annotation-head {
+  animation: annotation-fade 0.15s ease both;
+  animation-delay: calc(var(--i) * 140ms + 1300ms);
+}
+
+.overview-annotations.hidden * {
+  animation: none;
 }
 
 .overview-annotations text {
@@ -179,4 +205,22 @@ svg.overview-vis:active {
   font-weight: 400;
   /* a halo in the background colour keeps the label readable over any bubble */
   paint-order: stroke;
+}
+
+@keyframes annotation-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes annotation-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overview-annotations * {
+    animation: none;
+  }
 }
