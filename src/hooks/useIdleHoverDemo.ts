@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useRef } from "react";
 import type { Artist } from "@/types/artists";
-import { demoHighlightDot, onUserHover } from "@/stores/hoverBus";
+import {
+  demoHighlightDot,
+  endDemoMode,
+  onUserHover,
+  startDemoMode,
+} from "@/stores/hoverBus";
 import { getArtistTotal } from "@/utils/getArtistTotal";
 
 // A hint that hovering the circles does something: a few artists are highlighted one after
@@ -17,8 +22,7 @@ const DEMO_ARTISTS = [
   "Merisi Michelangelo",
 ];
 const START_DELAY_MS = 500; // before the first run, once the page is uncovered
-const SHOW_MS = 2000; // each artist stays highlighted this long…
-const GAP_MS = 200; // …then a short pause before the next
+const SHOW_MS = 2000; // each artist stays highlighted this long, then the next one fades in
 const IDLE_MS = 3000; // pointer away from the vis and the list for this long: play again
 
 // the filters' controls: using them stops the demo and keeps it from starting
@@ -64,10 +68,17 @@ export default function useIdleHoverDemo({
     let idleTimer: number | undefined;
     let startTimer: number | undefined;
 
-    const stop = () => {
+    // `fade`: let the highlight fade out; not when a real hover takes over, which is instant
+    const stop = (fade: boolean) => {
       window.clearTimeout(stepTimer);
       running = false;
-      demoHighlightDot(null);
+      if (fade) {
+        demoHighlightDot(null);
+        endDemoMode(true);
+      } else {
+        endDemoMode(false);
+        demoHighlightDot(null);
+      }
     };
 
     // the next demo artist whose circles are on show (not dimmed by the search or the
@@ -93,16 +104,16 @@ export default function useIdleHoverDemo({
         stepTimer = window.setTimeout(showNext, SHOW_MS);
         return;
       }
+      // straight from one artist to the next, with nothing cleared in between: the dots
+      // cross-fade (the transition is on while the demo plays, see startDemoMode)
       demoHighlightDot(id);
-      stepTimer = window.setTimeout(() => {
-        demoHighlightDot(null);
-        stepTimer = window.setTimeout(showNext, GAP_MS);
-      }, SHOW_MS);
+      stepTimer = window.setTimeout(showNext, SHOW_MS);
     };
 
     const start = () => {
       if (running) return;
       running = true;
+      startDemoMode();
       showNext();
     };
 
@@ -110,7 +121,7 @@ export default function useIdleHoverDemo({
     const stopListening = onUserHover(() => {
       hasHoveredRef.current = true;
       window.clearTimeout(startTimer);
-      stop();
+      stop(false);
     });
 
     // on opening the page (and until the first hover) it runs by itself
@@ -131,7 +142,7 @@ export default function useIdleHoverDemo({
     // someone is using a filter: stop the demo and don't let it start for now
     const pauseForFilters = () => {
       window.clearTimeout(startTimer);
-      stop();
+      stop(true);
     };
     const onOver = (event: MouseEvent) => {
       const target = event.target instanceof Element ? event.target : null;
@@ -171,7 +182,7 @@ export default function useIdleHoverDemo({
       document.documentElement.removeEventListener("mouseleave", onLeaveWindow);
       window.clearTimeout(startTimer);
       window.clearTimeout(idleTimer);
-      stop();
+      stop(true);
     };
   }, [paused, demoIds]);
 }

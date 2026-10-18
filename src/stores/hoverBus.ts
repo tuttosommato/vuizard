@@ -110,6 +110,30 @@ export function highlightDot(id: string | null) {
 // The same highlight, shown by the idle demo (see useIdleHoverDemo) without anyone hovering.
 export const demoHighlightDot = applyHighlight;
 
+// While the demo plays the dots get a `demo` class, which gives them a transition (see
+// overview.css), so that it fades from one artist to the next. A real hover is instant: the
+// class is dropped before its highlight is applied. When the demo just ends, the class stays
+// until the fade has played.
+const DEMO_FADE_MS = 700; // a little over the transition's length
+let demoOffTimer: number | undefined;
+
+export function startDemoMode() {
+  window.clearTimeout(demoOffTimer);
+  dotsContainer?.classList.add("demo");
+}
+
+export function endDemoMode(fade: boolean) {
+  window.clearTimeout(demoOffTimer);
+  if (fade) {
+    demoOffTimer = window.setTimeout(
+      () => dotsContainer?.classList.remove("demo"),
+      DEMO_FADE_MS,
+    );
+  } else {
+    dotsContainer?.classList.remove("demo");
+  }
+}
+
 let userHoverListener: (() => void) | null = null;
 
 // Called whenever an artist is really hovered; returns the way to stop listening.
