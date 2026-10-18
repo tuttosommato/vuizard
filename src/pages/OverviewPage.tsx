@@ -1,6 +1,7 @@
 import type { Artist } from "@/types/artists";
 import type { AuthorsCoBundle } from "@/types/coOccurrences";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getAllAuthors, getAllAuthorsCo } from "@/data/api";
 import PackingVis from "@/components/overview/PackingVis";
 import PackingLegend from "@/components/overview/PackingLegend";
@@ -127,7 +128,30 @@ function OverviewPageContent({
     [artists],
   );
 
-  const { selectedIds } = useOverviewSelection();
+  const { selectedIds, toggle } = useOverviewSelection();
+
+  // Arriving from an artist's page ("View in artists overview") with ?artist=<id>: that artist
+  // starts out selected. The parameter is used up (removed from the address) so that a
+  // reload or a later visit doesn't redo it, and it is only applied once (React's dev mode
+  // runs effects twice, which would select and then deselect).
+  const [searchParams, setSearchParams] = useSearchParams();
+  const artistParam = searchParams.get("artist");
+  // remembered from the first render, since the parameter is removed a moment later
+  const [arrivedForArtist] = useState(artistParam !== null);
+  const artistParamApplied = useRef(false);
+  useEffect(() => {
+    if (artistParam === null || artistParamApplied.current) return;
+    artistParamApplied.current = true;
+    if (artists[artistParam]) toggle(artistParam);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete("artist");
+        return next;
+      },
+      { replace: true },
+    );
+  }, [artistParam, artists, toggle, setSearchParams]);
   const {
     isArtistFilteredOut,
     matchingIds,
@@ -140,14 +164,18 @@ function OverviewPageContent({
 
   // a hint that hovering the circles does something; not while the About overlay covers the
   // page, nor while a filter is on (a search typed, a narrowed century range, or the artists
-  // of unknown dating switched off)
+  // of unknown dating switched off), nor while any artist is selected
   const { open: aboutOpen } = useAboutOverlay();
   const filtersActive =
     query.trim() !== "" ||
     !noDatesFilter ||
     tempRange[0] !== tempBounds[0] ||
     tempRange[1] !== present;
-  useIdleHoverDemo({ artists, paused: aboutOpen || filtersActive });
+  useIdleHoverDemo({
+    artists,
+    paused: aboutOpen || filtersActive || selectedIds.size > 0,
+    playOnOpen: !arrivedForArtist,
+  });
 
   const highlightedIds = useMemo(
     () => getHighlightedIds(selectedIds, coOccurrences),

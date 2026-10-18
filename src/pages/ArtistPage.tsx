@@ -341,7 +341,7 @@ function ArtistPageContent({
             </p>
           )}
         </div>
-        <Link to={`/`} className="button-link">
+        <Link to={`/?artist=${artistId}`} className="button-link">
           View in artists overview
         </Link>
         <ArtistLegend

@@ -34,9 +34,13 @@ const ZONES = `.overview-vis-cnt, .overview-right, ${FILTER_ZONES}`;
 export default function useIdleHoverDemo({
   artists,
   paused,
+  playOnOpen = true,
 }: {
   artists: Record<string, Artist>;
   paused: boolean; // e.g. the About overlay is covering the page, or a filter is on
+  // false: no run when the page opens (someone who came here for a given artist doesn't need
+  // the hint); only the idle rule plays it
+  playOnOpen?: boolean;
 }) {
   // the demo artists' ids (when several artists share a name, the one with most attributions)
   const demoIds = useMemo(() => {
@@ -125,7 +129,7 @@ export default function useIdleHoverDemo({
     });
 
     // on opening the page (and until the first hover) it runs by itself
-    if (!hasHoveredRef.current)
+    if (!hasHoveredRef.current && playOnOpen)
       startTimer = window.setTimeout(start, START_DELAY_MS);
 
     // afterwards, whenever the pointer is away from the vis, the list and the filters for IDLE_MS
@@ -184,5 +188,5 @@ export default function useIdleHoverDemo({
       window.clearTimeout(idleTimer);
       stop(true);
     };
-  }, [paused, demoIds]);
+  }, [paused, demoIds, playOnOpen]);
 }
