@@ -194,7 +194,7 @@ function ArtistPageContent({
   const listRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef(new Map<string, HTMLDivElement>());
   const artistVisRef = useRef<ArtistVisHandle>(null);
-  const { triggerNewSelection, selectedIds } = useArtistSelection();
+  const { triggerNewSelection } = useArtistSelection();
   const { isWorkFilteredOut, isAttributionFilteredOut } = useArtistFilter();
 
   // the works the filters leave out go after the others, each group in its own order
@@ -293,11 +293,6 @@ function ArtistPageContent({
     const scrollDelta = cardRect.top - containerRect.top;
     container.scrollBy({ top: scrollDelta - 40, behavior: "smooth" });
   }, [triggerNewSelection]);
-
-  useEffect(() => {
-    if (selectedIds.size === 0) return;
-    artistVisRef.current?.focusOnWorks([...selectedIds]);
-  }, [selectedIds]);
 
   return (
     <main className="artist-layout page-layout">
