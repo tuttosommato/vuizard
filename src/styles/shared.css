@@ -429,3 +429,45 @@ input[type="search"].list-page-search:focus {
     animation: none;
   }
 }
+
+/* LoadingImage.tsx: an <img> that shows the pulsing frame until it has arrived. */
+.loading-image {
+  position: relative;
+}
+
+/* arrived: the wrapper steps out of the way, so the image sits in its parent as a plain one */
+.loading-image-ready {
+  display: contents;
+}
+
+.loading-image-pending::before,
+.loading-image-loading::before,
+.loading-image-failed::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-text-muted);
+  opacity: 0.12;
+  animation: loading-pulse 1.2s ease-in-out infinite;
+}
+
+/* the image, on its way, stays in place but out of sight (display: none would stop it from
+   loading), which also hides the alt text the browser would show meanwhile */
+.loading-image.loading-image-loading img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+/* no image after all: the frame, still */
+.loading-image-failed::before {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-image-loading::before {
+    animation: none;
+  }
+}

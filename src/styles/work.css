@@ -154,6 +154,14 @@ main.work-layout {
   cursor: pointer;
 }
 
+/* the frame shown while an image of the strip is on its way: the size of a small portrait */
+.img-cnt .loading-image-loading,
+.img-cnt .loading-image-failed {
+  height: 8rem;
+  aspect-ratio: 3 / 4;
+  flex-shrink: 0;
+}
+
 .work-details {
   display: grid;
   grid-template-columns: max-content auto;
@@ -191,6 +199,13 @@ main.work-layout {
   width: auto;
   height: 70%;
   object-fit: contain;
+}
+
+/* the frame shown while the full-size image is on its way: the height the image will have */
+.full-screen-image .loading-image-loading,
+.full-screen-image .loading-image-failed {
+  height: 70%;
+  aspect-ratio: 3 / 4;
 }
 
 .full-screen-image button {

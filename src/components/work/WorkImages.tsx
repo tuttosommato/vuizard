@@ -2,6 +2,7 @@ import type { Work } from "@/types/works.tsx";
 import { BASE_URL } from "@/utils/constants.ts";
 import { useState, useCallback } from "react";
 import { createPortal } from "react-dom";
+import LoadingImage from "@/components/LoadingImage";
 import type { Photos } from "@/types/works.tsx";
 
 const closeIconSize = 24;
@@ -22,17 +23,28 @@ function FullScreenImage({
     right: number;
   } | null>(null);
 
+  // The close button sits at the image's corner: measured when it appears and again whenever the
+  // image changes size (the loading frame gives way to the picture, whose size is its own)
   const imageRef = useCallback((node: HTMLImageElement | null) => {
     if (!node) return;
     const measure = () => {
       const box = node.getBoundingClientRect();
-      setButtonPos({
-        top: box.y,
-        right: window.innerWidth - box.right,
-      });
+      const next = { top: box.y, right: window.innerWidth - box.right };
+      // the same place: keep the old object, so measuring again changes nothing
+      setButtonPos((prev) =>
+        prev && prev.top === next.top && prev.right === next.right
+          ? prev
+          : next,
+      );
     };
     measure();
     node.addEventListener("load", measure);
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => {
+      node.removeEventListener("load", measure);
+      observer.disconnect();
+    };
   }, []);
 
   return createPortal(
@@ -63,7 +75,11 @@ function FullScreenImage({
         </button>
       )}
 
-      <img ref={imageRef} alt={photo.alt} src={BASE_URL + photo.image_path} />
+      <LoadingImage
+        imgRef={imageRef}
+        alt={photo.alt}
+        src={BASE_URL + photo.image_path}
+      />
     </div>,
     document.body,
   );
@@ -92,7 +108,7 @@ export default function WorkImages({ photos }: WorkImagesProps) {
 
       <div className="img-cnt">
         {renderablePhotos.map((ph) => (
-          <img
+          <LoadingImage
             key={ph.image_path}
             alt={ph.alt}
             src={BASE_URL + ph.image_path}
