@@ -43,6 +43,15 @@ export default function Header({
       ? pending.index
       : activeIndex;
 
+  // Once the route has changed, whatever way it did (the nav, the browser's arrows, a link in a
+  // page), the click is over: left in place, it would come back to life whenever we returned to
+  // the page it was made from, and the switch would show a level we are not on.
+  const [lastPath, setLastPath] = useState(location.pathname);
+  if (location.pathname !== lastPath) {
+    setLastPath(location.pathname);
+    setPending(null);
+  }
+
   const handleLevelClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     to: string,
