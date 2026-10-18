@@ -489,6 +489,41 @@ main.artist-layout .artist-vis {
   max-height: 300px;
 }
 
+/* While the image is on its way: a frame the size of a small preview, gently pulsing, so it is
+   clear that something is coming. The image itself (still loading) is kept out of sight. */
+.work-thumbnail-loading {
+  border: var(--border);
+  border-color: var(--color-text-muted);
+  background-color: color-mix(in srgb, var(--color-bg) 80%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.work-thumbnail-loading img {
+  display: none;
+}
+
+.work-thumbnail-loading::before {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 90px;
+  background-color: var(--color-text-muted);
+  opacity: 0.12;
+  animation: work-thumbnail-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes work-thumbnail-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-thumbnail-loading::before {
+    animation: none;
+  }
+}
+
 /* The vis pans by dragging its background: the dots, which are clickable, keep their pointer */
 svg.artist-vis {
   cursor: grab;

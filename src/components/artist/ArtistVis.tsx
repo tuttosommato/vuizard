@@ -74,6 +74,30 @@ function ZoomControls({
   );
 }
 
+// The photo shown for a work: the first one that has an image, as the work's card does
+function thumbnailUrl(work: WorkItem): string | null {
+  const path = work.work?.photos.find((photo) => photo.image_path)?.image_path;
+  return path ? BASE_URL + path : null;
+}
+
+// The images already asked for are kept (and not only shown), so that one still on its way
+// keeps loading after the pointer has left the circle, and the next hover finds it ready. Only
+// the hovered circle's image is loaded; the oldest are let go past a limit.
+const PRELOADED_LIMIT = 60;
+const preloaded = new Map<string, HTMLImageElement>();
+function preloadThumbnail(url: string) {
+  if (preloaded.has(url)) return;
+  const image = new Image();
+  image.src = url;
+  preloaded.set(url, image);
+  if (preloaded.size > PRELOADED_LIMIT) {
+    preloaded.delete(preloaded.keys().next().value as string);
+  }
+}
+
+// The preview of the hovered circle's work. It is slow to arrive (the images come from the
+// Foundation's server), so a frame shows meanwhile that something is on its way. Remounted
+// for each work (see the key where it's used), so its state is that of one image.
 function WorkThumbnail({
   work,
   coords,
@@ -81,18 +105,33 @@ function WorkThumbnail({
   work: WorkItem;
   coords: { x: number; y: number };
 }) {
-  const src = work.work?.photos[0]?.image_path;
-  if (!src) return null;
+  const [status, setStatus] = useState<"loading" | "ready" | "failed">(
+    "loading",
+  );
+  const url = thumbnailUrl(work);
+  if (!url || status === "failed") return null;
 
   return createPortal(
     <div
-      className="work-thumbnail"
+      className={
+        "work-thumbnail" +
+        (status === "loading" ? " work-thumbnail-loading" : "")
+      }
       style={{
         left: coords.x,
         top: coords.y,
       }}
     >
-      <img src={BASE_URL + src} alt={work.work?.subject ?? "Untitled"} />
+      <img
+        src={url}
+        alt={work.work?.subject ?? "Untitled"}
+        // an image that is already there (loaded before) may not fire load again
+        ref={(img) => {
+          if (img?.complete && img.naturalWidth > 0) setStatus("ready");
+        }}
+        onLoad={() => setStatus("ready")}
+        onError={() => setStatus("failed")}
+      />
     </div>,
     document.body,
   );
@@ -354,7 +393,11 @@ function ArtistVis({
   return (
     <div className="artist-vis-container">
       {hoveredWork && (
-        <WorkThumbnail work={hoveredWork.work} coords={hoveredWork.coords} />
+        <WorkThumbnail
+          key={hoveredWork.work.id}
+          work={hoveredWork.work}
+          coords={hoveredWork.coords}
+        />
       )}
       <svg
         className={"artist-vis" + (isDimming ? " dimming" : "")}
@@ -411,6 +454,8 @@ function ArtistVis({
               onMouseEnter={(e) => {
                 const work = works.find((w) => w.id === dot.work_id);
                 if (!work) return;
+                const previewUrl = thumbnailUrl(work);
+                if (previewUrl) preloadThumbnail(previewUrl);
                 const rect = e.currentTarget.getBoundingClientRect();
                 setHoveredWork({
                   work,
