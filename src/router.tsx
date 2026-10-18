@@ -1,4 +1,4 @@
-import { createBrowserRouter, redirect } from "react-router-dom";
+import { createHashRouter, redirect } from "react-router-dom";
 import type { LoaderFunctionArgs } from "react-router-dom";
 import App from "@/App";
 import WorkPage from "@/pages/WorkPage";
@@ -31,7 +31,11 @@ function openAboutOnFirstVisit({ request }: LoaderFunctionArgs) {
   return redirect(url.pathname + url.search);
 }
 
-export const router = createBrowserRouter([
+// A hash router (addresses like .../vuizard/#/artist/6): the route sits after the "#", which
+// is never sent to the server and doesn't change what relative paths resolve against. So the
+// app works from any folder, needs no server rule for deep links, and every path in it
+// (the data, the built files) can be relative.
+export const router = createHashRouter([
   {
     path: "/",
     element: <App />,

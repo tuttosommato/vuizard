@@ -9,7 +9,9 @@ import type { AuthorsCoBundle } from "@/types/coOccurrences";
 // ---- Configuration ----
 
 const DATA_VERSION = "v1";
-const BASE = `/data/${DATA_VERSION}`;
+// Relative to the page (which, with the hash router, is always the app's own folder), so the
+// data is found wherever the app is served from
+const BASE = `./data/${DATA_VERSION}`;
 
 // Artists with MORE works than this have a pre-built bundle (see
 // scripts/split-data.mjs, BUNDLE_MIN_WORKS — keep the two in sync), so their page

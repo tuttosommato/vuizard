@@ -33,10 +33,14 @@ export function enteredSiteAtRoot(): boolean {
   } catch {
     return false;
   }
-  const url = new URL(window.location.href);
+  // the route is after the "#" (hash router): "#/artist/6", "#/?artist=6"; none means the root
+  const route = new URL(
+    window.location.hash.replace(/^#/, "") || "/",
+    "http://route.local",
+  );
   return (
-    url.pathname === "/" &&
-    !url.searchParams.has("artist") &&
-    !url.searchParams.has("about")
+    route.pathname === "/" &&
+    !route.searchParams.has("artist") &&
+    !route.searchParams.has("about")
   );
 }
