@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAboutOverlay from "@/hooks/useAboutOverlay";
+import { hasSeenAbout } from "@/utils/aboutSeen";
 
 // The three levels of the app, one route each: overview, artist, work
 const levels = [
@@ -18,6 +19,9 @@ const NAV_HEAD_START_MS = 60;
 export default function Header() {
   const location = useLocation();
   const { open: aboutOpen, openAbout, closeAbout } = useAboutOverlay();
+  // About opens by itself only for a direct entry at the root; whoever entered somewhere else
+  // gets a discreet hint on its button until they have opened it (see utils/aboutSeen)
+  const showAboutHint = !aboutOpen && !hasSeenAbout();
   const navigate = useNavigate();
   const isArtist = location.pathname.includes("artist");
   const isWork = location.pathname.includes("work");
@@ -58,13 +62,15 @@ export default function Header() {
       <button
         type="button"
         title="About"
-        className="button-link nav-about"
+        className={
+          "button-link nav-about" + (showAboutHint ? " nav-about-hint" : "")
+        }
         aria-expanded={aboutOpen}
         onClick={aboutOpen ? closeAbout : openAbout}
       >
-      About
+        About
       </button>
-      
+
       {/* Same idea as the table/ordering switches: one pill, a thumb that slides to the active option. Here the options are links, so the route is the state. */}
       <div
         className="level-switch"

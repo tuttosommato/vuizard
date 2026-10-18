@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import useAboutOverlay from "@/hooks/useAboutOverlay";
+import { markAboutSeen } from "@/utils/aboutSeen";
 
 export default function AboutOverlay() {
   const { open, closeAbout } = useAboutOverlay();
@@ -14,6 +15,7 @@ export default function AboutOverlay() {
   useEffect(() => {
     if (!open) return;
 
+    markAboutSeen(); // however it was opened: the hint on the button has done its job
     closeButtonRef.current?.focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -113,7 +115,9 @@ export default function AboutOverlay() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <span className="keyword">PhD project at the University of Bologna</span>
+                <span className="keyword">
+                  PhD project at the University of Bologna
+                </span>
               </a>
               , using data kindly provided by the Fondazione Federico Zeri. It
               does not offer a complete or exhaustive representation of the Zeri

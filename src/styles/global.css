@@ -126,6 +126,7 @@ nav {
    overview"), written vertically from bottom to top like the level labels. The padding
    is the button's with its two axes swapped, to keep the same look turned on its side. */
 .button-link.nav-about {
+  position: relative; /* for the hint's dot */
   padding: var(--space-sm) var(--space-xs);
   font-family: inherit;
   font-size: var(--text-sm); /* same as the level labels */
@@ -492,6 +493,37 @@ Above the page's own layers (z-index up to 10) and below the nav (100). */
   font-family: inherit;
   margin-top: var(--space-md);
   font-size: var(--text-sm);
+}
+
+/* A small pulsing dot on the About button, for those who haven't opened About yet and
+   weren't welcomed with it. The button is turned 180 degrees, so its bottom-left corner is
+   the one that shows at the top right. */
+.button-link.nav-about-hint::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  animation: about-hint-pulse 2s ease-out infinite;
+}
+
+@keyframes about-hint-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 60%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button-link.nav-about-hint::after {
+    animation: none;
+  }
 }
 
 /* the nav button looks pressed while the overlay is open (it gets aria-expanded in step 4) */

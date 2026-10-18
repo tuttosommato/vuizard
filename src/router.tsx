@@ -9,23 +9,27 @@ import ArtistPage from "@/pages/ArtistPage";
 import OverviewPage from "@/pages/OverviewPage";
 import ArtistListPage from "@/pages/ArtistListPage";
 import WorkListPage from "@/pages/WorkListPage";
+import {
+  enteredSiteAtRoot,
+  hasSeenAbout,
+  markAboutSeen,
+} from "@/utils/aboutSeen";
 
-const ABOUT_SEEN_KEY = "aboutSeen";
+// decided once, as the app starts: was the site entered at "/", asking for nothing in particular?
+const ENTERED_AT_ROOT = enteredSiteAtRoot();
 
+// About opens by itself only for that kind of entry, once per session: not when moving to the
+// overview from inside the app (the nav, a link from an artist page), which would put a
+// welcome over the page someone just asked for. Others are invited by a hint on the button.
 function openAboutOnFirstVisit({ request }: LoaderFunctionArgs) {
-  try {
-    if (sessionStorage.getItem(ABOUT_SEEN_KEY)) return null;
-    sessionStorage.setItem(ABOUT_SEEN_KEY, "1");
-  } catch {
-    return null; // storage blocked (private mode…): skip the intro rather than fail
-  }
+  if (!ENTERED_AT_ROOT || hasSeenAbout()) return null;
+  markAboutSeen();
 
   const url = new URL(request.url);
   if (url.searchParams.has("about")) return null; // already open
   url.searchParams.set("about", "");
   return redirect(url.pathname + url.search);
 }
-
 
 export const router = createBrowserRouter([
   {
