@@ -101,7 +101,6 @@ export default function ArtistsMetaTable({
                       >
                         <div className="attribution-author">
                           <ArrowLink
-                            isAnonym={author.is_anonymous}
                             onMouseEnter={() => setHighlightedId(null)}
                             onMouseLeave={() => setHighlightedId(attrId)}
                             author={author}

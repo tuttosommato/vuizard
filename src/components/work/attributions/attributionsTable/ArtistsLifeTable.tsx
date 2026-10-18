@@ -109,7 +109,6 @@ export default function ArtistsLifeTable({
                   return (
                     <div className="arrow-link-cnt">
                       <ArrowLink
-                        isAnonym={author.is_anonymous}
                         onMouseEnter={() => setHighlightedId(null)}
                         onMouseLeave={() =>
                           setHighlightedId(attr.attribution_id)

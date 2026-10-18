@@ -4,17 +4,19 @@ import type { AttributionAuthor } from "@/types/attributions";
 import { formatAuthorLabel } from "@/components/work/attributions/utils";
 
 export default function ArrowLink({
-  isAnonym = false,
+  noLink = false,
   onMouseEnter,
   onMouseLeave,
   author,
 }: {
-  isAnonym?: boolean;
+  // just the name, not a link: for the artist whose own page this is (anonymous artists have
+  // pages too, so they are linked like anyone else)
+  noLink?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   author: AttributionAuthor;
 }) {
-  if (isAnonym) {
+  if (noLink) {
     return (
       <span className="anonymous-artist">
         {formatAuthorLabel(author)}

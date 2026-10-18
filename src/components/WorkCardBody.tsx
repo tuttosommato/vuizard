@@ -114,10 +114,7 @@ export default function WorkCardBody({
                       >
                         <td className="work-card-attribution-authors">
                           <ArrowLink
-                            isAnonym={
-                              author.is_anonymous ||
-                              author.local_id === artistId
-                            }
+                            noLink={author.local_id === artistId}
                             author={author}
                           />
                         </td>
