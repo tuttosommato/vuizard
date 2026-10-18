@@ -47,7 +47,7 @@ type GroupStats = { artists: number; attributions: number };
 type LeafRenderCircle = RenderCircle & {
   id: string;
   name: string;
-  life: string; // life dates, for the tooltip
+  details: string[]; // the lines under the name in its tooltip: life dates, attributions
   groupKey: string | null;
   centuryBucket: number | null;
 };
@@ -61,6 +61,10 @@ type ArtistEdge = {
 };
 
 const TOOLTIP_GAP = 4;
+
+// "727 attributions", "1 attribution"
+const attributionsLabel = (total: number) =>
+  `${total.toLocaleString("en")} attribution${total === 1 ? "" : "s"}`;
 
 // compute total attributions for a given artist
 function getTotal(artist: Artist) {
@@ -198,7 +202,7 @@ function AreaTooltip({
 }
 
 // the tooltip that follows the pointer over a dot, placed against the dot's right edge
-function showHoverTooltip(name: string, life: string, dot: Element) {
+function showHoverTooltip(name: string, details: string[], dot: Element) {
   const rect = dot.getBoundingClientRect();
   showArtistTooltip(
     name,
@@ -206,7 +210,7 @@ function showHoverTooltip(name: string, life: string, dot: Element) {
       x: rect.right + TOOLTIP_GAP,
       y: rect.bottom - rect.height / 2,
     },
-    life,
+    details,
   );
 }
 
@@ -506,7 +510,7 @@ function SelectedArtistLabels({
   transform,
   containerRef,
 }: {
-  dots: { key: string; id: string; name: string; life: string }[];
+  dots: { key: string; id: string; name: string; details: string[] }[];
   transform: string; // only so that the labels follow the zoom
   containerRef: React.RefObject<HTMLDivElement | null>;
 }) {
@@ -539,7 +543,7 @@ function SelectedArtistLabels({
     return () => observer.disconnect();
   }, [dots, transform, containerRef]);
 
-  return dots.map(({ key, id, name, life }) => (
+  return dots.map(({ key, id, name, details }) => (
     <div
       key={key}
       data-artist-id={id}
@@ -550,7 +554,11 @@ function SelectedArtistLabels({
       className="reason-tooltip selected-artist-label"
     >
       <p className="tooltip-title">{name}</p>
-      <p className="tooltip-sub">{life}</p>
+      {details.map((detail) => (
+        <p key={detail} className="tooltip-sub">
+          {detail}
+        </p>
+      ))}
     </div>
   ));
 }
@@ -726,7 +734,10 @@ export default function PackingVis({
             key,
             id: node.data.id,
             name: node.data.name,
-            life: formatLife(artists[node.data.id].life),
+            details: [
+              formatLife(artists[node.data.id].life),
+              attributionsLabel(getTotal(artists[node.data.id])),
+            ],
             x: node.x,
             y: node.y,
             r: node.r,
@@ -772,7 +783,12 @@ export default function PackingVis({
     () =>
       leafCircles
         .filter((c) => selectedIds.has(c.id))
-        .map((c) => ({ key: c.key, id: c.id, name: c.name, life: c.life })),
+        .map((c) => ({
+          key: c.key,
+          id: c.id,
+          name: c.name,
+          details: c.details,
+        })),
     [leafCircles, selectedIds],
   );
 
@@ -876,14 +892,14 @@ export default function PackingVis({
                     // SelectedArtistLabels), so the hover one steps aside, and comes
                     // back when the artist is deselected under the pointer
                     if (isSelected)
-                      showHoverTooltip(c.name, c.life, e.currentTarget);
+                      showHoverTooltip(c.name, c.details, e.currentTarget);
                     else hideArtistTooltip();
                   }}
                   onMouseEnter={(e) => {
                     highlightDot(c.id);
                     if (c.groupKey) setHoveredGroupKey(c.groupKey);
                     if (!isSelected)
-                      showHoverTooltip(c.name, c.life, e.currentTarget);
+                      showHoverTooltip(c.name, c.details, e.currentTarget);
                   }}
                   onMouseLeave={() => {
                     highlightDot(null);

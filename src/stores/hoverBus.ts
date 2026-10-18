@@ -153,15 +153,15 @@ export function registerArtistTooltipEl(el: HTMLDivElement | null) {
 export function showArtistTooltip(
   name: string,
   coords: { x: number; y: number },
-  detail?: string,
+  details: string[] = [],
 ) {
   if (!tooltipEl) return;
-  // the name, and under it a muted line (the life dates)
+  // the name, and under it a muted line for each detail (the life dates, the attributions…)
   const title = document.createElement("p");
   title.className = "tooltip-title";
   title.textContent = name;
   const lines: HTMLElement[] = [title];
-  if (detail) {
+  for (const detail of details) {
     const sub = document.createElement("p");
     sub.className = "tooltip-sub";
     sub.textContent = detail;
