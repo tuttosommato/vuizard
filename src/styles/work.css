@@ -128,24 +128,84 @@ main.work-layout {
   font-weight: 200;
 }
 
+/* The strip of the work's images: it scrolls sideways when they don't fit (the scrollbars are
+   hidden, so the arrows do the sliding, see WorkImages.tsx). The first image starts at the
+   panel's edge. On the right the arrow sits in the strip's own side padding, beside the images
+   and inside the panel (which clips what sticks out of it), and the images fade out into it.
+   On the left there is nothing until the strip has been moved: then the left arrow appears
+   over a fade on the first visible image. */
+.img-strip {
+  position: relative;
+  margin-top: var(--space-md);
+  padding: 0 2rem 0 0;
+}
+
+.img-viewport {
+  position: relative;
+}
+
 .img-cnt {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   gap: var(--space-md);
-  position: relative;
-  margin-top: var(--space-md);
+  overflow-x: auto;
+  scroll-behavior: smooth;
 }
 
-.img-cnt::after {
+.img-viewport::after {
   content: "";
   position: absolute;
   top: 0;
-  right: 0;
   bottom: 0;
+  right: 0;
   width: 40px;
+  z-index: 1;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
   background: linear-gradient(to right, transparent, var(--color-bg));
+}
+
+.img-fade-right::after {
+  opacity: 1;
+}
+
+.img-strip-arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.img-strip-arrow-right {
+  right: 0;
+  width: 2rem;
+  justify-content: center;
+  background: none;
+}
+
+/* over the images, on the fade that comes with it */
+.img-strip-arrow-left {
+  left: 0;
+  z-index: 2;
+  width: 5rem;
+  justify-content: flex-start;
+  background: linear-gradient(to right, var(--color-bg) 25%, transparent);
+}
+
+.img-strip-arrow-left svg {
+  transform: scaleX(-1); /* the icon points right */
+}
+
+.img-strip-arrow:hover,
+.img-strip-arrow:focus-visible {
+  color: var(--color-text-highlight);
 }
 
 .img-cnt img {
