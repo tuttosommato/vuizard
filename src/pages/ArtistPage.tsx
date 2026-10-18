@@ -301,7 +301,7 @@ function ArtistPageContent({
 
   return (
     <main className="artist-layout page-layout">
-      <div className="artist-left page-side-panel">
+      <div className="artist-left page-side-panel side-panel-glass">
         <div className="artist-header">
           <p>Navigate the works with attributions to</p>
           <h1 className="artist-name">{state.artist.name}</h1>

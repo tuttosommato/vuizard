@@ -73,6 +73,18 @@
   box-sizing: border-box;
 }
 
+/* No scrollbars anywhere, in any browser; scrolling itself (wheel, touch, keyboard) still
+   works. Each engine has its own way, and they go in separate rules: a selector list is
+   dropped whole if the browser doesn't know one of its selectors. */
+* {
+  scrollbar-width: none; /* Firefox, and Chrome and Edge from version 121 */
+  -ms-overflow-style: none; /* the old Edge and Internet Explorer */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and the other WebKit/Blink browsers */
+}
+
 body {
   background-color: var(--color-bg);
   position: relative;

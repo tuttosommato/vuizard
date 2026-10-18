@@ -339,11 +339,6 @@ main.artist-layout .artist-vis {
   color: var(--color-discarded);
 }
 
-.artist-left {
-  background-color: color-mix(in srgb, var(--color-bg) 80%, transparent);
-  backdrop-filter: blur(10px);
-}
-
 .artist-left .artist-header p {
   font-size: var(--text-sm);
   font-weight: 400;

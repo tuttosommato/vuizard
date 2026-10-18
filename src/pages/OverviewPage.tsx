@@ -210,7 +210,7 @@ function OverviewPageContent({
       />
 
       <main className="overview-layout page-layout">
-        <div className="overview-left page-side-panel">
+        <div className="overview-left page-side-panel side-panel-glass">
           <div className="overview-header">
             <p>Navigate the artists through their</p>
             <h1>Cultural contexts</h1>
