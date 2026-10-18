@@ -6,6 +6,7 @@ import {
   VIS_CX,
   VIS_CY,
 } from "@/utils/constants.ts";
+import { showPositionExplanation } from "@/utils/positionExplanation";
 
 const legendOffset = 4;
 /* const bracketX = legendOffset * 4; */
@@ -55,7 +56,7 @@ export default function ArtistVisLegend({
       />
       <text
         x={labelX}
-        y={-(TIER_I + TIER_II) / 2 + legendOffset}
+        y={-(TIER_I + TIER_II) / 2 + legendOffset * 2}
         {...legendLabelPropsRight}
         dominantBaseline="auto"
       >
@@ -63,12 +64,45 @@ export default function ArtistVisLegend({
       </text>
       <text
         x={labelX}
-        y={-(TIER_III + TIER_IV) / 2 + legendOffset}
+        y={-(TIER_III + TIER_IV) / 2 - legendOffset * 2}
         {...legendLabelPropsRight}
         dominantBaseline="mathematical"
       >
         Less direct relationship with the artist
       </text>
+      {/* the "?" at the middle of the arrow: leads to the explanation in the legend panel */}
+      <g
+        className="tier-info-trigger"
+        role="button"
+        tabIndex={0}
+        aria-label="How the position of the circles is read"
+        onClick={showPositionExplanation}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            showPositionExplanation();
+          }
+        }}
+      >
+        <circle
+          cx={lineX + 24}
+          cy={-(TIER_I + TIER_IV) / 2}
+          r={12}
+          fill="var(--color-bg)"
+          stroke="var(--color-text-muted)"
+          strokeWidth={1.5}
+        />
+        <text
+          x={lineX + 24}
+          y={-(TIER_I + TIER_IV) / 2}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fill="var(--color-text-muted)"
+          fontSize="var(--text-sm)"
+        >
+          ?
+        </text>
+      </g>
         </>
       )}
       {/* Bracketed line */}

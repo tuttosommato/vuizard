@@ -1,5 +1,6 @@
 import AttributionCircle from "@/components/work/attributions/AttributionCircle";
 import { Fragment } from "react";
+import { POSITION_EXPLANATION_ID } from "@/utils/positionExplanation";
 import { useArtistFilter } from "@/stores/ArtistFilterContext";
 
 // One relation qualifier: its English term from the Getty vocabulary (linked), then the Italian
@@ -274,7 +275,7 @@ export default function ArtistLegend({
             records the related work has in total.
           </p>
         </div>
-        <div className="position-legend-items">
+        <div className="position-legend-items" id={POSITION_EXPLANATION_ID}>
           <h3>Position</h3>
           <p className="legend-caption">
             {nucleusOnly ? (
