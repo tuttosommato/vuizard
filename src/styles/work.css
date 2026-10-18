@@ -374,6 +374,57 @@ main.work-layout {
   font-size: calc(var(--text-legend) * 1.35);
 }
 
+/* The visualisation is an SVG whose height follows the window's, and its units scale with it: in
+   a short window its labels shrink along with it, so they are drawn larger there, in two steps
+   (the heights are those of useShortWindow.ts, which also makes room for them on the left of the
+   drawing). */
+@media (max-height: 900px) {
+  .vis-artist-label {
+    font-size: calc(var(--text-base) * 1.3);
+  }
+
+  .vis-arcs-legend text {
+    font-size: calc(var(--text-legend) * 1.35 * 1.3);
+  }
+
+  /* the circle round the "?" grows with its text, and moves left to stay clear of the arrow */
+  .axis-info-trigger circle {
+    r: 17px;
+    cx: -56px;
+  }
+
+  .axis-info-trigger text {
+    transform: translateX(-8px);
+  }
+
+  .vis-legend-label {
+    font-size: calc(var(--text-legend) * 1.15);
+  }
+}
+
+@media (max-height: 700px) {
+  .vis-artist-label {
+    font-size: calc(var(--text-base) * 1.6);
+  }
+
+  .vis-arcs-legend text {
+    font-size: calc(var(--text-legend) * 1.35 * 1.6);
+  }
+
+  .axis-info-trigger circle {
+    r: 21px;
+    cx: -64px;
+  }
+
+  .axis-info-trigger text {
+    transform: translateX(-16px);
+  }
+
+  .vis-legend-label {
+    font-size: calc(var(--text-legend) * 1.3);
+  }
+}
+
 .reason-tooltip {
   pointer-events: none;
   z-index: 9999;

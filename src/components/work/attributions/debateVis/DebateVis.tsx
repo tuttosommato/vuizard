@@ -8,6 +8,7 @@ import {
   standardOrdering,
 } from "@/components/work/attributions/debateVis/geometry";
 import useLabelsEnd from "@/hooks/useLabelsEnd";
+import useShortWindow from "@/hooks/useShortWindow";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useHighlight } from "@/stores/HighlightContext";
 import {
@@ -43,12 +44,16 @@ function easeInOutCubic(t: number) {
 }
 
 const LEFT_MARGIN = 120; // for horizontal viewbox on debate vis in order to fit legend axis labels
+// the same, for the larger labels of a short and of a very short window (see work.css)
+const LEFT_MARGINS = [LEFT_MARGIN, 175, 230];
 
 export default function DebateVis({
   currentAttributions,
 }: {
   currentAttributions: AttributionsBundle;
 }) {
+  const leftMargin = LEFT_MARGINS[useShortWindow()];
+
   // data and fetching
   const {
     attributions,
@@ -350,7 +355,7 @@ export default function DebateVis({
       {/* Avoid rendering if width is not available yet */}
       <svg
         className="debate-vis"
-        viewBox={`${-LEFT_MARGIN} 0 ${VIEW_W + LEFT_MARGIN} ${VIEW_H}`}
+        viewBox={`${-leftMargin} 0 ${VIEW_W + leftMargin} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
       >
         <BackgroundArcs />
