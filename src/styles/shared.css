@@ -361,3 +361,71 @@ input[type="search"].list-page-search:focus {
 .temp-range-input::-moz-range-thumb:hover {
   box-shadow: 0px 0px 2px 2px rgba(255, 255, 255, 0.1);
 }
+
+/* ---------- Loading ---------- */
+
+/* The pulse of everything that is waiting for something: the frame of an image preview, and the
+   loading screens' background (LoadingScreen.tsx). It goes between the element's own opacity and
+   a brighter one. */
+@keyframes loading-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* The whole page area, in the place the visualisation will take */
+.loading-screen {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-text-muted);
+  opacity: 0.12;
+  animation: loading-pulse 2.4s ease-out infinite;
+}
+
+.loading-screen-text {
+  position: relative; /* above the background */
+  font-size: var(--text-lg);
+  font-weight: 400;
+  color: var(--color-text);
+  opacity: 1;
+}
+
+/* three dots that light up in turn */
+.loading-dots span {
+  animation: loading-dot 2.4s ease-out infinite;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+@keyframes loading-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.2;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-screen::before,
+  .loading-dots span {
+    animation: none;
+  }
+}

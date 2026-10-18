@@ -3,6 +3,7 @@ import type { AuthorsCoBundle } from "@/types/coOccurrences";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAllAuthors, getAllAuthorsCo } from "@/data/api";
+import LoadingScreen from "@/components/LoadingScreen";
 import PackingVis from "@/components/overview/PackingVis";
 import PackingLegend from "@/components/overview/PackingLegend";
 import "@/styles/shared.css";
@@ -79,7 +80,7 @@ export default function OverviewPage() {
   if (loadState.status === "loading") {
     return (
       <main>
-        <p>Loading artists...</p>
+        <LoadingScreen />
       </main>
     );
   }

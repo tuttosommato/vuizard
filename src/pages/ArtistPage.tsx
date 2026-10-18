@@ -4,6 +4,7 @@ import { getArtistWorkItems, getAuthor } from "@/data/api";
 import type { Artist } from "@/types/artists";
 import type { WorkItem } from "@/types/works";
 import NotFoundPage from "./NotFoundPage";
+import LoadingScreen from "@/components/LoadingScreen";
 import ArtistVis, { type ArtistVisHandle } from "@/components/artist/ArtistVis";
 import "@/styles/shared.css";
 import "@/styles/artist.css";
@@ -108,15 +109,8 @@ export default function ArtistPage() {
     return (
       <>
         <title>Loading…</title>
-        <main className="work-layout">
-          {/* a bundled artist loads as one request, so it never counts up */}
-          <p>
-            {state.phase === "artist"
-              ? "Loading artist…"
-              : state.loadedCount === 0
-                ? `Loading ${state.workCount} works…`
-                : `Loading works: ${state.loadedCount} out of ${state.workCount}`}
-          </p>
+        <main>
+          <LoadingScreen />
         </main>
       </>
     );
@@ -150,7 +144,7 @@ export default function ArtistPage() {
   if (state.status === "loaded" && state.artistId !== artistId) {
     return (
       <main>
-        <p>Loading artist works...</p>
+        <LoadingScreen />
       </main>
     );
   }

@@ -509,13 +509,7 @@ main.artist-layout .artist-vis {
   height: 90px;
   background-color: var(--color-text-muted);
   opacity: 0.12;
-  animation: work-thumbnail-pulse 1.2s ease-in-out infinite;
-}
-
-@keyframes work-thumbnail-pulse {
-  50% {
-    opacity: 0.3;
-  }
+  animation: loading-pulse 1.2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
