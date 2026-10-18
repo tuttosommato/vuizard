@@ -258,6 +258,9 @@ export default function ArtistsLifeTable({
             <th className="artist-column work-dating-discarded">
               Work creation (discarded)
             </th>
+            {/* the same four cells as the other rows: the dates go in the last one */}
+            <td></td>
+            <td></td>
             <td>
               <svg width="100%" height={height}>
                 {discardedDating.map((d) => (
