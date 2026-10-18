@@ -47,13 +47,21 @@ main.list-page {
 }
 
 /* List pages */
+/* Stays at the exact vertical middle of the window: the sticky offset puts its top at half the
+   height, the transform lifts it by half of its own */
 .list-page-header {
   position: sticky;
-  top: 35%;
+  top: 50vh;
+  transform: translateY(-50%);
   width: 40%;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+}
+
+/* the title wraps at a width in characters, not at a fixed break */
+.list-page-header h1 {
+  max-width: 24ch;
 }
 
 .list-page-content {
@@ -87,6 +95,33 @@ input[type="search"].list-page-search:focus {
 
 .card-grid-2col .work-card {
   width: 440px;
+}
+
+/* narrower windows: the search box widens, and then the cards go into one column while the
+   left part takes the rest of the width */
+@media (max-width: 1500px) {
+  input[type="search"].list-page-search {
+    width: 90%;
+  }
+}
+
+@media (max-width: 1420px) {
+  .list-page-header {
+    flex: 1;
+    width: auto;
+  }
+
+  input[type="search"].list-page-search {
+    width: 60%;
+  }
+
+  .list-page-content {
+    flex: 0 0 440px;
+  }
+
+  .card-grid-2col {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---------- Legend ---------- */

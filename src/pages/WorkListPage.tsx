@@ -80,8 +80,7 @@ export default function WorksListPage() {
     <main className="list-page">
       <div className="list-page-header">
         <h1>
-          Search and click on an artwork <br /> to visualise its attribution
-          data
+          Search and click on an artwork to visualise its attribution data
         </h1>
         <input
           className="list-page-search"

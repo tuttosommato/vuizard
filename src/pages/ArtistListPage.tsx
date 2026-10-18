@@ -60,8 +60,7 @@ export default function ArtistsListPage() {
     <main className="list-page">
       <div className="list-page-header">
         <h1>
-          Search and click on an artist <br /> to visualise their attribution
-          data
+          Search and click on an artist to visualise their attribution data
         </h1>
         <input
           className="list-page-search"
