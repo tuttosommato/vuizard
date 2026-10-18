@@ -112,12 +112,39 @@ function FullScreenImage({
         </button>
       )}
 
-      <LoadingImage
-        key={photo.image_path} // a new image starts from its own loading frame
-        imgRef={imageRef}
-        alt={photo.alt}
-        src={BASE_URL + photo.image_path}
-      />
+      <figure className="full-screen-figure">
+        <LoadingImage
+          key={photo.image_path} // a new image starts from its own loading frame
+          imgRef={imageRef}
+          alt={photo.alt}
+          src={BASE_URL + photo.image_path}
+        />
+        {/* beside the image, at its bottom: what it shows and where to find it */}
+        <figcaption className="full-screen-caption">
+          {photo.link && (
+            <a
+              href={photo.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="external-link"
+            >
+              View on Fondazione Zeri
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M7 17L17 7M9 7h8v8" />
+              </svg>
+            </a>
+          )}
+          {photo.alt && <p>{photo.alt}</p>}
+        </figcaption>
+      </figure>
     </div>,
     document.body,
   );

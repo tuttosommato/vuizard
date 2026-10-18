@@ -256,16 +256,45 @@ main.work-layout {
   background-color: color-mix(in srgb, var(--color-bg) 80%, transparent);
 }
 
+.full-screen-figure {
+  --caption-width: clamp(8rem, 18vw, 16rem);
+  position: relative;
+  height: 70%;
+  /* the caption goes beside the image: leave room for one on each side, so it stays centred */
+  max-width: calc(100vw - 2 * (var(--caption-width) + 4rem));
+  margin: 0;
+  display: flex;
+}
+
 .full-screen-image img {
   width: auto;
-  height: 70%;
+  height: 100%;
+  max-width: 100%;
   object-fit: contain;
+}
+
+/* outside the figure's box, so the image itself stays centred on the screen */
+.full-screen-caption {
+  position: absolute;
+  left: 100%;
+  bottom: 0;
+  width: var(--caption-width);
+  margin-left: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.full-screen-caption p {
+  margin: 0;
+  font-size: var(--text-sm);
 }
 
 /* the frame shown while the full-size image is on its way: the height the image will have */
 .full-screen-image .loading-image-loading,
 .full-screen-image .loading-image-failed {
-  height: 70%;
+  height: 100%;
   aspect-ratio: 3 / 4;
 }
 
