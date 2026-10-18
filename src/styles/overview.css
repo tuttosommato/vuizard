@@ -34,6 +34,13 @@
 }
 
 /* the century slider and its labels, like the search box, take 90% of the legend's width */
+.temp-range-cnt {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+}
+
 .packing-legend .temp-range-slider {
   width: 90%;
 }
@@ -316,12 +323,6 @@ input[type="search"].legend-search:focus {
   outline: none;
 }
 
-/* The legend's two rows of example circles: size for the number of attributions, colour for the
-   acceptance rate of a co-occurrence */
-.legend h2.legend-section-gap {
-  margin-top: var(--space-md);
-}
-
 .circle-legend-item {
   display: flex;
   flex-direction: column;
@@ -374,4 +375,20 @@ input[type="search"].legend-search:focus {
 
 .circle-legend-note .legend-discarded {
   color: var(--color-discarded);
+}
+
+/* The title, set like the artist page's: a short muted line leading into it */
+.overview-header p {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.overview-header p.overview-header-description {
+  margin-top: var(--space-sm);
+}
+
+.legend h2.legend-section-gap {
+  margin-top: var(--space-md);
 }

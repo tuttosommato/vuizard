@@ -23,7 +23,8 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
+  overflow: auto;
 }
 
 main.list-page {
@@ -88,6 +89,7 @@ input[type="search"].list-page-search:focus {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  margin-top: var(--space-md);
 }
 
 .legend h2 {
@@ -156,7 +158,7 @@ input[type="search"].list-page-search:focus {
 .temp-legend-items {
   display: flex;
   flex-direction: column;
-  gap: var(--space-base);
+  gap: var(--space-sm);
 }
 
 .accepted-legend-item,

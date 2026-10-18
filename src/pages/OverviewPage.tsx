@@ -212,7 +212,15 @@ function OverviewPageContent({
       <main className="overview-layout page-layout">
         <div className="overview-left page-side-panel">
           <div className="overview-header">
-            <h1>Artists and cultural contexts</h1>
+            <p>Navigate the artists through their</p>
+            <h1>Cultural contexts</h1>
+            <p className="overview-header-description">
+              Each <span className="keyword">circle</span> is an <span className="keyword">artist</span>, grouped
+              in the <span className="keyword">cultural contexts</span> that
+              define their artistic practice. An artist who belongs to{" "}
+              <span className="keyword">more than one context</span> appears once in
+              each.
+            </p>
           </div>
           <PackingLegend />
         </div>

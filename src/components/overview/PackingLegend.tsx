@@ -42,10 +42,10 @@ export default function PackingLegend() {
 
   return (
     <div className="packing-legend legend">
-      <h2 className="legend-section-gap">Filters</h2>
+      {/* Filters */}
       <div className="legend-items-cnt">
         <div className="search-legend-items">
-          <h3>By name</h3>
+          <h3>Filter by name</h3>
           <input
             type="search"
             className="legend-search"
@@ -62,7 +62,7 @@ export default function PackingLegend() {
           )}
         </div>
         <div className="temp-legend-items">
-          <h3>By century</h3>
+          <h3>Filter by century</h3>
           <label className="no-dates-item label-cnt">
             <input
               type="checkbox"
@@ -76,62 +76,65 @@ export default function PackingLegend() {
               </span>
             </div>
           </label>
-          <div className="temp-range-slider">
-            <div className="temp-range-track" />
-            <div className="temp-range-ticks">
-              {steps.map((v) => (
-                <div
-                  key={v}
-                  className="temp-range-tick"
-                  style={{ left: `${((v - min) / (present - min)) * 100}%` }}
-                />
-              ))}
+          <div className="temp-range-cnt">
+            <div className="temp-range-slider">
+              <div className="temp-range-track" />
+              <div className="temp-range-ticks">
+                {steps.map((v) => (
+                  <div
+                    key={v}
+                    className="temp-range-tick"
+                    style={{ left: `${((v - min) / (present - min)) * 100}%` }}
+                  />
+                ))}
+              </div>
+              <div
+                className="temp-range-fill"
+                style={{
+                  left: `${((tempRange[0] - min) / (present - min)) * 100}%`,
+                  right: `${100 - ((tempRange[1] - min) / (present - min)) * 100}%`,
+                }}
+              />
+              <input
+                type="range"
+                min={min}
+                max={present}
+                step={100}
+                value={tempRange[0]}
+                onChange={(e) =>
+                  setTempRange([
+                    Math.min(Number(e.target.value), tempRange[1] - 100),
+                    tempRange[1],
+                  ])
+                }
+                className="temp-range-input"
+              />
+              <input
+                type="range"
+                min={min}
+                max={present}
+                step={100}
+                value={tempRange[1]}
+                onChange={(e) =>
+                  setTempRange([
+                    tempRange[0],
+                    Math.max(Number(e.target.value), tempRange[0] + 100),
+                  ])
+                }
+                className="temp-range-input"
+              />
             </div>
-            <div
-              className="temp-range-fill"
-              style={{
-                left: `${((tempRange[0] - min) / (present - min)) * 100}%`,
-                right: `${100 - ((tempRange[1] - min) / (present - min)) * 100}%`,
-              }}
-            />
-            <input
-              type="range"
-              min={min}
-              max={present}
-              step={100}
-              value={tempRange[0]}
-              onChange={(e) =>
-                setTempRange([
-                  Math.min(Number(e.target.value), tempRange[1] - 100),
-                  tempRange[1],
-                ])
-              }
-              className="temp-range-input"
-            />
-            <input
-              type="range"
-              min={min}
-              max={present}
-              step={100}
-              value={tempRange[1]}
-              onChange={(e) =>
-                setTempRange([
-                  tempRange[0],
-                  Math.max(Number(e.target.value), tempRange[0] + 100),
-                ])
-              }
-              className="temp-range-input"
-            />
-          </div>
-          <div className="temp-range-labels">
-            <span className="temp-range-label">{tempRange[0]}</span>
-            <span className="temp-range-label">
-              {formatUpperLabel(tempRange[1])}
-            </span>
+            <div className="temp-range-labels">
+              <span className="temp-range-label">{tempRange[0]}</span>
+              <span className="temp-range-label">
+                {formatUpperLabel(tempRange[1])}
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Legend */}
       <h2 className="legend-section-gap">Legend</h2>
       <div className="legend-items-cnt">
         <div className="circle-legend-item">
@@ -187,18 +190,15 @@ export default function PackingLegend() {
           </p>
         </div>
       </div>
-
+      {/* Legend caption */}
       <p className="legend-caption">
-        Each artist may belong to one or more{" "}
-        <span className="keyword">cultural contexts</span> that define their
-        artistic practice. <span className="keyword">Selecting one artist</span>{" "}
-        will show <span className="keyword">co-occurring artists</span> in their
-        cultural contexts, uncovering relations and showing their co-occurrence
-        quantity and <span className="keyword">acceptance rate</span> when both
-        are disputed. Selecting{" "}
-        <span className="keyword">more than one connected artist</span> will
-        also show the <span className="keyword">works of art</span> where they
-        were attributed.{" "}
+        <span className="keyword">Hover</span> an artist to see who appears with
+        them in attributions, and <span className="keyword">select</span> it to
+        keep that view, with the colour showing the{" "}
+        <span className="keyword">acceptance rate</span> of what they share.
+        Select <span className="keyword">more than one</span> connected artist
+        to also list the <span className="keyword">works of art</span> where
+        they were all attributed.
       </p>
     </div>
   );
