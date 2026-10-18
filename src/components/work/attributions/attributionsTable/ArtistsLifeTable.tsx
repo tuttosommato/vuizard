@@ -14,6 +14,13 @@ import { useHighlight } from "@/stores/HighlightContext";
 
 const barHeight = labelsFontSize / 1.1;
 
+// An artist whose dates are only known to the century (an anonymous one, or a named master such
+// as Maestro di Rosano, "sec. XII"): shown as an approximate century, not as a life span
+const isCenturyOnly = (
+  author: AttributionsBundle["attributions"][number]["authors"][number],
+  artist: Artist,
+) => author.is_anonymous || artist.life.precision === "century";
+
 export default function ArtistsLifeTable({
   artists,
   currentAttributions,
@@ -137,7 +144,9 @@ export default function ArtistsLifeTable({
                   const artist = artists[author.local_id];
                   return (
                     <span>
-                      {author.is_anonymous ? "approx. century" : artist.life.type}
+                      {isCenturyOnly(author, artist)
+                        ? "approx. century"
+                        : artist.life.type}
                     </span>
                   );
                 })}
@@ -146,6 +155,7 @@ export default function ArtistsLifeTable({
                 {attr.authors.map((author) => {
                   const artist = artists[author.local_id];
                   const life = artist.life;
+                  const centuryOnly = isCenturyOnly(author, artist);
 
                   if (life.start) {
                     return (
@@ -186,10 +196,10 @@ export default function ArtistsLifeTable({
                           toQ={life.end ? life.end_approx : ""}
                           scale={timeScale}
                           height={height}
-                          barHeight={author.is_anonymous ? barHeight * 0.6 : barHeight}
-                          fillOpacity={author.is_anonymous ? 0.5 : 1}
+                          barHeight={centuryOnly ? barHeight * 0.6 : barHeight}
+                          fillOpacity={centuryOnly ? 0.5 : 1}
                           fill={colorScale(attr.type)}
-                          raw={author.is_anonymous ? life.raw : ''}
+                          raw={centuryOnly ? life.raw : ''}
                           fontSize={barHeight}
                         />
                       </svg>
