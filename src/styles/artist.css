@@ -561,3 +561,43 @@ svg.artist-vis {
 svg.artist-vis:active {
   cursor: grabbing;
 }
+
+/* the explanation of the circles' position: the relation qualifiers, one line of text each */
+.position-legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.position-legend-items .legend-caption {
+  margin-top: 0;
+}
+
+.qualifier-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  padding-left: var(--space-md);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+
+/* the four levels, from the nucleus out: each with the qualifiers that put a circle there */
+.qualifier-levels {
+  list-style: decimal;
+}
+
+.qualifier-levels > li {
+  padding-left: var(--space-2xs);
+}
+
+.qualifier-levels ul {
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-2xs);
+  padding-left: var(--space-sm);
+}

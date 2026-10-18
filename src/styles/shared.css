@@ -155,6 +155,13 @@ input[type="search"].list-page-search:focus {
   gap: var(--space-lg);
 }
 
+/* a short explanation under a legend row (the overview's colour row, the artist page's sizes) */
+.circle-legend-note {
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+
 .legend-caption {
   font-size: var(--text-sm);
   color: var(--color-text-muted);

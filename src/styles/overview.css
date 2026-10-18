@@ -367,12 +367,8 @@ input[type="search"].legend-search:focus {
   color: var(--color-text-muted);
 }
 
-/* the explanation under the colour row; the two colour words are in the colours they name */
-.circle-legend-note {
-  font-size: var(--text-xs);
-  line-height: 1.4;
-  color: var(--color-text-muted);
-}
+/* the two colour words of the explanation under the colour row are in the colours they name
+   (the note itself is in shared.css) */
 
 .circle-legend-note .legend-accepted {
   color: var(--color-accepted);
