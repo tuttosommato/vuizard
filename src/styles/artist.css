@@ -231,6 +231,41 @@ main.artist-layout .artist-vis {
   aspect-ratio: 3 / 4;
 }
 
+/* While the image is on its way: the frame of the image previews, pulsing, in the image's own
+   proportions, so the card doesn't change size when the picture arrives. The image itself is
+   kept in place but invisible (display: none would stop it from loading), which also hides the
+   alt text the browser would show meanwhile. */
+.work-card-img-pending {
+  position: relative;
+  aspect-ratio: 3 / 4;
+}
+
+.work-card-img-pending::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-text-muted);
+  opacity: 0.12;
+  animation: loading-pulse 1.2s ease-in-out infinite;
+}
+
+.work-card-img-pending img {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+/* no image, or it failed: the same frame, still */
+.work-card-img-failed::before {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-card-img-pending::before {
+    animation: none;
+  }
+}
+
 .work-card-info {
   min-width: 0;
   width: 80%;

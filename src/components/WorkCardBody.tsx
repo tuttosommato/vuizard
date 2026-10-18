@@ -2,12 +2,47 @@ import type { WorkItem } from "@/types/works";
 import { BASE_URL } from "@/utils/constants.ts";
 import { formatDating } from "@/utils/formatDating";
 import ArrowLink from "@/components/ArrowLink";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 interface WorkCardBodyProps {
   workItem: WorkItem;
   artistId?: string;
   isList?: boolean;
+}
+
+// A card's image. Until it has arrived the card shows the pulsing frame of the image previews,
+// not the browser's alt text; a work with no image, or one that fails to load, gets the same
+// frame without the pulse.
+function CardImage({ src, alt }: { src: string | undefined; alt: string }) {
+  const [status, setStatus] = useState<"loading" | "ready" | "failed">(
+    src ? "loading" : "failed",
+  );
+
+  return (
+    <div
+      className={
+        "work-card-img-container" +
+        (status === "loading" ? " work-card-img-pending" : "") +
+        (status === "failed"
+          ? " work-card-img-pending work-card-img-failed"
+          : "")
+      }
+    >
+      {src && status !== "failed" && (
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy" // an artist can have ~1,000 cards: only load the ones near the viewport
+          // an image that is already there (loaded before) may not fire load again
+          ref={(img) => {
+            if (img?.complete && img.naturalWidth > 0) setStatus("ready");
+          }}
+          onLoad={() => setStatus("ready")}
+          onError={() => setStatus("failed")}
+        />
+      )}
+    </div>
+  );
 }
 
 export default function WorkCardBody({
@@ -25,14 +60,19 @@ export default function WorkCardBody({
 
   return (
     <>
-      <div title={workItem.work?.subject || "Untitled"} className="work-card-upper">
-        <div className="work-card-img-container">
-          <img
-            src={BASE_URL + availablePhotos?.[0]?.image_path}
-            alt={availablePhotos?.[0]?.alt || "Untitled"}
-            loading="lazy" // an artist can have ~1,000 cards: only load the ones near the viewport
-          />
-        </div>
+      <div
+        title={workItem.work?.subject || "Untitled"}
+        className="work-card-upper"
+      >
+        <CardImage
+          key={availablePhotos?.[0]?.image_path}
+          src={
+            availablePhotos?.[0]?.image_path
+              ? BASE_URL + availablePhotos[0].image_path
+              : undefined
+          }
+          alt={availablePhotos?.[0]?.alt || "Untitled"}
+        />
         <div className="work-card-info">
           <div className="work-card-description">
             <h4 className="work-card-title">
@@ -87,7 +127,10 @@ export default function WorkCardBody({
                             (attr.type === "accepted"
                               ? " type-span-accepted"
                               : " type-span-discarded") +
-                            (involvesThisArtist || (isList && attr.type === "accepted") ? " type-span-highlighted" : "")
+                            (involvesThisArtist ||
+                            (isList && attr.type === "accepted")
+                              ? " type-span-highlighted"
+                              : "")
                           }
                         >
                           {idx + 1 != authorsLength || authorsLength === 1
