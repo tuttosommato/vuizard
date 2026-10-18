@@ -543,3 +543,47 @@ Above the page's own layers (z-index up to 10) and below the nav (100). */
     animation: none;
   }
 }
+/* ScreenSizeNotice.tsx: shown in place of the page when the window is too small for it */
+.screen-size-notice {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  text-align: center;
+}
+
+.screen-size-notice h1 {
+  font-size: var(--text-lg);
+}
+
+.screen-size-notice p {
+  max-width: 28rem;
+  color: var(--color-text-muted);
+}
+
+/* the level switch, while the pages can't be shown: visible but inert */
+.level-switch-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* The About overlay on a screen narrower than the app's minimum: one column, the title and its
+   subtitle aligned to the left above the text. */
+@media (max-width: 1023px) {
+  .about-overlay-text-cnt {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 56ch;
+    padding: var(--space-xl) var(--space-lg);
+    gap: var(--space-lg);
+  }
+
+  .about-overlay-title-cnt {
+    position: static;
+    text-align: left;
+    max-width: none;
+  }
+}

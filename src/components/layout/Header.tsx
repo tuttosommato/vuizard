@@ -16,7 +16,11 @@ const levels = [
 // compositor while the page work blocks the main thread.
 const NAV_HEAD_START_MS = 60;
 
-export default function Header() {
+export default function Header({
+  levelsDisabled = false,
+}: {
+  levelsDisabled?: boolean; // the screen is too small for the pages: the switch is shown, inert
+}) {
   const location = useLocation();
   const { open: aboutOpen, openAbout, closeAbout } = useAboutOverlay();
   // About opens by itself only for a direct entry at the root; whoever entered somewhere else
@@ -45,6 +49,10 @@ export default function Header() {
     index: number,
   ) => {
     // leave new-tab/new-window clicks to the browser
+    if (levelsDisabled) {
+      e.preventDefault();
+      return;
+    }
     if (e.defaultPrevented || e.button !== 0) return;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
@@ -73,7 +81,9 @@ export default function Header() {
 
       {/* Same idea as the table/ordering switches: one pill, a thumb that slides to the active option. Here the options are links, so the route is the state. */}
       <div
-        className="level-switch"
+        className={
+          "level-switch" + (levelsDisabled ? " level-switch-disabled" : "")
+        }
         style={{ "--active-index": displayIndex } as React.CSSProperties}
       >
         {levels.map(({ to, label, title }, i) => (
@@ -84,6 +94,8 @@ export default function Header() {
             title={title}
             aria-label={title}
             aria-current={i === activeIndex ? "page" : undefined}
+            aria-disabled={levelsDisabled || undefined}
+            tabIndex={levelsDisabled ? -1 : undefined}
             onClick={(e) => handleLevelClick(e, to, i)}
           >
             {label}
