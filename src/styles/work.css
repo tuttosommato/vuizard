@@ -253,6 +253,7 @@ main.work-layout {
   align-items: center;
   z-index: 9999;
   backdrop-filter: blur(10px);
+  background-color: color-mix(in srgb, var(--color-bg) 80%, transparent);
 }
 
 .full-screen-image img {
@@ -285,6 +286,25 @@ main.work-layout {
 
 .full-screen-image button svg {
   display: block;
+}
+
+/* previous / next image, at the screen's sides */
+.full-screen-image .full-screen-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.full-screen-nav-previous {
+  left: var(--space-lg);
+}
+
+.full-screen-nav-next {
+  right: var(--space-lg);
+}
+
+.full-screen-nav-previous svg {
+  transform: scaleX(-1); /* the icon points right */
 }
 
 /* =============================================================

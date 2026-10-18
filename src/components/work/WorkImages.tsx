@@ -15,9 +15,14 @@ type WorkImagesProps = {
 function FullScreenImage({
   photo,
   onClose,
+  onPrevious,
+  onNext,
 }: {
   photo: Photos;
   onClose: () => void;
+  // undefined at the first / last image: there is nowhere to go
+  onPrevious?: () => void;
+  onNext?: () => void;
 }) {
   const [buttonPos, setButtonPos] = useState<{
     top: number;
@@ -48,8 +53,39 @@ function FullScreenImage({
     };
   }, []);
 
+  // the keyboard moves between the images and closes the view
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+      else if (event.key === "ArrowLeft") onPrevious?.();
+      else if (event.key === "ArrowRight") onNext?.();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose, onPrevious, onNext]);
+
   return createPortal(
     <div className="full-screen-image">
+      {onPrevious && (
+        <button
+          type="button"
+          className="full-screen-nav full-screen-nav-previous"
+          aria-label="Previous image"
+          onClick={onPrevious}
+        >
+          <ArrowIcon size={20} stroke={1.5} />
+        </button>
+      )}
+      {onNext && (
+        <button
+          type="button"
+          className="full-screen-nav full-screen-nav-next"
+          aria-label="Next image"
+          onClick={onNext}
+        >
+          <ArrowIcon size={20} stroke={1.5} />
+        </button>
+      )}
       {buttonPos && (
         <button
           style={{
@@ -77,6 +113,7 @@ function FullScreenImage({
       )}
 
       <LoadingImage
+        key={photo.image_path} // a new image starts from its own loading frame
         imgRef={imageRef}
         alt={photo.alt}
         src={BASE_URL + photo.image_path}
@@ -87,16 +124,25 @@ function FullScreenImage({
 }
 
 export default function WorkImages({ photos }: WorkImagesProps) {
-  const [selectedImage, setSelectedImage] = useState<Photos | null>(null);
+  // the image open in the full-screen view (its index among the renderable ones)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // filter out photos without image_path, as they cannot be rendered. Note that the lack of image_path is a problem coming from the data source
   // eventually, other images are still rendered and available at the original catalog link
   const renderablePhotos = photos.filter((ph) => ph.image_path);
 
-  const handleFullScreen = (photo: Photos) => {
-    if (!photo) return;
-    setSelectedImage(photo);
-  };
+  const closeFullScreen = useCallback(() => setSelectedIndex(null), []);
+  const showPrevious = useCallback(
+    () => setSelectedIndex((i) => (i !== null && i > 0 ? i - 1 : i)),
+    [],
+  );
+  const showNext = useCallback(
+    () =>
+      setSelectedIndex((i) =>
+        i !== null && i < renderablePhotos.length - 1 ? i + 1 : i,
+      ),
+    [renderablePhotos.length],
+  );
 
   // The strip scrolls sideways when its images don't fit; with the scrollbars hidden, arrows at
   // its ends (shown only on the side that has more) move it by most of a screenful.
@@ -132,10 +178,14 @@ export default function WorkImages({ photos }: WorkImagesProps) {
 
   return (
     <>
-      {selectedImage && (
+      {selectedIndex !== null && renderablePhotos[selectedIndex] && (
         <FullScreenImage
-          photo={selectedImage}
-          onClose={() => setSelectedImage(null)}
+          photo={renderablePhotos[selectedIndex]}
+          onClose={closeFullScreen}
+          onPrevious={selectedIndex > 0 ? showPrevious : undefined}
+          onNext={
+            selectedIndex < renderablePhotos.length - 1 ? showNext : undefined
+          }
         />
       )}
 
@@ -143,14 +193,12 @@ export default function WorkImages({ photos }: WorkImagesProps) {
         {/* the images' own area, which fades out on the right while there is more (see work.css) */}
         <div className={"img-viewport" + (more.right ? " img-fade-right" : "")}>
           <div className="img-cnt" ref={stripRef}>
-            {renderablePhotos.map((ph) => (
+            {renderablePhotos.map((ph, index) => (
               <LoadingImage
                 key={ph.image_path}
                 alt={ph.alt}
                 src={BASE_URL + ph.image_path}
-                onClick={() => {
-                  handleFullScreen(ph);
-                }}
+                onClick={() => setSelectedIndex(index)}
               />
             ))}
           </div>
