@@ -1,5 +1,7 @@
 # VUIZARD
 
+----
+
 A purely client-side app (React + TypeScript + Vite) drawing its visualisations with D3 and reading static JSON files, with no backend.
 
 ## The three levels
