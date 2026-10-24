@@ -19,6 +19,9 @@ import {
 } from "@/components/work/attributions/debateVis/constants";
 import VisLegend from "@/components/work/attributions/debateVis/VisLegend";
 import AxisLegend from "@/components/work/attributions/debateVis/AxisLegend";
+import RankingTooltip, {
+  type RankingTab,
+} from "@/components/work/attributions/debateVis/RankingTooltip";
 import ArrowMarkerDef from "@/components/ArrowMarkerDef";
 import {
   attributionIdsByCompositeId,
@@ -53,6 +56,19 @@ export default function DebateVis({
   currentAttributions: AttributionsBundle;
 }) {
   const leftMargin = LEFT_MARGINS[useShortWindow()];
+
+  // The explanation behind the "?" next to the axis and the one next to the ordering switch: the
+  // same tooltip, opened on the tab of the thing each one stands by. Its position is worked out
+  // once, from the trigger's place when it opens, so a resize closes it.
+  const [info, setInfo] = useState<{ tab: RankingTab; x: number } | null>(null);
+  const toggleInfo = (tab: RankingTab, anchor: DOMRect) =>
+    setInfo((prev) => (prev ? null : { tab, x: anchor.right }));
+  useEffect(() => {
+    if (!info) return;
+    const close = () => setInfo(null);
+    window.addEventListener("resize", close);
+    return () => window.removeEventListener("resize", close);
+  }, [info]);
 
   // data and fetching
   const {
@@ -405,21 +421,45 @@ export default function DebateVis({
         })}
 
         <ArrowMarkerDef />
-        <AxisLegend />
-      </svg>
-      <div className="debate-vis-ordering-switch">
-        <Switch
-          currentState={activeOrdering}
-          setNewState={setActiveOrdering}
-          options={[
-            { value: "standard", label: "Catalogue order" },
-            {
-              value: "authoritativeness",
-              label: "By source authoritativeness",
-            },
-          ]}
+        <AxisLegend
+          open={info !== null}
+          onToggle={(anchor) => toggleInfo("authoritativeness", anchor)}
         />
+      </svg>
+      <div className="debate-vis-ordering-row">
+        <button
+          type="button"
+          className="ordering-info-trigger"
+          aria-label="How the attributions are ordered"
+          aria-expanded={info !== null}
+          onClick={(event) =>
+            toggleInfo("catalogue", event.currentTarget.getBoundingClientRect())
+          }
+        >
+          {info ? "×" : "?"}
+        </button>
+        <div className="debate-vis-ordering-switch">
+          <Switch
+            currentState={activeOrdering}
+            setNewState={setActiveOrdering}
+            options={[
+              { value: "standard", label: "Catalogue order" },
+              {
+                value: "authoritativeness",
+                label: "By source authoritativeness",
+              },
+            ]}
+          />
+        </div>
       </div>
+      {info && (
+        <RankingTooltip
+          tab={info.tab}
+          setTab={(tab) => setInfo((prev) => prev && { ...prev, tab })}
+          x={info.x}
+          onClose={() => setInfo(null)}
+        />
+      )}
     </div>
   );
 }

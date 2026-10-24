@@ -366,7 +366,8 @@ main.work-layout {
   font-size: var(--text-base); /* readable size regardless of viewBox scale */
 }
 
-.vis-arcs-legend {
+/* the axis labels are subdued, the "?" among them is not */
+.vis-arcs-legend > *:not(.axis-info-trigger) {
   opacity: 0.575;
 }
 
@@ -453,7 +454,7 @@ body:has(.ranking-explanation-tooltip) .vis-legend,
 body:has(.ranking-explanation-tooltip) .debate-vis-ordering-switch,
 body:has(.ranking-explanation-tooltip) .debate-vis > *:not(.vis-arcs-legend),
 body:has(.ranking-explanation-tooltip) .vis-arcs-legend > *:not(.axis-info-trigger) {
-  opacity: 0.1825;
+  opacity: 0.13;
   transition: opacity 0.2s ease;
   pointer-events: none;
 }
@@ -463,16 +464,60 @@ body:has(.ranking-explanation-tooltip) .vis-arcs-legend > *:not(.axis-info-trigg
   top: 50%;
   transform: translateY(-50%);
   max-height: 90vh;
-  width: clamp(580px, 50vw, 720px);
+  width: fit-content; /* the width of its text: 50ch (below) */
+  max-width: 90vw;
   z-index: 9999;
-  background-color: transparent;
-  backdrop-filter: blur(10px);
+  /* the glass of the About overlay */
+  background-color: color-mix(in srgb, var(--color-bg) 10%, transparent);
+  backdrop-filter: blur(8px);
+  overscroll-behavior: contain; /* its own scroll never carries on to the page behind */
   color: var(--color-text);
   border: var(--border);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
   font-size: var(--text-xs);
-  overflow-y: scroll;
+  overflow-y: auto;
+}
+
+/* the two tabs: laid out on top of each other, so the tooltip keeps the height of the taller */
+.ranking-explanation-panels {
+  display: grid;
+  margin-top: var(--space-md);
+}
+
+.ranking-explanation-panel {
+  grid-area: 1 / 1;
+}
+
+.ranking-explanation-panel[data-active="false"] {
+  visibility: hidden;
+}
+
+/* the link that switches the tab: a button with the look of .arrow-link (global.css) */
+.ranking-tab-link {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+
+/* The closing note holds the tab links. Paragraphs are at 0.8 opacity (global.css), which would
+   also hold a hovered link back: the note is at full opacity, its text colour is what is
+   toned down, so the link can reach its hover colour in full. */
+.ranking-explanation-tooltip p.ranking-explanation-note {
+  opacity: 1;
+  color: color-mix(in srgb, var(--color-text) 80%, var(--color-bg));
+}
+
+/* as the links of the About text: highlight colour, no underline, on hover */
+.ranking-tab-link:hover,
+.ranking-tab-link:focus-visible {
+  color: var(--color-text-highlight);
+  text-decoration: none;
 }
 
 .ranking-explanation-tooltip h3 {
@@ -481,13 +526,17 @@ body:has(.ranking-explanation-tooltip) .vis-arcs-legend > *:not(.axis-info-trigg
 
 .ranking-explanation-tooltip p.ranking-explanation-p {
   margin-bottom: var(--space-sm);
-  font-size: calc(var(--text-base) * 0.9);
+  font-size: var(--text-md);
+  line-height: 1.45;
+  width: 55ch;
 }
 
 .reason-type-groups {
   display: flex;
   flex-direction: column;
-  margin: var(--space-md) 0;
+  width: 55ch; /* as the paragraphs, in the same font size */
+  font-size: var(--text-md);
+  margin: var(--space-lg) 0;
 }
 
 .objective-list-cnt p,
@@ -506,7 +555,8 @@ body:has(.ranking-explanation-tooltip) .vis-arcs-legend > *:not(.axis-info-trigg
   font-weight: 500;
   font-size: var(--text-sm);
   color: var(--color-text-highlight);
-  width: 200px;
+  width: 9.5rem;
+  flex-shrink: 0;
   margin: 0;
 }
 
@@ -548,6 +598,47 @@ body:has(.ranking-explanation-tooltip) .vis-arcs-legend > *:not(.axis-info-trigg
   display: flex;
   width: 100%;
   justify-content: center;
+}
+
+/* the ordering switch with its "?" beside it */
+.debate-vis-ordering-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+.debate-vis-ordering-row .debate-vis-ordering-switch {
+  width: auto;
+  margin-top: 0;
+}
+
+.ordering-info-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.375rem; /* about the size of the circle on the axis */
+  height: 1.375rem;
+  padding: 0;
+  border: var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.ordering-info-trigger:hover,
+.ordering-info-trigger:focus-visible {
+  background-color: var(--color-text);
+  color: var(--color-bg);
 }
 
 .reason-edge,
