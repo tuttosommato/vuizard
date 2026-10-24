@@ -181,7 +181,7 @@ function AreaTooltip({
   return createPortal(
     <div
       ref={tooltipRef}
-      className="reason-tooltip"
+      className="reason-tooltip overview-tooltip"
       style={{
         position: "fixed",
         transform: `translate(-50%, calc(-100% - ${TOOLTIP_GAP}px))`,
@@ -224,7 +224,7 @@ function ArtistTooltip() {
   return createPortal(
     <div
       ref={ref}
-      className="reason-tooltip"
+      className="reason-tooltip overview-tooltip"
       style={{
         position: "fixed",
         opacity: 0,
@@ -551,7 +551,7 @@ function SelectedArtistLabels({
         if (el) labelRefs.current.set(key, el);
         else labelRefs.current.delete(key);
       }}
-      className="reason-tooltip selected-artist-label"
+      className="reason-tooltip overview-tooltip selected-artist-label"
     >
       <p className="tooltip-title">{name}</p>
       {details.map((detail) => (

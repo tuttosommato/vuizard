@@ -80,6 +80,13 @@
   visibility: hidden; /* until it has been placed */
 }
 
+/* The overview's tooltips (school, artist under the pointer, selected artists) are more opaque
+   than .reason-tooltip's glass: what is behind them changes with the state of the picture (the
+   hover dims it, a selection doesn't), which made the same tooltip look darker or lighter. */
+.reason-tooltip.overview-tooltip {
+  background-color: color-mix(in srgb, var(--color-bg) 90%, transparent);
+}
+
 /* Where they overlap, the one of the artist under the pointer comes to the front (hoverBus.ts
    adds .raised). Doubled class to beat .reason-tooltip's z-index, which comes from elsewhere. */
 .reason-tooltip.selected-artist-label {
