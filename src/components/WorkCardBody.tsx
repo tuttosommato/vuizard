@@ -2,12 +2,14 @@ import type { WorkItem } from "@/types/works";
 import { BASE_URL } from "@/utils/constants.ts";
 import { formatDating } from "@/utils/formatDating";
 import ArrowLink from "@/components/ArrowLink";
+import { CardOpenArrow, CardTitle } from "@/components/CardLink";
 import { Fragment, useState } from "react";
 
 interface WorkCardBodyProps {
   workItem: WorkItem;
   artistId?: string;
   isList?: boolean;
+  to?: string; // makes the card a link to this address
 }
 
 // A card's image. Until it has arrived the card shows the pulsing frame of the image previews,
@@ -49,6 +51,7 @@ export default function WorkCardBody({
   workItem,
   artistId = "",
   isList = false,
+  to,
 }: WorkCardBodyProps) {
   const acceptedDating = workItem.work?.dating
     .filter((d) => d.type === "accepted")
@@ -75,9 +78,9 @@ export default function WorkCardBody({
         />
         <div className="work-card-info">
           <div className="work-card-description">
-            <h4 className="work-card-title">
+            <CardTitle to={to}>
               {workItem.work?.subject || "Untitled"}
-            </h4>
+            </CardTitle>
             <p className="work-card-dating">
               {acceptedDating?.join(", ") || "No dating information available"}
             </p>
@@ -90,6 +93,7 @@ export default function WorkCardBody({
           </div>
         </div>
       </div>
+      {to && <CardOpenArrow />}
       <div className="work-card-attributions-expanded">
         <table className="work-card-attributions-table">
           <thead className="work-card-attributions-header">

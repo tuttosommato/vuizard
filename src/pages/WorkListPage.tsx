@@ -1,10 +1,10 @@
 import { useMemo, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { getWorksIndex, getWork, getAttributions } from "@/data/api";
 import type { WorksIndex, WorkItem } from "@/types/works";
 import "@/styles/shared.css";
 import "@/styles/artist.css";
 import WorkCardBody from "@/components/WorkCardBody";
+import { CardTitle } from "@/components/CardLink";
 
 const PAGE_SIZE = 100;
 
@@ -95,13 +95,17 @@ export default function WorksListPage() {
           {visibleFiltered.map(([id, label]) => {
             const workItem = worksById.get(id);
             return (
-              <Link key={id} to={`/work/${id}`} className="work-card">
+              <div key={id} className="work-card">
                 {workItem ? (
-                  <WorkCardBody workItem={workItem} isList={true} />
+                  <WorkCardBody
+                    workItem={workItem}
+                    isList={true}
+                    to={`/work/${id}`}
+                  />
                 ) : (
-                  <h4 className="work-card-title">{label}</h4>
+                  <CardTitle to={`/work/${id}`}>{label}</CardTitle>
                 )}
-              </Link>
+              </div>
             );
           })}
         </div>

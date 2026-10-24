@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { getAllAuthors } from "@/data/api";
 import type { Artist } from "@/types/artists";
 import "@/styles/shared.css";
@@ -73,13 +72,9 @@ export default function ArtistsListPage() {
       <div className="list-page-content">
         <div className="card-grid-2col">
           {visibleFiltered.map((artist) => (
-            <Link
-              key={artist.id}
-              to={`/artist/${artist.id}`}
-              className="work-card"
-            >
-              <ArtistCardBody artist={artist} />
-            </Link>
+            <div key={artist.id} className="work-card">
+              <ArtistCardBody artist={artist} to={`/artist/${artist.id}`} />
+            </div>
           ))}
         </div>
         {hasMore && (

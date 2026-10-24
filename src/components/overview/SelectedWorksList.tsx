@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { getAttributions, getWork } from "@/data/api";
 import type { Artist } from "@/types/artists";
 import type { WorkItem } from "@/types/works";
@@ -16,7 +15,6 @@ export default function SelectedWorksList({
   artists: Record<string, Artist>;
   selectedIds: Set<string>;
 }) {
-  const navigate = useNavigate();
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [worksById, setWorksById] = useState<Map<string, WorkItem>>(new Map());
 
@@ -80,9 +78,13 @@ export default function SelectedWorksList({
         const workItem = worksById.get(id);
         return (
           <div key={id} className="work-card-container">
-            <div className="work-card" onClick={() => navigate(`/work/${id}`)}>
+            <div className="work-card">
               {workItem ? (
-                <WorkCardBody workItem={workItem} artistId={singleArtistId} />
+                <WorkCardBody
+                  workItem={workItem}
+                  artistId={singleArtistId}
+                  to={`/work/${id}`}
+                />
               ) : (
                 <h4 className="work-card-title">Loading…</h4>
               )}
