@@ -24,6 +24,11 @@ export default function ArrowLink({
     );
   }
   
+  // the last word goes with the arrow in a no-break piece: the arrow never ends up alone on a
+  // line of its own
+  const label = formatAuthorLabel(author);
+  const cut = label.lastIndexOf(" ") + 1;
+
   return (
     <Link
       to={`/artist/${author.local_id}`}
@@ -32,9 +37,12 @@ export default function ArrowLink({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {formatAuthorLabel(author)}
-      <span className="arrow-link-arrow" aria-hidden="true">
-        <ArrowIcon />
+      {label.slice(0, cut)}
+      <span className="arrow-link-tail">
+        {label.slice(cut)}
+        <span className="arrow-link-arrow" aria-hidden="true">
+          <ArrowIcon />
+        </span>
       </span>
     </Link>
   );

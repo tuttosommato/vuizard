@@ -43,6 +43,7 @@
   --text-3xl: 2.5rem;
 
   /* Spacing */
+  --space-3xs: 0.05rem;
   --space-2xs: 0.125rem;
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -298,13 +299,18 @@ a:hover {
   color: var(--color-text-highlight);
 }
 
+.arrow-link-tail {
+  white-space: nowrap;
+}
+
+/* sits on the text: its middle at the middle of the lowercase letters, whatever the font size */
 .arrow-link-arrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  vertical-align: middle;
-  padding: 0 var(--space-xs);
-  margin-left: 0.4em;
+  vertical-align: -0.16em;
+  padding: var(--space-3xs) var(--space-xs);
+  margin-left: 0.6em;
   border: var(--border);
   border-radius: var(--radius-sm);
   border-color: var(--color-text-muted);
@@ -326,6 +332,9 @@ a:hover {
 
 .arrow-link {
   text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-skip-ink: all; /* the line leaves a gap where letters go below it */
+  text-underline-offset: 3px;
   color: inherit;
   color: var(--color-text-muted);
   transition: color 0.2s ease;
