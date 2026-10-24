@@ -78,7 +78,10 @@ export default function WorkCardBody({
         />
         <div className="work-card-info">
           <div className="work-card-description">
-            <CardTitle to={to}>
+            <CardTitle
+              to={to}
+              className="work-card-title work-card-title-lines"
+            >
               {workItem.work?.subject || "Untitled"}
             </CardTitle>
             <p className="work-card-dating">

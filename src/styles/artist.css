@@ -177,12 +177,24 @@ main.artist-layout .artist-vis {
 
 /* room for the arrow that comes in at the corner, so it never lands on the title */
 .work-card .work-card-title:has(> .work-card-link) {
-  padding-right: calc(var(--space-lg) + var(--space-sm));
+  padding-right: calc(var(--space-lg) + var(--space-md));
 }
 
 .work-card-link {
   color: inherit;
   text-decoration: none;
+}
+
+/* An artwork's title takes up to two lines, then is cut with an ellipsis (the artists' names
+   stay on one) */
+.work-card .work-card-title.work-card-title-lines {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* above the card's other content: the paragraphs have an opacity, which puts each of them in a
