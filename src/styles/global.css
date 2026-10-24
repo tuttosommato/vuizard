@@ -488,13 +488,22 @@ Above the page's own layers (z-index up to 10) and below the nav (100). */
   margin-top: 0;
 }
 
-/* links in the text keep the text colour (the global link colour is the muted one) and
-   are underlined, as .in-text-a does */
+/* Links in the text keep the text colour (the global link colour is the muted one) and are
+   underlined, as .in-text-a does; on hover they go to the highlight colour and lose the
+   underline. The same as the links between the tabs of the ranking tooltip (work.css). The
+   keyword inside them takes the link's colour, so that it can change. */
 .about-overlay-text a.in-text-a {
   color: inherit;
+  transition: color 0.2s ease;
 }
 
-.about-overlay-text a.in-text-a:hover {
+.about-overlay-text a.in-text-a .keyword {
+  color: inherit;
+  font-weight: inherit;
+}
+
+.about-overlay-text a.in-text-a:hover,
+.about-overlay-text a.in-text-a:focus-visible {
   color: var(--color-text-highlight);
 }
 
