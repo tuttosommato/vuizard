@@ -89,7 +89,7 @@ export default function ArtistVisLegend({
           cy={-(TIER_I + TIER_IV) / 2}
           r={12}
           fill="var(--color-bg)"
-          stroke="var(--color-text-muted)"
+          stroke="var(--color-text)"
           strokeWidth={1.5}
         />
         <text
@@ -97,7 +97,7 @@ export default function ArtistVisLegend({
           y={-(TIER_I + TIER_IV) / 2}
           textAnchor="middle"
           dominantBaseline="central"
-          fill="var(--color-text-muted)"
+          fill="var(--color-text)"
           fontSize="var(--text-sm)"
         >
           ?
