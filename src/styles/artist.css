@@ -185,16 +185,20 @@ main.artist-layout .artist-vis {
   text-decoration: none;
 }
 
+/* above the card's other content: the paragraphs have an opacity, which puts each of them in a
+   stacking context painted after (so over) the link's layer, and they would take the clicks */
 .work-card-link::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 1;
   border-radius: inherit;
 }
 
+/* the artists' links, over the stretched one */
 .work-card .arrow-link {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 /* hovering a link inside the card (an artist) hands the cues over to it: the title's underline
