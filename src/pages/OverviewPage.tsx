@@ -129,7 +129,20 @@ function OverviewPageContent({
     [artists],
   );
 
-  const { selectedIds, toggle } = useOverviewSelection();
+  const { selectedIds, toggle, triggerNewSelection } = useOverviewSelection();
+  const cardsRef = useRef<HTMLDivElement>(null);
+
+  // a new selection puts its card at the top of the list: go up to it, whatever the scroll
+  useEffect(() => {
+    if (!triggerNewSelection) return;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    cardsRef.current?.scrollTo({
+      top: 0,
+      behavior: reducedMotion ? "auto" : "smooth",
+    });
+  }, [triggerNewSelection]);
 
   // Arriving from an artist's page ("View in artists overview") with ?artist=<id>: that artist
   // starts out selected. The parameter is used up (removed from the address) so that a
@@ -258,6 +271,7 @@ function OverviewPageContent({
         </div>
         <div className="overview-right">
           <div
+            ref={cardsRef}
             className={
               "overview-cards-cnt page-side-panel" +
               (selectedIds.size > 0 ? " overview-cards-cnt-faded" : "")

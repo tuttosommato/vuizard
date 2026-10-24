@@ -186,16 +186,20 @@ function ArtistPageContent({
   );
 
   const listRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef(new Map<string, HTMLDivElement>());
   const artistVisRef = useRef<ArtistVisHandle>(null);
-  const { triggerNewSelection } = useArtistSelection();
+  const { selectedIds, triggerNewSelection } = useArtistSelection();
   const { isWorkFilteredOut, isAttributionFilteredOut } = useArtistFilter();
 
-  // the works the filters leave out go after the others, each group in its own order
+  // the works selected in the visualisation come first, in the order they were selected (as the
+  // overview's artists do); then the others, with the ones the filters leave out last, each
+  // group in its own order
   const orderedWorks = useMemo(() => {
+    const byId = new Map(state.worksList.map((w) => [w.id, w]));
+    const selected = [...selectedIds].flatMap((id) => byId.get(id) ?? []);
     const kept: WorkItem[] = [];
     const filteredOut: WorkItem[] = [];
     for (const w of state.worksList) {
+      if (selectedIds.has(w.id)) continue;
       (isWorkItemFilteredOut(
         w,
         artistId,
@@ -206,8 +210,27 @@ function ArtistPageContent({
         : kept
       ).push(w);
     }
-    return [...kept, ...filteredOut];
-  }, [state.worksList, artistId, isWorkFilteredOut, isAttributionFilteredOut]);
+    return [...selected, ...kept, ...filteredOut];
+  }, [
+    state.worksList,
+    artistId,
+    isWorkFilteredOut,
+    isAttributionFilteredOut,
+    selectedIds,
+  ]);
+
+
+  // a new selection puts its card at the top of the list: go up to it, whatever the scroll
+  useEffect(() => {
+    if (!triggerNewSelection) return;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    listRef.current?.scrollTo({
+      top: 0,
+      behavior: reducedMotion ? "auto" : "smooth",
+    });
+  }, [triggerNewSelection]);
 
   const dotSpecs = useMemo(
     () => getArtistDotSpecs(state.worksList, artistId),
@@ -257,36 +280,6 @@ function ArtistPageContent({
           Math.min(thresholdMultiplier, fitNucleusMultiplier(dotSpecs)),
     [isAnonymous, nucleusRadius, thresholdMultiplier, dotSpecs],
   );
-
-  useEffect(() => {
-    if (!triggerNewSelection) return;
-    const workId = triggerNewSelection as string;
-    const card = cardRefs.current.get(workId);
-    const container = listRef.current;
-    if (!card || !container) return;
-
-    const cardRect = card.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-
-    const isFullyVisible =
-      cardRect.top >= containerRect.top &&
-      cardRect.bottom <= containerRect.bottom;
-
-    if (isFullyVisible) return;
-
-    const isCutOffAtBottom =
-      cardRect.top >= containerRect.top &&
-      cardRect.bottom >= containerRect.bottom;
-
-    if (isCutOffAtBottom) {
-      const scrollDelta = cardRect.bottom - containerRect.bottom;
-      container.scrollBy({ top: scrollDelta + 40, behavior: "smooth" });
-      return;
-    }
-
-    const scrollDelta = cardRect.top - containerRect.top;
-    container.scrollBy({ top: scrollDelta - 40, behavior: "smooth" });
-  }, [triggerNewSelection]);
 
   return (
     <main className="artist-layout page-layout">
@@ -370,18 +363,11 @@ function ArtistPageContent({
           </div>
         }
         {orderedWorks.map((workItem) => (
-          <div
+          <WorkCard
             key={workItem.id}
-            ref={(el) => {
-              if (el) cardRefs.current.set(workItem.id, el);
-              else cardRefs.current.delete(workItem.id);
-            }}
-          >
-            <WorkCard
-              workItem={workItem}
-              artistId={artistId ?? ""}
-            />
-          </div>
+            workItem={workItem}
+            artistId={artistId ?? ""}
+          />
         ))}
       </div>
     </main>
