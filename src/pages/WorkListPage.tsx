@@ -101,6 +101,7 @@ export default function WorksListPage() {
 
   return (
     <main className="list-page">
+      <title>Browse artworks</title>
       <div className="list-page-header">
         <h1>
           Search and click on an artwork to visualise its attribution data

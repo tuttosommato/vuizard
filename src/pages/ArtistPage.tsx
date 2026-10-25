@@ -284,6 +284,7 @@ function ArtistPageContent({
 
   return (
     <main className="artist-layout page-layout">
+      <title>{state.artist.name}</title>
       <div className="artist-left page-side-panel side-panel-glass">
         <div className="artist-header">
           <p>Navigate the works with attributions to</p>
