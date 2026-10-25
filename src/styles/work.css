@@ -614,6 +614,84 @@ body:has(.ranking-explanation-tooltip) .vis-arcs-legend > *:not(.axis-info-trigg
   margin-top: 0;
 }
 
+/* The wobble of the attributions when the switch changes nothing: a quick turn about the
+   centre of the picture that settles back, like something nudged. Two copies of the keyframes,
+   used alternately, so that a second one can start before the first has finished. */
+.vis-nudge {
+  transform-origin: 0 0;
+}
+
+.vis-nudge[data-nudge="a"] {
+  animation: vis-nudge-a 0.55s ease-out;
+}
+
+.vis-nudge[data-nudge="b"] {
+  animation: vis-nudge-b 0.55s ease-out;
+}
+
+@keyframes vis-nudge-a {
+  0% {
+    transform: rotate(0);
+  }
+  22% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(1.8deg);
+  }
+  75% {
+    transform: rotate(-0.7deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+
+@keyframes vis-nudge-b {
+  0% {
+    transform: rotate(0);
+  }
+  22% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(1.8deg);
+  }
+  75% {
+    transform: rotate(-0.7deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+
+/* the note under the switch; its place is kept so the page doesn't move when it comes and goes */
+.ordering-same-note {
+  min-height: 1.4em;
+  margin: var(--space-xs) 0 0;
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.ordering-same-note:not(:empty) {
+  animation: ordering-note-in 0.25s ease;
+}
+
+@keyframes ordering-note-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vis-nudge[data-nudge],
+  .ordering-same-note:not(:empty) {
+    animation: none;
+  }
+}
+
 .ordering-info-trigger {
   display: flex;
   align-items: center;

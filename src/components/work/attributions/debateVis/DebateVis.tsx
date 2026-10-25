@@ -15,6 +15,8 @@ import {
   VIEW_W,
   VIEW_H,
   center,
+  centerX,
+  centerY,
   outerX,
 } from "@/components/work/attributions/debateVis/constants";
 import VisLegend from "@/components/work/attributions/debateVis/VisLegend";
@@ -82,6 +84,30 @@ export default function DebateVis({
   const [activeOrdering, setActiveOrdering] = useState<
     "standard" | "authoritativeness"
   >("standard");
+
+  // When the two orderings give the same sequence for this work, the switch changes nothing in
+  // the picture: it answers with a small wobble of the attributions and a note, so that the
+  // click is seen not to have gone unheard.
+  const orderingsAreSame = useMemo(() => {
+    const standard = standardOrdering(attributions);
+    const byAuthority = authoritativenessOrdering(attributions);
+    return standard.every(
+      (attr, i) => attr.attribution_id === byAuthority[i].attribution_id,
+    );
+  }, [attributions]);
+  const [nudge, setNudge] = useState(0); // counts the wobbles; its parity restarts the animation
+  const [sameNote, setSameNote] = useState(false);
+  const noteTimer = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(noteTimer.current), []);
+  const changeOrdering = (next: "standard" | "authoritativeness") => {
+    if (next === activeOrdering) return;
+    setActiveOrdering(next);
+    if (!orderingsAreSame) return;
+    setNudge((n) => n + 1);
+    setSameNote(true);
+    window.clearTimeout(noteTimer.current);
+    noteTimer.current = window.setTimeout(() => setSameNote(false), 2600);
+  };
 
   const orderedAttributions = useMemo(() => {
     if (activeOrdering === "standard") return standardOrdering(attributions);
@@ -376,49 +402,63 @@ export default function DebateVis({
       >
         <BackgroundArcs />
 
-        {/* rendered in a STABLE order (attributions, never reordered) so React
+        {/* The attributions and the links between them sit in a wrapper that can wobble about the
+            centre of the picture (see .vis-nudge in work.css); the inner translate puts their
+            own coordinates back. */}
+        <g transform={center}>
+          <g
+            className="vis-nudge"
+            data-nudge={nudge === 0 ? undefined : nudge % 2 ? "a" : "b"}
+          >
+            <g transform={`translate(${-centerX}, ${-centerY})`}>
+              {/* rendered in a STABLE order (attributions, never reordered) so React
             never has to move these DOM nodes around, only their rotation prop
             changes, which is what makes the animation reliable */}
-        {attributions.map((attr) => {
-          const slotIndex =
-            slotIndexByAttributionId.get(attr.attribution_id) ?? 0;
-          const total = highlightedAttributions.length;
-          return (
-            <AttributionsGroup
-              key={attr.attribution_id}
-              attr={attr}
-              rotation={
-                interpolatedRotations.get(attr.attribution_id) ??
-                targetRotationByAttributionId.get(attr.attribution_id) ??
-                0
-              }
-              labelsRef={labelsRef}
-              highlightMembers={highlightMembers}
-              tooltipPosition={slotIndex + 1 <= total / 2 ? "bottom" : "top"}
-            />
-          );
-        })}
+              {attributions.map((attr) => {
+                const slotIndex =
+                  slotIndexByAttributionId.get(attr.attribution_id) ?? 0;
+                const total = highlightedAttributions.length;
+                return (
+                  <AttributionsGroup
+                    key={attr.attribution_id}
+                    attr={attr}
+                    rotation={
+                      interpolatedRotations.get(attr.attribution_id) ??
+                      targetRotationByAttributionId.get(attr.attribution_id) ??
+                      0
+                    }
+                    labelsRef={labelsRef}
+                    highlightMembers={highlightMembers}
+                    tooltipPosition={
+                      slotIndex + 1 <= total / 2 ? "bottom" : "top"
+                    }
+                  />
+                );
+              })}
 
-        {linkSpecs.map((s) => {
-          const d = curvePath(s.a, s.b);
-          return (
-            d && (
-              <path
-                key={`${s.className}-${s.a}-${s.b}`}
-                className={s.className}
-                transform={center}
-                d={d}
-                stroke={s.stroke}
-                strokeWidth={s.strokeWidth}
-                fill="none"
-                opacity={
-                  s.a === highlightedId || s.b === highlightedId ? 1 : 0.3
-                }
-                vectorEffect="non-scaling-stroke"
-              />
-            )
-          );
-        })}
+              {linkSpecs.map((s) => {
+                const d = curvePath(s.a, s.b);
+                return (
+                  d && (
+                    <path
+                      key={`${s.className}-${s.a}-${s.b}`}
+                      className={s.className}
+                      transform={center}
+                      d={d}
+                      stroke={s.stroke}
+                      strokeWidth={s.strokeWidth}
+                      fill="none"
+                      opacity={
+                        s.a === highlightedId || s.b === highlightedId ? 1 : 0.3
+                      }
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  )
+                );
+              })}
+            </g>
+          </g>
+        </g>
 
         <ArrowMarkerDef />
         <AxisLegend
@@ -441,7 +481,7 @@ export default function DebateVis({
         <div className="debate-vis-ordering-switch">
           <Switch
             currentState={activeOrdering}
-            setNewState={setActiveOrdering}
+            setNewState={changeOrdering}
             options={[
               { value: "standard", label: "Catalogue order" },
               {
@@ -452,6 +492,10 @@ export default function DebateVis({
           />
         </div>
       </div>
+      {/* for this work the two orderings are the same: what the switch did, and didn't, is said */}
+      <p className="ordering-same-note" role="status">
+        {sameNote && "Same order for this work"}
+      </p>
       {info && (
         <RankingTooltip
           tab={info.tab}
