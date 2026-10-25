@@ -241,9 +241,9 @@ function ArtistPageContent({
   // Ceiling from the overall dot count (keeps the tiers from crowding)...
   const thresholdMultiplier =
     dotsLength >= 500
-      ? 2
+      ? 2.25
       : dotsLength >= 450
-        ? 2.35
+        ? 2.5
         : dotsLength >= 400
           ? 2.75
           : dotsLength >= 300
