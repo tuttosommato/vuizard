@@ -5,6 +5,7 @@ import type { Artist } from "@/types/artists";
 import type { WorkItem } from "@/types/works";
 import NotFoundPage from "./NotFoundPage";
 import LoadingScreen from "@/components/LoadingScreen";
+import ArtistExternalLinks from "@/components/ArtistExternalLinks";
 import ArtistVis, { type ArtistVisHandle } from "@/components/artist/ArtistVis";
 import "@/styles/shared.css";
 import "@/styles/artist.css";
@@ -322,6 +323,8 @@ function ArtistPageContent({
               ))}
             </p>
           )}
+
+          <ArtistExternalLinks artist={state.artist} />
         </div>
         <Link to={`/?artist=${artistId}`} className="button-link">
           View in artists overview

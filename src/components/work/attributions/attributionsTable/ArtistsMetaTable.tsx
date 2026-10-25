@@ -1,3 +1,4 @@
+import ArtistExternalLinks from "@/components/ArtistExternalLinks";
 import { scaleLinear } from "d3";
 import { Fragment } from "react";
 import type { AttributionsBundle } from "@/types/attributions";
@@ -213,36 +214,10 @@ export default function ArtistsMetaTable({
                               </span>
                             </div>
                           )}
-                          {(() => {
-                            const links = [
-                              { label: "ULAN", href: coArtist.ulan },
-                              { label: "VIAF", href: coArtist.viaf },
-                              {
-                                label: "Wikidata",
-                                href: coArtist.wikidata,
-                              },
-                              { label: "DBpedia", href: coArtist.dbpedia },
-                            ].filter((l) => l.href);
-                            return links.length > 0 ? (
-                              <div className="artist-links-cnt">
-                                External links:{" "}
-                                {links.map((l, i) => (
-                                  <span key={l.label}>
-                                    <a
-                                      href={l.href!}
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="in-text-a"
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      {l.label}
-                                    </a>
-                                    {i < links.length - 1 && ", "}
-                                  </span>
-                                ))}
-                              </div>
-                            ) : null;
-                          })()}
+                          <ArtistExternalLinks
+                            artist={coArtist}
+                            stopPropagation
+                          />
                         </td>
                         <td className="reliability-column details-cell">
                           {idx === 0 &&

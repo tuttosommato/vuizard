@@ -464,6 +464,14 @@ main.artist-layout .artist-vis {
   color: var(--color-text);
 }
 
+/* the links to the external authorities, set like the paragraphs around them */
+.artist-left .artist-header .artist-links-cnt {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin-top: var(--space-xs);
+}
+
 .artist-left .artist-header p.artist-life {
   font-weight: 400;
   color: var(--color-text);
