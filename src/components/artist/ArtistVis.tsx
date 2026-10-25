@@ -276,7 +276,7 @@ function ArtistVis({
         // tighter than the tier dots (+2): the nucleus is a small, hard-edged space,
         // and the multiplier is fitted to this padding (see fitNucleusMultiplier)
         forceCollide<(typeof nodes)[0]>(
-          (d) => d.radius + VIS_NUCLEUS_DOT_PADDING,
+          (d) => d.radius + VIS_NUCLEUS_DOT_PADDING/1.5,
         )
           .strength(1)
           .iterations(10),
@@ -312,7 +312,7 @@ function ArtistVis({
       )
       .force(
         "collide",
-        forceCollide<(typeof nodes)[0]>((d) => d.radius + 2)
+        forceCollide<(typeof nodes)[0]>((d) => d.radius + 1)
           .strength(1)
           .iterations(10),
       )
