@@ -1,5 +1,10 @@
 import { useMemo, useEffect, useState } from "react";
-import { getWorksIndex, getWork, getAttributions } from "@/data/api";
+import {
+  getWorksIndex,
+  getWorksCounts,
+  getWork,
+  getAttributions,
+} from "@/data/api";
 import type { WorksIndex, WorkItem } from "@/types/works";
 import "@/styles/shared.css";
 import "@/styles/artist.css";
@@ -10,6 +15,8 @@ const PAGE_SIZE = 100;
 
 export default function WorksListPage() {
   const [index, setIndex] = useState<WorksIndex | null>(null);
+  // how many attributions each work has: the list goes from the most to the fewest
+  const [counts, setCounts] = useState<Record<string, number> | null>(null);
   const [query, setQuery] = useState("");
   const [rawQuery, setRawQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -27,6 +34,16 @@ export default function WorksListPage() {
   }, []);
 
   useEffect(() => {
+    let canceled = false;
+    getWorksCounts().then((c) => {
+      if (!canceled) setCounts(c);
+    });
+    return () => {
+      canceled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     const id = setTimeout(() => setQuery(rawQuery), 150);
     return () => clearTimeout(id);
   }, [rawQuery]);
@@ -34,10 +51,16 @@ export default function WorksListPage() {
   const filtered = useMemo(() => {
     if (!index) return [];
     const q = query.trim().toLowerCase();
-    return Object.entries(index).filter(([, label]) =>
+    const matching = Object.entries(index).filter(([, label]) =>
       label.toLowerCase().includes(q),
     );
-  }, [index, query]);
+    // by decreasing number of attributions (the sort is stable: works with as many keep the
+    // order of the index); without the counts, in the order of the index
+    if (counts) {
+      matching.sort(([a], [b]) => (counts[b] ?? 0) - (counts[a] ?? 0));
+    }
+    return matching;
+  }, [index, query, counts]);
 
   if (query !== prevQuery) {
     setPrevQuery(query);

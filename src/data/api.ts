@@ -23,6 +23,10 @@ const ARTIST_BUNDLE_MIN_WORKS = 400;
 // callers asking for the same resource share a single in-flight fetch.
 
 const indexCache: { current: Promise<WorksIndex> | null } = { current: null };
+const countsCache: { current: Promise<Record<string, number> | null> | null } =
+  {
+    current: null,
+  };
 const workCache = new Map<string, Promise<Work | null>>();
 const attributionsCache = new Map<string, Promise<AttributionsBundle | null>>();
 const authorCache = new Map<string, Promise<Artist | null>>();
@@ -60,6 +64,17 @@ export function getWorksIndex(): Promise<WorksIndex> {
     indexCache.current = fetchJson<WorksIndex>(`${BASE}/works-index.json`);
   }
   return indexCache.current;
+}
+
+// How many attributions each work has, keyed by work id; null if the data has no such file (an
+// older split), in which case the list of works keeps the order of the index.
+export function getWorksCounts(): Promise<Record<string, number> | null> {
+  if (!countsCache.current) {
+    countsCache.current = fetchJsonOrNull<Record<string, number>>(
+      `${BASE}/works-counts.json`,
+    );
+  }
+  return countsCache.current;
 }
 
 export function getAllAuthors(): Promise<Record<string, Artist>> {

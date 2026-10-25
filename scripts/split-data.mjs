@@ -3,6 +3,8 @@
 //   public/data/v1/authors/<authorId>.json      (one per author — all)
 //   public/data/v1/attributions/<workId>.json   (one per work IN SCOPE)
 //   public/data/v1/works-index.json             ({ [workId]: title })
+//   public/data/v1/works-counts.json            ({ [workId]: number of attributions }, to
+//                                                order the artwork list by it)
 //   public/data/v1/authors-full.json            (authors.json, copied as-is)
 //   public/data/v1/authors-co-full.json         (authors_co.json, copied as-is)
 //   public/data/v1/artist-bundles/<authorId>.json
@@ -25,6 +27,8 @@
 // Run with: npm run split-data
 // To rebuild only the artist bundles (leaves every other output untouched):
 //   node scripts/split-data.mjs --bundles-only
+// To rebuild only works-counts.json (reads attributions.json only, so it is quick):
+//   node scripts/split-data.mjs --counts-only
 
 import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -97,6 +101,16 @@ async function splitInScopeWorksAndAttributions(works, attributions) {
   }
 }
 
+// How many attributions each work has, for ordering the list of works without loading them all
+async function writeWorksCounts(attributions) {
+  const counts = {};
+  for (const [id, bundle] of Object.entries(attributions)) {
+    counts[id] = bundle.attributions?.length ?? 0;
+  }
+  await writeJson(join(OUT, "works-counts.json"), counts);
+  console.log(`  wrote works-counts.json (${Object.keys(counts).length} entries)`);
+}
+
 async function splitAuthors() {
   console.log("→ reading authors.json...");
   const authors = await readJson(join(SOURCE, "authors.json"));
@@ -152,14 +166,22 @@ async function writeArtistBundles(works, attributions) {
 }
 
 const bundlesOnly = process.argv.includes("--bundles-only");
+const countsOnly = process.argv.includes("--counts-only");
 
 console.time("split-data");
-const { works, attributions } = await loadWorksAndAttributions();
-if (!bundlesOnly) {
-  await splitInScopeWorksAndAttributions(works, attributions);
-  await splitAuthors();
-  await copyAuthorsBundles();
+if (countsOnly) {
+  console.log("→ reading attributions.json...");
+  await mkdir(OUT, { recursive: true });
+  await writeWorksCounts(await readJson(join(SOURCE, "attributions.json")));
+} else {
+  const { works, attributions } = await loadWorksAndAttributions();
+  if (!bundlesOnly) {
+    await splitInScopeWorksAndAttributions(works, attributions);
+    await writeWorksCounts(attributions);
+    await splitAuthors();
+    await copyAuthorsBundles();
+  }
+  await writeArtistBundles(works, attributions);
 }
-await writeArtistBundles(works, attributions);
 console.timeEnd("split-data");
 console.log("✓ done. Output is in public/data/v1/");
