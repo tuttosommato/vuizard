@@ -192,7 +192,7 @@ export default function RankingTooltip({
               Foundation's records. The internal rules prescribe reporting the
               alternative attributions{" "}
               <span className="keyword">
-                from the most recent to the oldest
+                from the oldest to the most recent 
               </span>
               , above all where the year an attribution was made can be
               established (for example because it is tied to a text cited in the
