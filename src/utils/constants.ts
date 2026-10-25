@@ -38,8 +38,8 @@ export const VIS_ANON_RING_GAP = 70;
 export const VIS_HALF_PLANE_GAP = 10;
 // Nucleus dot sizing (see fitNucleusMultiplier): start from a standard multiplier
 // and shrink it until the dots fit in the lower half-disc.
-export const VIS_NUCLEUS_DOT_PADDING = 1.5; // breathing room between nucleus dots (tier dots keep 2)
-export const VIS_NUCLEUS_FILL = 0.7; // share of the half-disc the padded dots may cover
+export const VIS_NUCLEUS_DOT_PADDING = 1; // breathing room between nucleus dots (the tier dots keep the same)
+export const VIS_NUCLEUS_FILL = 0.8; // share of the half-disc the padded dots may cover
 export const VIS_DOT_MULTIPLIER_BASE = 4; // standard size
 export const VIS_DOT_MULTIPLIER_MIN = 1.5; // floor, so dots stay visible and clickable
 export const VIS_DOT_RADIUS = 5;
