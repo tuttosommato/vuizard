@@ -1,11 +1,10 @@
-// Imperative, non-React hover bridge from the artist card list into PackingVis.
+// Using an imperative approach here -->
 // Hover fires far more often than click, and at 5000+ artists routing it through
 // React state would force a re-render/diff of the whole dot list on every mouseenter
 // so this bypasses React entirely for this one direction.
 //
 //
-// !! An artist can own more than one leaf circle (multiple cultural-context declarations),
-// so a given id can match several dots/edges at once.
+// !! An artist can own more than one leaf circle (multiple cultural-context declarations), so a given id can match several dots/edges at once.
 
 let dotsContainer: SVGGElement | null = null;
 
@@ -18,12 +17,10 @@ export function registerDotsContainer(el: SVGGElement | null) {
   focusedDots = [];
 }
 
-// Hovering an artist also highlights who appears with them, the way selecting one does
-// (the others dim, the co-occurring ones take their acceptance colour); selecting just
-// makes that permanent. Same reason as the rest of this file for being imperative: it
-// touches up to a few hundred dots per hover, and React would re-render all 5000+.
-// PackingVis registers where the related artists and their colours come from: with
-// something selected, hovering another artist shows what selecting it too would do.
+// Hovering an artist only highlights the artist with its tooltip, while only by selecting it
+// who appears with them gets also highlighted
+// (the others dim, the co-occurring ones take their acceptance colour).
+
 type HoverFocusSource = {
   // related artist id -> the fill it takes; null when there's nothing to show for this one
   related: (id: string) => Map<string, string> | null;
@@ -85,7 +82,11 @@ function raiseSelectedLabels(id: string | null) {
   }
 }
 
-function applyHighlight(id: string | null) {
+// `withRelated`: also show who appears with the artist (they stay, in their acceptance colour,
+// and everyone else dims strongly). A real hover doesn't (it outlines the artist and dims the
+// rest a little; who appears with it is shown by selecting it); the idle demo does, to show what
+// selecting an artist does.
+function applyHighlight(id: string | null, withRelated: boolean) {
   clearHoverFocus();
   raiseSelectedLabels(id);
   dotsContainer
@@ -96,7 +97,7 @@ function applyHighlight(id: string | null) {
     dotsContainer
       ?.querySelectorAll(`[data-artist-id="${id}"]`)
       .forEach((el) => el.classList.add("hovered"));
-    applyHoverFocus(id);
+    if (withRelated) applyHoverFocus(id);
   }
 }
 
@@ -104,11 +105,12 @@ function applyHighlight(id: string | null) {
 export function highlightDot(id: string | null) {
   // someone is really hovering: whatever is showing a demo of the highlight stops first
   if (id !== null) userHoverListener?.();
-  applyHighlight(id);
+  applyHighlight(id, false);
 }
 
-// The same highlight, shown by the idle demo (see useIdleHoverDemo) without anyone hovering.
-export const demoHighlightDot = applyHighlight;
+// The highlight of the idle demo (see useIdleHoverDemo), shown without anyone hovering: it
+// includes who appears with the artist, which a real hover no longer does.
+export const demoHighlightDot = (id: string | null) => applyHighlight(id, true);
 
 // While the demo plays the dots get a `demo` class, which gives them a transition (see
 // overview.css), so that it fades from one artist to the next. A real hover is instant: the

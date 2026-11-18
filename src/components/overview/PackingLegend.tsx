@@ -199,9 +199,10 @@ export default function PackingLegend() {
       </div>
       {/* Legend caption */}
       <p className="legend-caption">
-        <span className="keyword">Hover</span> an artist to see who appears with
-        them in attributions, and <span className="keyword">select</span> it to
-        keep that view, with the colour showing the{" "}
+        <span className="keyword">Hover</span> artists to see their biographical data
+        and <span className="keyword">number of attributions</span>, and{" "}
+        <span className="keyword">select</span> them to see who appears with
+        them in attributions throughout the dataset, with the colour showing the{" "}
         <span className="keyword">acceptance rate</span> of what they share.
         Select <span className="keyword">more than one</span> connected artist
         to also list the <span className="keyword">works of art</span> where
