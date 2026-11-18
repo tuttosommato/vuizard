@@ -8,6 +8,7 @@ import useMeasuredSize from "@/hooks/useMeasuredSize";
 import TimeSpan from "@/components/work/attributions/attributionsTable/TimeSpan";
 import { Fragment, useMemo } from "react";
 import ArrowLink from "@/components/ArrowLink";
+import { lifeTypeLabel } from "@/utils/formatLife";
 import QuestionMarkTooltip from "@/components/QuestionMarkTooltip";
 import { useCrossSelection } from "@/stores/CrossSelectionContext";
 import { useHighlight } from "@/stores/HighlightContext";
@@ -146,7 +147,7 @@ export default function ArtistsLifeTable({
                     <span>
                       {isCenturyOnly(author, artist)
                         ? "approx. century"
-                        : artist.life.type}
+                        : lifeTypeLabel(artist.life).toLowerCase()}
                     </span>
                   );
                 })}

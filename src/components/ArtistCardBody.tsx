@@ -1,5 +1,6 @@
 import type { Artist } from "@/types/artists";
 import { getArtistTotal } from "@/utils/getArtistTotal";
+import { formatLife, formatLifeLabel } from "@/utils/formatLife";
 import { memo } from "react";
 import { CardOpenArrow, CardTitle } from "@/components/CardLink";
 
@@ -15,6 +16,8 @@ export default memo(function ArtistCardBody({
     .map((d) => d.label)
     .join(", ");
 
+  const lifeLabel = formatLifeLabel(artist.life);
+
   return (
     <>
       <div className="work-card-upper">
@@ -23,17 +26,9 @@ export default memo(function ArtistCardBody({
             <CardTitle to={to}>{artist.name}</CardTitle>
             <p className="work-card-dating">
               <span className="work-card-dating-note">
-                {artist.life.raw &&
-                  artist.life.start &&
-                  `${artist.life.precision === "century" ? "Approx. century" : String(artist.life.type).charAt(0).toUpperCase() + String(artist.life.type).slice(1)}: `}
+                {lifeLabel && `${lifeLabel}: `}
               </span>
-              {artist.life.raw && artist.life.start
-                ? `${artist.life.start}${artist.life.start_approx ? " ca." : ""} - ${
-                    artist.life.end
-                      ? `${artist.life.end}${artist.life.end_approx ? " ca." : ""}`
-                      : "present"
-                  }`
-                : artist.life.raw || "Life dates unknown"}
+              {formatLife(artist.life)}
             </p>
 
             {[

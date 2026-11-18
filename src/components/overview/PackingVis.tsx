@@ -1,6 +1,6 @@
 import type { Artist } from "@/types/artists";
 import { schoolName } from "@/utils/schoolNames";
-import { formatLife } from "@/utils/formatLife";
+import { formatLifeWithLabel } from "@/utils/formatLife";
 import type { AuthorsCoBundle } from "@/types/coOccurrences";
 import { useMemo, useRef, useState, useEffect, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
@@ -735,7 +735,7 @@ export default function PackingVis({
             id: node.data.id,
             name: node.data.name,
             details: [
-              formatLife(artists[node.data.id].life),
+              formatLifeWithLabel(artists[node.data.id].life),
               attributionsLabel(getTotal(artists[node.data.id])),
             ],
             x: node.x,
