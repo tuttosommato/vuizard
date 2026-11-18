@@ -1,4 +1,5 @@
 import ArtistExternalLinks from "@/components/ArtistExternalLinks";
+import { schoolChainLabel } from "@/utils/schoolNames";
 import { scaleLinear } from "d3";
 import { Fragment } from "react";
 import type { AttributionsBundle } from "@/types/attributions";
@@ -201,15 +202,9 @@ export default function ArtistsMetaTable({
                             0 && (
                             <div className="artist-context-cnt">
                               Cultural context:{" "}
-                              <span className="context-list"> {"scuola "}
+                              <span className="context-list">
                                 {coArtist.cultural_context_info.declarations
-                                  .map((d) => {
-                                    if (d.chain.length === 0) return "n.d.";
-                                    if (d.chain.length === 1) return d.chain[0];
-                                    if (d.chain.length === 2)
-                                      return d.chain[0] + ` (${d.chain[1]})`;
-                                    return d.chain[0] + ` (${d.chain[2]})`;
-                                  })
+                                  .map((d) => schoolChainLabel(d.chain))
                                   .join("; ")}
                               </span>
                             </div>

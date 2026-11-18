@@ -91,11 +91,27 @@ const WHOLE_LABELS: Record<string, string> = {
   arte_romana: "Roman art",
 };
 
+// a name that isn't listed (new data) still reads as something: "foo_bar" -> "Foo bar"
+function adjectiveOf(name: string): string {
+  return (
+    ADJECTIVES[name] ??
+    name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, " ")
+  );
+}
+
 export function schoolName(name: string): string {
   if (name in WHOLE_LABELS) return WHOLE_LABELS[name];
-  // a name that isn't listed (new data) still reads as something: "foo_bar" -> "Foo bar school"
-  const adjective =
-    ADJECTIVES[name] ??
-    name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, " ");
-  return `${adjective} school`;
+  return `${adjectiveOf(name)} school`;
+}
+
+// A declaration's chain, broad to narrow (["italiana", "emiliana", "ferrarese"]), in a line: the
+// nation and, in brackets, the narrowest place after it ("Italian school (Ferrarese)"). For the
+// tables of artists, where the nation is what the bubbles group by and the place is what is added.
+export function schoolChainLabel(chain: string[]): string {
+  if (chain.length === 0) return WHOLE_LABELS.unknown;
+  const [nation, ...places] = chain;
+  const narrowest = places[places.length - 1];
+  return narrowest
+    ? `${schoolName(nation)} (${adjectiveOf(narrowest)})`
+    : schoolName(nation);
 }

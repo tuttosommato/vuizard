@@ -1,6 +1,7 @@
 import type { Artist } from "@/types/artists";
 import { getArtistTotal } from "@/utils/getArtistTotal";
 import { formatLife, formatLifeLabel } from "@/utils/formatLife";
+import { schoolName } from "@/utils/schoolNames";
 import { memo } from "react";
 import { CardOpenArrow, CardTitle } from "@/components/CardLink";
 
@@ -12,8 +13,9 @@ export default memo(function ArtistCardBody({
   to?: string; // makes the card a link to this address
 }) {
   const totalAttributions = getArtistTotal(artist);
+  // in English, as the overview's bubbles and tooltips name them ("Venetian school")
   const culturalContext = artist.cultural_context_info.declarations
-    .map((d) => d.label)
+    .map((d) => schoolName(d.canonical))
     .join(", ");
 
   const lifeLabel = formatLifeLabel(artist.life);
@@ -55,8 +57,7 @@ export default memo(function ArtistCardBody({
               <p className="work-card-context">
                 Cultural context:{" "}
                 <span className="work-card-context-value">
-                  {culturalContext.toLowerCase() != "unknown" ? "scuola" : ""}{" "}
-                  {culturalContext.toLowerCase()}
+                  {culturalContext}
                 </span>
               </p>
             )}
