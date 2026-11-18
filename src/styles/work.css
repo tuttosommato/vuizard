@@ -750,6 +750,7 @@ body:has(.ranking-explanation-tooltip) .vis-arcs-legend > *:not(.axis-info-trigg
   width: 95%;
   margin-bottom: var(--space-md);
   justify-content: space-between;
+  gap: var(--space-base);
 }
 
 .vis-legend-col {
