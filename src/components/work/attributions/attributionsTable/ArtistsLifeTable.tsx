@@ -264,17 +264,23 @@ export default function ArtistsLifeTable({
             </svg>
           </td>
         </tr>
-        {discardedDating.length > 0 && (
-          <tr className="dating-row discarded-dating-row">
-            <th className="artist-column work-dating-discarded">
-              Work creation (discarded)
-            </th>
-            {/* the same four cells as the other rows: the dates go in the last one */}
-            <td></td>
-            <td></td>
-            <td>
-              <svg width="100%" height={height}>
-                {discardedDating.map((d) => (
+        {/* One row per discarded dating, so that datings that overlap in time don't land on top of
+            each other; the first carries the name of the row, in chronological order */}
+        {[...discardedDating]
+          .sort((a, b) => +a.from - +b.from || +a.to - +b.to)
+          .map((d, i) => (
+            <tr
+              key={`${d.from}-${d.to}-${i}`}
+              className="dating-row discarded-dating-row"
+            >
+              <th className="artist-column work-dating-discarded">
+                {i === 0 && "Work creation (discarded)"}
+              </th>
+              {/* the same four cells as the other rows: the dates go in the last one */}
+              <td></td>
+              <td></td>
+              <td>
+                <svg width="100%" height={height}>
                   <TimeSpan
                     from={+d.from}
                     to={+d.to}
@@ -285,13 +291,12 @@ export default function ArtistsLifeTable({
                     barHeight={barHeight}
                     fill={"var(--color-text)"}
                     fillOpacity={0.5}
-                    raw={''}
+                    raw={""}
                   />
-                ))}
-              </svg>
-            </td>
-          </tr>
-        )}
+                </svg>
+              </td>
+            </tr>
+          ))}
       </tbody>
     </table>
   );

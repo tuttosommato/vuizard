@@ -57,9 +57,56 @@ async function resetDir(dir) {
   await mkdir(dir, { recursive: true });
 }
 
+// The same author attributed more than once in a work (each time with its own reasons) comes in
+// the source as several records with the same attribution_id (type + authors): the page keys
+// everything on that id, so they collided and left empty slots in the picture. Here they become
+// one attribution with all the reasons, the exact repeats dropped.
+function mergeRepeatedAttributions(attributions) {
+  const signature = (a) =>
+    JSON.stringify([a.type, a.authors.map((x) => [x.composite_id, x.r_qualifier, x.u_qualifier])]);
+  const reasonKey = (r) => JSON.stringify([r.reason, r.original_text, r.date, r.rank]);
+  let works = 0;
+  let merged = 0;
+  for (const [workId, bundle] of Object.entries(attributions)) {
+    const byId = new Map();
+    let repeated = false;
+    const kept = [];
+    for (const attr of bundle.attributions) {
+      const first = byId.get(attr.attribution_id);
+      if (!first) {
+        byId.set(attr.attribution_id, attr);
+        kept.push(attr);
+      } else if (signature(first) !== signature(attr)) {
+        // same id but not the same author(s): not a repeat, left as it is
+        console.warn(`  ⚠ work ${workId}: ${attr.attribution_id} repeats with other authors, not merged`);
+        kept.push(attr);
+      } else {
+        repeated = true;
+        merged++;
+        const seen = new Set(first.reasons.map(reasonKey));
+        for (const reason of attr.reasons) {
+          if (!seen.has(reasonKey(reason))) {
+            first.reasons.push(reason);
+            seen.add(reasonKey(reason));
+          }
+        }
+      }
+    }
+    if (repeated) {
+      bundle.attributions = kept;
+      bundle.n_attributions = kept.length;
+      works++;
+    }
+  }
+  console.log(`  merged ${merged} repeated attributions in ${works} works`);
+  return attributions;
+}
+
 async function loadWorksAndAttributions() {
   console.log("→ reading attributions.json (defines the in-scope work set)...");
-  const attributions = await readJson(join(SOURCE, "attributions.json"));
+  const attributions = mergeRepeatedAttributions(
+    await readJson(join(SOURCE, "attributions.json")),
+  );
   console.log(`  ${Object.keys(attributions).length} works in scope`);
 
   console.log("→ reading works.json (lookup table, ~50 MB — slow)...");
@@ -172,7 +219,9 @@ console.time("split-data");
 if (countsOnly) {
   console.log("→ reading attributions.json...");
   await mkdir(OUT, { recursive: true });
-  await writeWorksCounts(await readJson(join(SOURCE, "attributions.json")));
+  await writeWorksCounts(
+    mergeRepeatedAttributions(await readJson(join(SOURCE, "attributions.json"))),
+  );
 } else {
   const { works, attributions } = await loadWorksAndAttributions();
   if (!bundlesOnly) {

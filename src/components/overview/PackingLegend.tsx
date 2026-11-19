@@ -31,10 +31,7 @@ export default function PackingLegend() {
     return () => clearTimeout(timer);
   }, [text, setQuery]);
   const [min] = tempBounds;
-  // A century runs from 1 to 100 (the 12th century is 1101-1200, as the dates of the artists'
-  // lives are given), while the slider's steps are the round years that begin the bucket of
-  // each century (1100, 1200...): the lower end reads as the year after the step, the upper one
-  // as the step itself.
+  // A century runs from 1 to 100 (the 12th century is 1101-1200, as the dates of the artists' lives are given)
   const formatLowerLabel = (value: number) => String(value + 1);
   const formatUpperLabel = (value: number) =>
     value === present ? "Present" : String(value);

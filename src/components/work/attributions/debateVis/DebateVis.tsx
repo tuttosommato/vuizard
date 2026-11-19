@@ -1,4 +1,7 @@
-import type { AttributionsBundle } from "@/types/attributions";
+import type {
+  AttributionsBundle,
+  AuthorSimilarity,
+} from "@/types/attributions";
 import BackgroundArcs from "@/components/work/attributions/debateVis/BackgroundArcs";
 import AttributionsGroup from "@/components/work/attributions/debateVis/AttributionsGroup";
 import {
@@ -41,7 +44,13 @@ type LinkSpec = {
   className: string;
 };
 
+// A similarity link between two authors is drawn when their npmi (how much more often they appear
+// together than chance would have it) is high enough, and when it rests on enough works: npmi
+// rewards rare pairs, so two authors who share a single work can score high on very little.
 const similarity_threshold = 0.35; // minimum npmi for a similarity link to be drawn
+const similarity_min_count = 2; // minimum raw number of works the two authors share (count_ab)
+const isSimilar = (s: AuthorSimilarity) =>
+  s.npmi > similarity_threshold && s.count_ab >= similarity_min_count;
 const ROTATION_DURATION_MS = 400;
 
 function easeInOutCubic(t: number) {
@@ -141,7 +150,7 @@ export default function DebateVis({
     };
 
     author_similarities.forEach((s) => {
-      if (s.npmi > similarity_threshold) addRelated(s.a, s.b);
+      if (isSimilar(s)) addRelated(s.a, s.b);
     });
     implicit_relations.forEach(([a, b]) => addRelated(a, b));
     master_relations.forEach(([a, b]) => addRelated(a, b));
@@ -245,15 +254,18 @@ export default function DebateVis({
     ) => {
       const aIds = attributionIdsForComposite[compositeA] ?? [];
       const bIds = attributionIdsForComposite[compositeB] ?? [];
+      // Two authors of the same attribution (one record with both: "X & Y") would make a link
+      // from the attribution to itself, drawn as a line that goes out and comes back along itself:
+      // they are already together on one label, so there is nothing to connect.
       aIds.forEach((a) =>
-        bIds.forEach((b) =>
-          specs.push({ a, b, stroke, strokeWidth, className }),
-        ),
+        bIds.forEach((b) => {
+          if (a !== b) specs.push({ a, b, stroke, strokeWidth, className });
+        }),
       );
     };
 
     author_similarities.forEach((l) => {
-      if (l.npmi > similarity_threshold) {
+      if (isSimilar(l)) {
         expand(
           l.a,
           l.b,
@@ -309,7 +321,7 @@ export default function DebateVis({
       else keys.add("uncertain");
     });
 
-    if (author_similarities.some((s) => s.npmi > similarity_threshold)) {
+    if (author_similarities.some(isSimilar)) {
       keys.add("similar");
     }
     if (implicit_relations.length > 0) keys.add("same-artist");
