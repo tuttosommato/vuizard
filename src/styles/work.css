@@ -1055,3 +1055,10 @@ td.details-cell {
 .artists-life-table tbody tr:not(tr.dating-row) {
   border-bottom: 1px solid var(--color-text-muted);
 }
+
+/* a position on a ray with several reasons: their entries one under the other, set apart */
+.reason-tooltip-entry + .reason-tooltip-entry {
+  margin-top: var(--space-xs);
+  padding-top: var(--space-xs);
+  border-top: 1px solid color-mix(in srgb, var(--color-text) 25%, transparent);
+}

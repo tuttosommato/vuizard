@@ -37,6 +37,22 @@ function ColorDot({ fill }: { fill: string }) {
   )
 } */
 
+// two circles overlapping, as the reasons of the same rank are drawn
+function StackEl() {
+  return (
+    <svg
+      viewBox={`-${w / 2} -${h / 2} ${w} ${h}`}
+      width={w}
+      height={h}
+      overflow="visible"
+    >
+      <circle cy={rB * 0.55} r={rB * 0.7} fill="var(--color-text)" />
+      <circle cy={-rB * 0.55} r={rB * 0.7 + 1} fill="var(--color-bg)" />
+      <circle cy={-rB * 0.55} r={rB * 0.7} fill="var(--color-text)" />
+    </svg>
+  );
+}
+
 function Symbolel({
   type,
 }: {
@@ -117,6 +133,11 @@ const sections: LegendItem[][] = [
       el: <ColorDot fill="var(--color-discarded)" />,
       label: "Discarded attribution",
       key: "discarded",
+    },
+    {
+      el: <StackEl />,
+      label: "Several reasons at the same level",
+      key: "multiple-reasons",
     },
     /*     {
       el: <MeanReliabilityDot />,

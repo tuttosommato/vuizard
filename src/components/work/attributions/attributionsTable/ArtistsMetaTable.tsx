@@ -5,8 +5,11 @@ import { Fragment } from "react";
 import type { AttributionsBundle } from "@/types/attributions";
 import type { Artist } from "@/types/artists";
 import uncertaintyLine from "@/utils/uncertaintyLine";
-import AttributionCircle from "@/components/work/attributions/AttributionCircle";
-import { circleTypeFor } from "@/components/work/attributions/utils";
+import {
+  circleTypeFor,
+  reasonsByRank,
+} from "@/components/work/attributions/utils";
+import ReasonStack from "@/components/work/attributions/ReasonStack";
 import { colorScale } from "@/utils/constants.ts";
 import useMeasuredSize from "@/hooks/useMeasuredSize";
 import ArrowLink from "@/components/ArrowLink";
@@ -57,6 +60,7 @@ export default function ArtistsMetaTable({
           const attrId = attr.attribution_id;
           const isExpanded = selectedIds.has(attrId);
           const circleType = circleTypeFor(attr);
+          const positions = reasonsByRank(attr.reasons);
           const u = attr.authors.some((a) => a.u_qualifier);
           const authorsLength = attr.authors.length;
 
@@ -112,15 +116,17 @@ export default function ArtistsMetaTable({
                       <td className="reliability-column">
                         {idx === 0 && (
                           <svg width="100%" height={height}>
+                            {/* one line and one place on it for each rank; reasons of the same
+                                rank make a stack of circles, as in the visualisation */}
                             {u
-                              ? attr.reasons.map((reason, i) => (
+                              ? positions.map(({ rank }) => (
                                   <path
-                                    key={i}
+                                    key={rank}
                                     d={uncertaintyLine(
                                       [
                                         rankScale(0),
                                         height / 2,
-                                        rankScale(reason.rank),
+                                        rankScale(rank),
                                         height / 2,
                                       ],
                                       u ? 0.85 : 0.6,
@@ -130,33 +136,34 @@ export default function ArtistsMetaTable({
                                     fill="none"
                                   ></path>
                                 ))
-                              : attr.reasons.map((reason, i) => (
+                              : positions.map(({ rank }) => (
                                   <line
-                                    key={i}
+                                    key={rank}
                                     x1={rankScale(0)}
                                     y1={height / 2}
-                                    x2={rankScale(reason.rank)}
+                                    x2={rankScale(rank)}
                                     y2={height / 2}
                                     stroke="var(--color-text)"
                                     strokeWidth={1.5}
                                   ></line>
                                 ))}
 
-                            {attr.reasons.map((reason, i) => {
-                              return (
-                                <g
-                                  key={i}
-                                  transform={`translate(${rankScale(reason.rank)}, ${height / 2})`}
-                                >
-                                  <AttributionCircle
-                                    type={circleType}
-                                    fill={colorScale(attr.type)}
-                                    r={radius}
-                                  />
-                                  <title>{reason.reason}</title>
-                                </g>
-                              );
-                            })}
+                            {positions.map(({ rank, reasons }) => (
+                              <g
+                                key={rank}
+                                transform={`translate(${rankScale(rank)}, ${height / 2})`}
+                              >
+                                <ReasonStack
+                                  type={circleType}
+                                  fill={colorScale(attr.type)}
+                                  r={radius}
+                                  count={reasons.length}
+                                />
+                                <title>
+                                  {reasons.map((r) => r.reason).join("\n")}
+                                </title>
+                              </g>
+                            ))}
                           </svg>
                         )}
                       </td>

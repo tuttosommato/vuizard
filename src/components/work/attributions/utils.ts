@@ -1,5 +1,24 @@
 import type { Attribution } from "@/types/attributions";
 type AttributionAuthor = Attribution["authors"][number];
+type Reason = Attribution["reasons"][number];
+
+// An attribution's reasons grouped by rank: the rank is the position of a reason on the
+// attribution's ray, so reasons of the same rank share a place. In the order the ranks first
+// appear.
+export function reasonsByRank(
+  reasons: Reason[],
+): { rank: number; reasons: Reason[] }[] {
+  const groups = new Map<number, Reason[]>();
+  for (const reason of reasons) {
+    const group = groups.get(reason.rank);
+    if (group) group.push(reason);
+    else groups.set(reason.rank, [reason]);
+  }
+  return [...groups.entries()].map(([rank, group]) => ({
+    rank,
+    reasons: group,
+  }));
+}
 
 // it picks the first author to represent the attribution when u_qualifier and r_qualifier are needed since they are the same for all authors in an attribution
 export function representativeAuthor(attr: Attribution): AttributionAuthor {

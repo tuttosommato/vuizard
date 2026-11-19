@@ -1,16 +1,17 @@
 import type { Attribution } from "@/types/attributions";
 import uncertaintyLine from "@/utils/uncertaintyLine";
-import AttributionCircle from "@/components/work/attributions/AttributionCircle";
+import ReasonStack from "@/components/work/attributions/ReasonStack";
 import { verticalCenterOffset } from "@/components/work/attributions/debateVis/geometry";
 import {
   circleTypeFor,
   formatAttributionLabel,
+  reasonsByRank,
   representativeAuthor,
 } from "@/components/work/attributions/utils";
 import { rankScale, radius, center } from "@/components/work/attributions/debateVis/constants";
 import { colorScale } from "@/utils/constants.ts";
 import { createPortal } from "react-dom";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useCrossSelection } from "@/stores/CrossSelectionContext";
 import { useHighlight } from "@/stores/HighlightContext";
 
@@ -24,21 +25,17 @@ type GroupProps = {
 
 const TOOLTIP_GAP = 4;
 
+// The tooltip of a position on the ray: one entry for each reason that has it (usually one)
 function ReasonTooltip({
-  reason,
-  date,
+  entries,
   coords,
   tooltipPosition,
-  rawReason,
 }: {
-  reason: string;
-  date: string | null;
+  entries: { reason: string; date: string | null; rawReason: string }[];
   coords: { x: number; y: number } | null;
   tooltipPosition: "top" | "bottom";
-  rawReason: string;
 }) {
   if (!coords) return null;
-  const reasonClean = reason.replace(/[-–—]/g, " ").trim();
   return createPortal(
     <div
       className="reason-tooltip"
@@ -52,13 +49,17 @@ function ReasonTooltip({
             : `translate(${TOOLTIP_GAP}px, ${TOOLTIP_GAP}px)`,
       }}
     >
-      <p>
-        <span className="keyword">{reasonClean}</span>
-        <br />
-        {rawReason}
-        <br />
-        {date ? '' : "date: n/a"}
-      </p>
+      {entries.map((entry, i) => (
+        <p key={i} className="reason-tooltip-entry">
+          <span className="keyword">
+            {entry.reason.replace(/[-–—]/g, " ").trim()}
+          </span>
+          <br />
+          {entry.rawReason}
+          <br />
+          {entry.date ? "" : "date: n/a"}
+        </p>
+      ))}
     </div>,
     document.body,
   );
@@ -73,6 +74,9 @@ export default function AttributionsGroup({
 }: GroupProps) {
   const attrFill = colorScale(attr.type);
   const circleType = circleTypeFor(attr);
+
+  // the reasons by position on the ray: reasons of the same rank share one
+  const positions = useMemo(() => reasonsByRank(attr.reasons), [attr.reasons]);
 
   const symbolRefs = useRef<Map<number, SVGElement>>(new Map());
   const [coordsList, setCoordsList] = useState<
@@ -89,8 +93,8 @@ export default function AttributionsGroup({
     highlightMembers?.has(attr.attribution_id) || isHighlighted || isSelected;
 
   useEffect(() => {
-    const next = attr.reasons.map((_, ri) => {
-      const el = symbolRefs.current.get(ri);
+    const next = positions.map((_, pi) => {
+      const el = symbolRefs.current.get(pi);
       if (!el) return null;
       const rect = el.getBoundingClientRect();
       return {
@@ -99,24 +103,23 @@ export default function AttributionsGroup({
       };
     });
     setCoordsList(next);
-  }, [isHighlighted, attr.reasons, tooltipPosition]);
+  }, [isHighlighted, positions, tooltipPosition]);
 
   return (
     <>
       {isHighlighted &&
-        attr.reasons.map((reason, ri) => {
-          const date = reason.date != "" ? reason.date : null;
-          return (
-            <ReasonTooltip
-              key={`${attr.attribution_id}-tooltip-${ri}`}
-              reason={reason.reason}
-              date={date}
-              coords={coordsList[ri] ?? null}
-              tooltipPosition={tooltipPosition}
-              rawReason={reason.original_text}
-            />
-          );
-        })}
+        positions.map((position, pi) => (
+          <ReasonTooltip
+            key={`${attr.attribution_id}-tooltip-${pi}`}
+            entries={position.reasons.map((reason) => ({
+              reason: reason.reason,
+              date: reason.date != "" ? reason.date : null,
+              rawReason: reason.original_text,
+            }))}
+            coords={coordsList[pi] ?? null}
+            tooltipPosition={tooltipPosition}
+          />
+        ))}
 
       <g
         className="attribution-group"
@@ -129,10 +132,10 @@ export default function AttributionsGroup({
         onMouseLeave={() => setHighlightedId(null)}
       >
         {/* Edges */}
-        {attr.reasons.map((reason) => {
-          const x1 = rankScale(reason.rank) + radius; // edge is traced from the right edge of the circle so that it is not visible when opacity is reduced
+        {positions.map(({ rank }) => {
+          const x1 = rankScale(rank) + radius; // edge is traced from the right edge of the circle so that it is not visible when opacity is reduced
           const x2 = rankScale(0);
-          const key = `${attr.attribution_id}-${reason.reason}`;
+          const key = `${attr.attribution_id}-edge-${rank}`;
 
           // call representativeAuthor since the relation is shared among all reasons of the same attribution
           return representativeAuthor(attr).u_qualifier ? (
@@ -163,20 +166,28 @@ export default function AttributionsGroup({
           );
         })}
 
-        {/* Symbols */}
-        {attr.reasons.map((reason, ri) => (
-          <g
-            className="reason-symbol"
-            key={`${attr.attribution_id}-sym-${ri}`}
-            ref={(el) => {
-              if (el) symbolRefs.current.set(ri, el);
-              else symbolRefs.current.delete(ri);
-            }}
-            transform={`translate(${rankScale(reason.rank)}, 0)`}
-          >
-            <AttributionCircle type={circleType} fill={attrFill} r={radius} />
-          </g>
-        ))}
+        {/* Symbols: one place for each rank; several reasons of the same rank make a small stack */}
+        {positions.map(({ rank, reasons }, pi) => {
+          const n = reasons.length;
+          return (
+            <g
+              className="reason-symbol"
+              key={`${attr.attribution_id}-sym-${rank}`}
+              ref={(el) => {
+                if (el) symbolRefs.current.set(pi, el);
+                else symbolRefs.current.delete(pi);
+              }}
+              transform={`translate(${rankScale(rank)}, 0)`}
+            >
+              <ReasonStack
+                type={circleType}
+                fill={attrFill}
+                r={radius}
+                count={n}
+              />
+            </g>
+          );
+        })}
 
         {/* Labels */}
         <text

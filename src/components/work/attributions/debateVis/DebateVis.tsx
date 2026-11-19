@@ -31,6 +31,7 @@ import ArrowMarkerDef from "@/components/ArrowMarkerDef";
 import {
   attributionIdsByCompositeId,
   circleTypeFor,
+  reasonsByRank,
   representativeAuthor,
 } from "@/components/work/attributions/utils";
 import Switch from "@/components/work/Switch";
@@ -314,6 +315,8 @@ export default function DebateVis({
     attributions.forEach((attr) => {
       keys.add(attr.type); // "accepted" | "discarded"
       keys.add(circleTypeFor(attr)); // "artist" | "recognised" | "unrecognised" | "anonym"
+      if (reasonsByRank(attr.reasons).some((g) => g.reasons.length > 1))
+        keys.add("multiple-reasons"); // several reasons at the same level: a stack of circles
 
       const u = representativeAuthor(attr).u_qualifier;
       if (!u) keys.add("confident");
