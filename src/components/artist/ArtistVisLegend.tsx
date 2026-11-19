@@ -51,8 +51,8 @@ export default function ArtistVisLegend({
         y2={-(TIER_I + legendOffset)}
         stroke="var(--color-text-muted)"
         strokeWidth={1.5}
-        markerEnd="url(#arrow)"
-        markerStart="url(#arrow)"
+        markerEnd="url(#arrow-muted)"
+        markerStart="url(#arrow-muted)"
       />
       <text
         x={labelX}
